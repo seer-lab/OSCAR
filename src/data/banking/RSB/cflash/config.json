@@ -1,0 +1,17 @@
+{
+    "name": "Banking (Removed synchronized block)",
+    "root": {
+        "path": "../Data/data/banking/RSB/"
+    },
+    "src": {
+        "path": "src/"
+    },
+    "test": {
+        "test_suite": {
+            "path": "test/",
+            "entrypoint": "RunTests.java"
+        },
+        "num_test_runs": 500,
+        "diff_threshold": 0
+    }
+}

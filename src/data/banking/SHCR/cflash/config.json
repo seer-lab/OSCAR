@@ -1,0 +1,17 @@
+{
+    "name": "Banking (Shifted critical region)",
+    "root": {
+        "path": "../Data/data/banking/SHCR/"
+    },
+    "src": {
+        "path": "src/"
+    },
+    "test": {
+        "test_suite": {
+            "path": "test/",
+            "entrypoint": "RunTests.java"
+        },
+        "num_test_runs": 500,
+        "diff_threshold": 0
+    }
+}

@@ -1,0 +1,17 @@
+{   
+    "name": "Transaction MECH (Removed synchronized keyword from method - Version 2)",
+    "root": {
+        "path": "../Data/data/transaction-mech/RSK/v2/"
+    },
+    "src": {
+        "path": "src/"
+    },
+    "test": {
+        "test_suite": {
+            "path": "test/",
+            "entrypoint": "RunTests.java"
+        },
+        "num_test_runs": 500,
+        "diff_threshold": 0
+    }
+}

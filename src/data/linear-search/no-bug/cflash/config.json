@@ -1,0 +1,17 @@
+{
+    "name": "Linear Search (No bug)",
+    "root": {
+        "path": "../Data/data/linear-search/no-bug/"
+    },
+    "src": {
+        "path": "src/"
+    },
+    "test": {
+        "test_suite": {
+            "path": "test/",
+            "entrypoint": "RunTests.java"
+        },
+        "num_test_runs": 500,
+        "diff_threshold": 0
+    }
+}
