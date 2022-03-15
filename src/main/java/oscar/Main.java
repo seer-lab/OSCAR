@@ -1,47 +1,38 @@
 package oscar;
 
+import oscar.utils.Config;
 import soot.*;
-import soot.jimple.internal.StmtBox;
-import soot.options.Options;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class Main {
-
   public static void main(String[] args) {
-    G.reset();
+    // Parse program configuration
+    Config.parse(args);
 
-    // Options.v().set_allow_phantom_refs(true);
-    Options.v().set_prepend_classpath(true);
-    List<String> processDirs = new ArrayList<>();
-    processDirs.add("cflash-data/account/Account.jar");
-    Options.v().set_soot_classpath("cflash-data/account");
-    Options.v().set_process_dir(processDirs);
-    Options.v().set_whole_program(true);
+    // Initial configs
 
-    Scene.v().loadNecessaryClasses();
+    // Init soot
+    //Scene scene = getScene("cflash-data/account", "cflash-data/account/Account.jar");
+    Scene scene = FileReader.readClassFile("src/test/java", "SimpleSleepExample");
 
-    HashMap<String, SootClass> sootClasses = new HashMap<>(
-        Scene.v().getClasses().stream()
-            .filter(sc -> !sc.getName().startsWith("java."))
-            .filter(sc -> !sc.getName().startsWith("sun."))
-            .filter(sc -> !sc.getName().startsWith("jdk."))
-            .filter(sc -> !sc.getName().startsWith("javax."))
-            .filter(sc -> !sc.getName().startsWith("com.sun"))
-            .collect(Collectors.toMap(SootClass::getName, Function.identity()))
-    );
-    SootClass mainClass = sootClasses.get("Main");
+    // Get all detected Classes
+    Map<String, SootClass> sootClasses = ClassReader.getClasses(scene);
+
+    // Get Main class
+    //SootClass mainClass = sootClasses.get("Main");
+    //SootMethod meth = mainClass.getMethodByName("main");
+
+    SootClass mainClass = sootClasses.get("SimpleSleepExample");
     SootMethod meth = mainClass.getMethodByName("main");
 
     Body body = meth.retrieveActiveBody();
     List<UnitBox> boxes = body.getAllUnitBoxes();
+
+    System.out.println(body.toString());
+
   }
 
-  public void traverseUnits() {
 
-  }
 }
