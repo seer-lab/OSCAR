@@ -1,4 +1,4 @@
-package oscar;
+package oscar.soot;
 
 import soot.G;
 import soot.Scene;

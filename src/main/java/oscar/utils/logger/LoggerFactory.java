@@ -1,4 +1,4 @@
-package oscar.utils;
+package oscar.utils.logger;
 
 import java.io.IOException;
 import java.util.Date;
@@ -40,7 +40,7 @@ public final class LoggerFactory {
   }
 
   private static final class LogFormatter extends Formatter {
-    private static final String format = "[%1$tF %1$tT][%2$s][%3$s]: %4$s %n";
+    private static final String format = "[%3$s][%2$s][%1$tF %1$tT]: %4$s %n";
 
     @Override
     public synchronized String format(LogRecord lr) {

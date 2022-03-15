@@ -1,6 +1,6 @@
-package oscar;
+package oscar.soot;
 
-import oscar.utils.LoggerFactory;
+import oscar.utils.logger.LoggerFactory;
 import soot.Scene;
 import soot.SootClass;
 import soot.util.Chain;
@@ -33,10 +33,10 @@ public final class ClassReader {
     Chain<SootClass> sceneClasses = scene.getClasses();
     logger.info("%d classes detected.".formatted(sceneClasses.size()));
 
-    return sceneClasses
+    Map<String, SootClass> filteredSceneClasses = sceneClasses
         .stream()
         .filter(sc -> {
-          boolean condition = !BlacklistedClasses.contains(sc.getName());
+          boolean condition = BlacklistedClasses.stream().noneMatch(bc -> sc.getName().startsWith(bc));
 
           if (condition)
             logger.info("Class detected: %s".formatted(sc.getName()));
@@ -46,5 +46,9 @@ public final class ClassReader {
           return condition;
         })
         .collect(Collectors.toMap(SootClass::getName, Function.identity()));
+
+    logger.info("Filtered detected class count: %d/%d.".formatted(filteredSceneClasses.size(), sceneClasses.size()));
+
+    return filteredSceneClasses;
   }
 }
