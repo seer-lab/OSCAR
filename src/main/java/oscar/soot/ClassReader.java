@@ -14,13 +14,6 @@ import java.util.stream.Collectors;
 public final class ClassReader {
   private static final Logger logger = LoggerFactory.getInstance(ClassReader.class);
 
-  private static final List<String> BlacklistedClasses = List.of(
-      "java.",
-      "sun.",
-      "jdk.",
-      "javax.",
-      "com.sun"
-  );
 
   /**
    * Detect and obtain all the clases from examined files
@@ -35,16 +28,16 @@ public final class ClassReader {
 
     Map<String, SootClass> filteredSceneClasses = sceneClasses
         .stream()
-        .filter(sc -> {
-          boolean condition = BlacklistedClasses.stream().noneMatch(bc -> sc.getName().startsWith(bc));
+        /* .filter(sc -> {
+         boolean condition = BlacklistedClasses.stream().noneMatch(bc -> sc.getName().startsWith(bc));
 
           if (condition)
-            logger.info("Class detected: %s".formatted(sc.getName()));
+            logger.fine("Class detected: %s".formatted(sc.getName()));
           else
-            logger.info("Class detected (ignored): %s".formatted(sc.getName()));
+            logger.fine("Class detected (ignored): %s".formatted(sc.getName()));
 
           return condition;
-        })
+        })*/
         .collect(Collectors.toMap(SootClass::getName, Function.identity()));
 
     logger.info("Filtered detected class count: %d/%d.".formatted(filteredSceneClasses.size(), sceneClasses.size()));
