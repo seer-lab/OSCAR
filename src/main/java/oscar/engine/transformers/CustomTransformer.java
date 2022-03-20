@@ -1,8 +1,10 @@
-package oscar.soot;
+package oscar.engine.transformers;
 
+import soot.Body;
 import soot.BodyTransformer;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class CustomTransformer extends BodyTransformer {
   protected static final List<String> blacklistedClasses = List.of(

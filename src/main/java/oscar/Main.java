@@ -1,8 +1,8 @@
 package oscar;
 
 import org.apache.commons.cli.ParseException;
-import oscar.soot.RandomNoiserTransformer;
-import oscar.soot.Soot;
+import oscar.engine.Engine;
+import oscar.engine.transformers.RandomNoiserTransformer;
 import oscar.utils.ConfigParser;
 import oscar.utils.OptionsParser;
 import oscar.utils.logger.LoggerFactory;
@@ -25,7 +25,7 @@ public class Main {
     Logger logger = LoggerFactory.getInstance(Main.class);
 
     // Init soot
-    Soot.initialize();
+    Engine.initialize();
 
     // Register transformers
     List<Transform> transformers = List.of(
@@ -36,6 +36,7 @@ public class Main {
 
     // Run Soot packs (note that our transformer pack is added to the phase "jtp")
     PackManager.v().runPacks();
+
     // Write the result of packs in outputPath
     PackManager.v().writeOutput();
 
@@ -66,6 +67,4 @@ public class Main {
     */
 
   }
-
-
 }

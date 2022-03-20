@@ -1,19 +1,23 @@
-package oscar.soot;
+package oscar.engine;
 
 import oscar.utils.ConfigParser;
+import oscar.utils.error.CustomException;
 import oscar.utils.logger.LoggerFactory;
 import soot.G;
 import soot.Scene;
 import soot.SootClass;
 import soot.options.Options;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
-public class Soot {
-  private static final Logger logger = LoggerFactory.getInstance(Soot.class);
+public class Engine {
+  private static final Logger logger = LoggerFactory.getInstance(Engine.class);
 
+  private static final Map<String, List<String>> tags = new HashMap<>();
 
   public static void initialize() {
     // Get target file type and check if valid
@@ -32,17 +36,16 @@ public class Soot {
     Options.v().set_validate(true);
     Options.v().set_include_all(true);
     Options.v().set_output_format(Options.output_format_class);
-
-    Options.v().set_soot_classpath(ConfigParser.TargetDirectory);
     Options.v().set_output_dir(ConfigParser.OutputDirectory);
 
     // Check if JAR or class file and process accordingly
     if (targetFileType == FILE_TYPE.JAR) {
       Options.v().set_output_jar(true);
-      Options.v().set_process_dir(List.of(ConfigParser.TargetDirectory));
+      Options.v().set_process_dir(List.of(ConfigParser.TargetFile));
     }
 
     if (targetFileType == FILE_TYPE.CLASS) {
+      Options.v().set_soot_classpath(ConfigParser.TargetDirectory);
       SootClass sc = Scene.v().loadClassAndSupport(ConfigParser.MainClass);
       sc.setApplicationClass();
     }
@@ -66,6 +69,20 @@ public class Soot {
       case "class" -> FILE_TYPE.CLASS;
       default -> FILE_TYPE.INVALID;
     };
+  }
+
+  public static void registerTagger(String name) {
+    if (tags.containsKey(name))
+      throw new RuntimeException("Tagger '%s' already exists.".formatted(name));
+
+    tags.put(name, new ArrayList<>());
+  }
+
+  public static void tag(String tagger, String tag) {
+    if (!tags.containsKey(tagger))
+      throw new RuntimeException("Tagger '%s' not found.".formatted(tagger));
+
+    tags.get(tagger).add(tag);
   }
 
   private enum FILE_TYPE {

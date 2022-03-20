@@ -1,10 +1,9 @@
-package oscar.soot;
+package oscar.engine.transformers;
 
-import oscar.utils.ConfigParser;
+import oscar.engine.writers.SleepWriter;
 import soot.*;
 import soot.jimple.*;
 import soot.javaToJimple.*;
-import soot.jimple.internal.JInvokeStmt;
 
 import java.util.List;
 import java.util.Map;
@@ -17,15 +16,9 @@ public class RandomNoiserTransformer extends CustomTransformer {
     if (!isClassBlacklisted(b.getMethod().getDeclaringClass().getName()))
       return;
 
-    if (!b.getMethod().getName().equals("main"))
-      return;
-
     JimpleBody body = (JimpleBody) b;
 
-    SootMethod sleepMethod = Scene.v().grabMethod("<java.lang.Thread: void sleep(long)>");
-    Value sleepLength = LongConstant.v(4000);
-    StaticInvokeExpr sleepInstructionExpr = Jimple.v().newStaticInvokeExpr(sleepMethod.makeRef(), List.of(sleepLength));
-    InvokeStmt sleepInstructionStmt = Jimple.v().newInvokeStmt(sleepInstructionExpr);
+    InvokeStmt sleepInstructionStmt = SleepWriter.createStatement(4000L);
 
     UnitPatchingChain boxes = body.getUnits();
 
@@ -41,17 +34,15 @@ public class RandomNoiserTransformer extends CustomTransformer {
       c++;
     }
 
-    boxes.remove(boxToRemove);
+   // boxes.remove(boxToRemove);
 
-    b.getUnits().insertAfter(List.of(sleepInstructionStmt), body.getUnits().stream().toList().get(c));
+   // b.getUnits().insertAfter(List.of(sleepInstructionStmt), body.getUnits().stream().toList().get(c));
 
-    b.validate();
+   // b.validate();
   }
-
 
   public static Local generateNewLocal(Body body, Type type) {
     LocalGenerator lg = new DefaultLocalGenerator(body);
     return lg.generateLocal(type);
   }
-
 }
