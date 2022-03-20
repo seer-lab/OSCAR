@@ -3,6 +3,7 @@ package oscar;
 import org.apache.commons.cli.ParseException;
 import oscar.engine.Engine;
 import oscar.engine.transformers.RandomNoiserTransformer;
+import oscar.engine.transformers.noisers.SynchronizedBlockNoiser;
 import oscar.utils.ConfigParser;
 import oscar.utils.OptionsParser;
 import oscar.utils.logger.LoggerFactory;
@@ -29,7 +30,7 @@ public class Main {
 
     // Register transformers
     List<Transform> transformers = List.of(
-        new Transform("jtp.rnt", new RandomNoiserTransformer())
+        new Transform("jtp.sbn", new SynchronizedBlockNoiser())
     );
 
     transformers.forEach(PackManager.v().getPack("jtp")::add);
@@ -39,32 +40,5 @@ public class Main {
 
     // Write the result of packs in outputPath
     PackManager.v().writeOutput();
-
-   /*
-    // Get all detected Classes
-    Map<String, SootClass> sootClasses = ClassReader.getClasses(scene);
-
-    // Get Main class
-    SootClass mainClass = sootClasses.get(ConfigParser.MainClass);
-    SootMethod meth = mainClass.getMethodByName("main");
-    GrimpBody body = (GrimpBody) meth.getActiveBody();
-
-    System.out.println("-------------BODY-------------");
-    System.out.println(body);
-    System.out.println("------------------------------");
-
-    UnitPatchingChain units = body.getUnits();
-
-    units.stream()
-         .filter(u -> u.getDefBoxes().contains("staticinvoke"))
-         .forEach(System.out::println);
-
-    //SootMethod sleepInst = Scene.v().grabMethod("<java.lang.Thread: void sleep(long)>(2000L)");
-    // InvokeStmt sleepStmt = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(psLocal, sleepInst.makeRef(), printlnParamter));
-    // units.add(printlnMethodCallStmt);
-
-    //InstrumentUtil.setupSoot(androidJar, apkPath, outputPath);
-    */
-
   }
 }
