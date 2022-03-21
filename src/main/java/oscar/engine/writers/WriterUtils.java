@@ -1,14 +1,15 @@
 package oscar.engine.writers;
 
 import soot.Body;
-import soot.Local;
-import soot.SootClass;
+import soot.LongType;
 import soot.Type;
 import soot.javaToJimple.DefaultLocalGenerator;
+import soot.jimple.internal.JimpleLocal;
 
 public final class WriterUtils {
-  public static Local generateNewLocal(Body body, Type type) {
-    DefaultLocalGenerator lg = new DefaultLocalGenerator(body);
-    return lg.generateLocal(type);
+  private static int localCounter = 0;
+
+  public static JimpleLocal generateLocal(Type type) {
+    return new JimpleLocal("__oscar__local__%d".formatted(localCounter++), type);
   }
 }
