@@ -1,4 +1,4 @@
-package oscar.engine.transformers;
+package oscar.transformers;
 
 import soot.Body;
 import soot.BodyTransformer;

@@ -1,4 +1,4 @@
-package oscar.engine.writers;
+package oscar.engine.generators;
 
 import soot.Scene;
 import soot.SootMethod;

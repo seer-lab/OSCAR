@@ -1,11 +1,10 @@
-package oscar.engine.transformers;
+package oscar.transformers;
 
-import oscar.engine.writers.SleepWriter;
+import oscar.engine.generators.SleepWriter;
 import soot.*;
 import soot.jimple.*;
 import soot.javaToJimple.*;
 
-import java.util.List;
 import java.util.Map;
 
 public class RandomNoiserTransformer extends CustomTransformer {

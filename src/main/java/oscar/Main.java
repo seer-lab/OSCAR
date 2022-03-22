@@ -2,8 +2,7 @@ package oscar;
 
 import org.apache.commons.cli.ParseException;
 import oscar.engine.Engine;
-import oscar.engine.transformers.RandomNoiserTransformer;
-import oscar.engine.transformers.noisers.SynchronizedBlockNoiser;
+import oscar.transformers.noisers.SynchronizedBlockNoiser;
 import oscar.utils.ConfigParser;
 import oscar.utils.OptionsParser;
 import oscar.utils.logger.LoggerFactory;
