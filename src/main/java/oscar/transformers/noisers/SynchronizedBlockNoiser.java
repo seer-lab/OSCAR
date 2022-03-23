@@ -2,11 +2,11 @@ package oscar.transformers.noisers;
 
 import oscar.transformers.CustomTransformer;
 import oscar.engine.generators.JimpleGenerator;
-import oscar.engine.WriterUtils;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.*;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +18,6 @@ public class SynchronizedBlockNoiser extends CustomTransformer {
       return;
 
     JimpleBody body = (JimpleBody) b;
-    SootMethod bodyMethod = body.getMethod();
     JimpleGenerator generator = new JimpleGenerator(body);
     UnitPatchingChain boxes = body.getUnits();
 
@@ -36,18 +35,16 @@ public class SynchronizedBlockNoiser extends CustomTransformer {
       generator.addExceptionToBodyMethod("java.lang.InterruptedException");
 
       // Instantiate a new java.util.Random class
-      JSpecialInvokeExpr jsie = generator.Statement.instantiateClass("java.util.Random", List.of());
-      JimpleLocal randomClassLocal = (JimpleLocal) jsie.getBase();
-      boxes.addFirst(new JInvokeStmt(jsie));
+      JimpleLocal randomClassLocal = generator.Statement.instantiateClass("java.util.Random", List.of());
 
       for (JInvokeStmt syncMethodInvocation : syncMethodInvocations) {
         // create new local and get random value
-        JAssignStmt jas = callRandomNextLong(randomClassLocal, generator);
-        JimpleLocal randomValueLocal = (JimpleLocal) jas.getLeftOp();
-        boxes.insertBefore(jas, syncMethodInvocation);
+        LinkedList<JAssignStmt> rndGenStmts = getRandomCreationAssignments(randomClassLocal, generator);
+        JimpleLocal randomValueLocal = (JimpleLocal) rndGenStmts.getLast().getLeftOp();
+        rndGenStmts.forEach(stmt -> boxes.insertBefore(stmt, syncMethodInvocation));
 
         // Create arguments to print
-        jas = getLongValueOf(randomClassLocal, generator);
+        JAssignStmt jas = generator.Conversion.longValueOf(randomValueLocal);
         JimpleLocal longValueLocal = (JimpleLocal) jas.getLeftOp();
         boxes.insertBefore(jas, syncMethodInvocation);
 
@@ -61,17 +58,30 @@ public class SynchronizedBlockNoiser extends CustomTransformer {
     b.validate();
   }
 
-  private JAssignStmt callRandomNextLong(JimpleLocal randomLocalRef, JimpleGenerator bodyModifier) {
-    return bodyModifier.Statement.invokeMethod(
+  private LinkedList<JAssignStmt> getRandomCreationAssignments(JimpleLocal randomLocalRef, JimpleGenerator generator) {
+    LinkedList<JAssignStmt> stmts = new LinkedList<>();
+
+    // Invoke nextLong
+    JAssignStmt nextLongStmt = generator.Statement.virtualInvoke(
         randomLocalRef,
         "java.util.Random",
-        "nextLong",
-        LongType.v(),
-        List.of(LongConstant.v(4000L))
+        "long nextLong()",
+        List.of()
     );
-  }
+    stmts.add(nextLongStmt);
 
-  private JAssignStmt getLongValueOf(JimpleLocal local, JimpleGenerator generator) {
-    return generator.Conversion.valueOf(LongType.v(), "java.lang.long", local);
+    // Modulo random value
+    JAssignStmt moduloStmt = generator.Arithmetic.modulo(nextLongStmt.getLeftOp(), LongConstant.v(4000L));
+    stmts.add(moduloStmt);
+
+    // Do math abs on value
+    JAssignStmt mathAbsStmt = generator.Statement.staticInvoke(
+        "java.lang.Math",
+        "long abs(long)",
+        List.of(moduloStmt.getLeftOp())
+    );
+    stmts.add(mathAbsStmt);
+
+    return stmts;
   }
 }

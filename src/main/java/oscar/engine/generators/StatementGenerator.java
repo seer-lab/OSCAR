@@ -1,6 +1,5 @@
 package oscar.engine.generators;
 
-import oscar.engine.WriterUtils;
 import soot.*;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
@@ -11,24 +10,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record StatementGenerator(JimpleGenerator generator) {
-  public JSpecialInvokeExpr instantiateClass(String className, List<Value> initArgs) {
+  public JimpleLocal instantiateClass(String className, List<Value> initArgs) {
     // Add a new local
     SootClass sootClass = generator.getSootClass(className);
     JimpleLocal local = generator.generateLocalFromClass(sootClass);
     JNewExpr newExp = new JNewExpr(RefType.v(sootClass));
-    generator.appendUnit(new JAssignStmt(local, newExp));
 
     // Invoke the init
-    SootMethod initMethod = sootClass.getMethod("<init>");
-    return new JSpecialInvokeExpr(local, initMethod.makeRef(), initArgs);
+    SootMethod initMethod = sootClass.getMethod("void <init>()");
+    JSpecialInvokeExpr classInvokeExpr = new JSpecialInvokeExpr(local, initMethod.makeRef(), initArgs);
+
+    generator.appendUnit(new JInvokeStmt(classInvokeExpr));
+    generator.appendUnit(new JAssignStmt(local, newExp));
+
+    return (JimpleLocal) classInvokeExpr.getBase();
   }
 
-  public JAssignStmt invokeMethod(JimpleLocal refLocal, String methodClass, String methodName, Type returnType, List<Value> args) {
-    JimpleLocal resultLocal = WriterUtils.generateLocal(returnType);
+  public JAssignStmt virtualInvoke(JimpleLocal refLocal, String methodClass, String methodName, List<Value> args) {
     SootClass sootClass = generator.getSootClass(methodClass);
     SootMethod method = sootClass.getMethod(methodName);
+    JimpleLocal resultLocal = generator.getLocal(method.getReturnType());
+
     JVirtualInvokeExpr invokeExpr =
         new JVirtualInvokeExpr(refLocal, method.makeRef(), args);
+
+    return new JAssignStmt(resultLocal, invokeExpr);
+  }
+
+  public JAssignStmt staticInvoke(String methodClass, String methodName, List<Value> args) {
+    SootClass sootClass = generator.getSootClass(methodClass);
+    SootMethod method = sootClass.getMethod(methodName);
+    JimpleLocal resultLocal = generator.getLocal(method.getReturnType());
+
+    JStaticInvokeExpr invokeExpr =
+        new JStaticInvokeExpr(method.makeRef(), args);
 
     return new JAssignStmt(resultLocal, invokeExpr);
   }
@@ -37,23 +52,24 @@ public record StatementGenerator(JimpleGenerator generator) {
     ArrayList<Unit> statements = new ArrayList<>();
 
     // Print the random length
-    JimpleLocal printLocal = WriterUtils.generateLocal(RefType.v("java.io.PrintStream"));
+    JimpleLocal printLocal = generator.getLocal(RefType.v("java.io.PrintStream"));
     SootField sysOutField = Scene.v().getField("<java.lang.System: java.io.PrintStream out>");
     statements.add(new JAssignStmt(printLocal, Jimple.v().newStaticFieldRef(sysOutField.makeRef())));
 
     // Create array for print parameters
-    JimpleLocal arrayLocal = WriterUtils.generateLocal(RefType.v("java.lang.Object"));
-    statements.add(new JAssignStmt(arrayLocal, IntConstant.v(args.size())));
+    JAssignStmt arrayCreationStmt = generator.array("java.lang.Object", 1, args.size());
+    JimpleLocal arrayLocal = (JimpleLocal) arrayCreationStmt.getLeftOp();
+    statements.add(arrayCreationStmt);
 
     // Assign args values to array
-    for (int i = 0; i <= args.size(); i++) {
+    for (int i = 0; i < args.size(); i++) {
       JArrayRef arrayForPrint = new JArrayRef(arrayLocal, IntConstant.v(i));
       statements.add(new JAssignStmt(arrayForPrint, args.get(i)));
     }
 
     // Print
     SootClass printStreamClass = Scene.v().getSootClass("java.io.PrintStream");
-    SootMethod printStreamMethod = printStreamClass.getMethod("printf");
+    SootMethod printStreamMethod = printStreamClass.getMethod("java.io.PrintStream printf(java.lang.String,java.lang.Object[])");
     StringConstant printMsg = StringConstant.v(message);
     JVirtualInvokeExpr printInvokeExpr =
         new JVirtualInvokeExpr(printLocal, printStreamMethod.makeRef(), List.of(printMsg, arrayLocal));
@@ -64,7 +80,8 @@ public record StatementGenerator(JimpleGenerator generator) {
 
   public JInvokeStmt sleep(JimpleLocal sleepLengthLocal) {
     SootClass threadClass = Scene.v().getSootClass("java.lang.Thread");
-    SootMethod sleepMethod = threadClass.getMethod("sleep");
+    SootMethod sleepMethod = threadClass.getMethod("void sleep(long)");
+
     return new JInvokeStmt(new JStaticInvokeExpr(sleepMethod.makeRef(), List.of(sleepLengthLocal)));
   }
 }

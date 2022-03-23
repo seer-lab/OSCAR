@@ -1,17 +1,19 @@
 package oscar.engine;
 
 import oscar.utils.ConfigParser;
-import oscar.utils.error.CustomException;
 import oscar.utils.logger.LoggerFactory;
 import soot.G;
 import soot.Scene;
 import soot.SootClass;
 import soot.options.Options;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class Engine {
@@ -37,6 +39,7 @@ public class Engine {
     Options.v().set_include_all(true);
     Options.v().set_output_format(Options.output_format_class);
     Options.v().set_output_dir(ConfigParser.OutputDirectory);
+    Options.v().set_force_overwrite(true);
 
     // Check if JAR or class file and process accordingly
     if (targetFileType == FILE_TYPE.JAR) {
@@ -89,5 +92,27 @@ public class Engine {
     JAR,
     CLASS,
     INVALID
+  }
+
+  private static void copyManifest(String sourceJar, String targetJar) {
+      Path zipFilePath = Paths.get(sourceJar);
+
+      try {
+        FileSystem zip = FileSystems.newFileSystem(zipFilePath);
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to read source JAR file.");
+      }
+
+      try () {
+        Path manifestFile = zipFileSystem.getPath("META-INF/MANIFEST.MF");
+        String newManifestContent;
+        // Read from MANIFEST.MF.
+        try (Stream<String> lines = Files.lines(manifestFile, StandardCharsets.UTF_8)) {
+          newManifestContent = lines.filter(l -> !l.startsWith("Class-Path entry I want to remove"))
+                                    .collect(Collectors.joining("\n"));
+        }
+        // Replace MANIFEST.MF content.
+        Files.write(manifestFile, newManifestContent.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+    }
   }
 }

@@ -1,13 +1,14 @@
-package oscar.transformers;
+package oscar.transformers.noisers;
 
 import oscar.engine.generators.SleepWriter;
+import oscar.transformers.CustomTransformer;
 import soot.*;
 import soot.jimple.*;
 import soot.javaToJimple.*;
 
 import java.util.Map;
 
-public class RandomNoiserTransformer extends CustomTransformer {
+public class RandomNoiser extends CustomTransformer {
 
   @Override
   protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
