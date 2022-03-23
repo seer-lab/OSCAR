@@ -25,7 +25,7 @@ public class Main {
     Logger logger = LoggerFactory.getInstance(Main.class);
 
     // Init soot
-    Engine.initialize();
+    Engine.start();
 
     // Register transformers
     List<Transform> transformers = List.of(
@@ -39,5 +39,8 @@ public class Main {
 
     // Write the result of packs in outputPath
     PackManager.v().writeOutput();
+
+    // Finalize soot routines
+    Engine.end();
   }
 }

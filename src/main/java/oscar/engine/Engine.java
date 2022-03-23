@@ -2,17 +2,9 @@ package oscar.engine;
 
 import oscar.utils.ConfigParser;
 import oscar.utils.logger.LoggerFactory;
-import soot.G;
-import soot.Scene;
-import soot.SootClass;
+import soot.*;
 import soot.options.Options;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -21,7 +13,7 @@ public class Engine {
 
   private static final Map<String, List<String>> tags = new HashMap<>();
 
-  public static void initialize() {
+  public static void start() {
     // Get target file type and check if valid
     FILE_TYPE targetFileType = getInputFileType(ConfigParser.TargetFile);
 
@@ -45,6 +37,7 @@ public class Engine {
     if (targetFileType == FILE_TYPE.JAR) {
       Options.v().set_output_jar(true);
       Options.v().set_process_dir(List.of(ConfigParser.TargetFile));
+      //Options.v().set_process_jar_dir(List.of(ConfigParser.TargetFile));
     }
 
     if (targetFileType == FILE_TYPE.CLASS) {
@@ -56,12 +49,9 @@ public class Engine {
     Scene.v().loadNecessaryClasses();
 
     logger.info("Soot engine initialization complete.");
+  }
 
-    // Options.v().set_src_prec(Options.src_prec_java);
-    // Options.v().set_android_jars(androidJar);
-    //Scene.v().addBasicClass("java.io.PrintStream",SootClass.SIGNATURES);
-    //Scene.v().addBasicClass("java.lang.System", SootClass.SIGNATURES);
-    //Options.v().set_process_multiple_dex(true);
+  public static void end() {
   }
 
   private static FILE_TYPE getInputFileType(String file) {
@@ -93,26 +83,25 @@ public class Engine {
     CLASS,
     INVALID
   }
-
+/*
   private static void copyManifest(String sourceJar, String targetJar) {
-      Path zipFilePath = Paths.get(sourceJar);
+    FileSystem targetZip;
+    FileSystem sourceZip;
 
-      try {
-        FileSystem zip = FileSystems.newFileSystem(zipFilePath);
-      } catch (IOException e) {
-        throw new RuntimeException("Failed to read source JAR file.");
-      }
-
-      try () {
-        Path manifestFile = zipFileSystem.getPath("META-INF/MANIFEST.MF");
-        String newManifestContent;
-        // Read from MANIFEST.MF.
-        try (Stream<String> lines = Files.lines(manifestFile, StandardCharsets.UTF_8)) {
-          newManifestContent = lines.filter(l -> !l.startsWith("Class-Path entry I want to remove"))
-                                    .collect(Collectors.joining("\n"));
-        }
-        // Replace MANIFEST.MF content.
-        Files.write(manifestFile, newManifestContent.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+    try {
+      sourceZip = FileSystems.newFileSystem(sourceJar);
+      targetZip = FileSystems.newFileSystem(targetJar);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to read source JAR file.");
     }
-  }
+
+    Path sourceManifest = sourceZip.getPath("META-INF/MANIFEST.MF");
+    Path targetManifest = targetZip.getPath("META-INF/MANIFEST.MF");
+
+    try {
+      Files.copy(sourceManifest, targetManifest, StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to write manifest to JAR file.");
+    }
+  }*/
 }
