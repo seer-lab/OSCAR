@@ -24,7 +24,7 @@ public final class LoggerFactory {
       fileHandler.setLevel(loggerLevel);
       fileHandler.setFormatter(new LogFormatter());
     } catch (IOException | SecurityException e) {
-      throw new RuntimeException("Failed to write to log file location in client.properties file.");
+      throw new RuntimeException("Failed to write to log file location in client.properties file.", e);
     }
   }
 

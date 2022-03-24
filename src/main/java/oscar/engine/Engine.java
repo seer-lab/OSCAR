@@ -1,21 +1,35 @@
 package oscar.engine;
 
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.*;
 import oscar.utils.ConfigParser;
 import oscar.utils.logger.LoggerFactory;
 import soot.*;
 import soot.options.Options;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Engine {
   private static final Logger logger = LoggerFactory.getInstance(Engine.class);
 
-  private static final Map<String, List<String>> tags = new HashMap<>();
+  private static final String OSCAR_TEMP_DIR = ".oscar_temp";
+  private static final String OSCAR_EXTRACT_DIR = OSCAR_TEMP_DIR + "/extract";
+  private static final String OSCAR_GENERATED_DIR = OSCAR_TEMP_DIR + "/generated";
+
+  private static FILE_TYPE targetFileType;
 
   public static void start() {
     // Get target file type and check if valid
-    FILE_TYPE targetFileType = getInputFileType(ConfigParser.TargetFile);
+    targetFileType = getInputFileType(ConfigParser.TargetFile);
 
     if (targetFileType == FILE_TYPE.INVALID)
       throw new RuntimeException("Invalid input file type.");
@@ -33,18 +47,46 @@ public class Engine {
     Options.v().set_output_dir(ConfigParser.OutputDirectory);
     Options.v().set_force_overwrite(true);
 
-    // Check if JAR or class file and process accordingly
-    if (targetFileType == FILE_TYPE.JAR) {
-      Options.v().set_output_jar(true);
-      Options.v().set_process_dir(List.of(ConfigParser.TargetFile));
-      //Options.v().set_process_jar_dir(List.of(ConfigParser.TargetFile));
+    // Try to create temp folder
+    try {
+      FileUtils.deleteDirectory(new File(OSCAR_TEMP_DIR));
+      Files.createDirectory(Path.of(OSCAR_TEMP_DIR));
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to delete temp folder. Check directory permissions.", e);
     }
 
-    if (targetFileType == FILE_TYPE.CLASS) {
-      Options.v().set_soot_classpath(ConfigParser.TargetDirectory);
-      SootClass sc = Scene.v().loadClassAndSupport(ConfigParser.MainClass);
-      sc.setApplicationClass();
+    // Check if JAR file and process accordingly
+    switch (targetFileType) {
+      case JAR -> {
+        Options.v().set_output_dir(OSCAR_GENERATED_DIR);
+
+        // Delete target jar if exists
+        try {
+          Files.deleteIfExists(Path.of(ConfigParser.OutputDirectory + "/out.jar"));
+        } catch (IOException e) {
+          throw new RuntimeException("Failed to delete previously generated file. Check file permissions.", e);
+        }
+
+        ZipFile jar = new ZipFile(ConfigParser.TargetFile);
+
+        try {
+          jar.extractAll(OSCAR_EXTRACT_DIR);
+        } catch (IOException e) {
+          throw new RuntimeException("Failed to extract jar. Check permissions.", e);
+        }
+
+        Options.v().set_soot_classpath(OSCAR_EXTRACT_DIR);
+
+        //Options.v().set_output_jar(true);
+        //Options.v().set_process_dir(List.of(ConfigParser.TargetFile));
+        //Options.v().set_process_jar_dir(List.of(ConfigParser.TargetFile));
+      }
+
+      case CLASS -> Options.v().set_soot_classpath(ConfigParser.TargetDirectory);
     }
+
+    SootClass sc = Scene.v().loadClassAndSupport(ConfigParser.MainClass);
+    sc.setApplicationClass();
 
     Scene.v().loadNecessaryClasses();
 
@@ -52,6 +94,41 @@ public class Engine {
   }
 
   public static void end() {
+    if (targetFileType == FILE_TYPE.JAR) {
+      ZipFile jar = new ZipFile(ConfigParser.OutputDirectory + "/out.jar");
+
+      try {
+        for (File tempFile : getDirectoryContent(OSCAR_EXTRACT_DIR))
+          if (tempFile.isDirectory())
+            jar.addFolder(tempFile);
+          else
+            jar.addFile(tempFile);
+
+        for (File tempFile : getDirectoryContent(OSCAR_GENERATED_DIR))
+          if (tempFile.isDirectory())
+            jar.addFolder(tempFile);
+          else
+            jar.addFile(tempFile);
+      } catch (ZipException e) {
+        throw new RuntimeException("Failed to add files from temp folder to zip.", e);
+      }
+
+      // Copy generated files over
+      try {
+        File srcDir = new File(OSCAR_GENERATED_DIR);
+        File destDir = new File(ConfigParser.TargetDirectory);
+        FileUtils.copyDirectory(srcDir, destDir);
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to copy generated sources to output folder. Check directory permissions.", e);
+      }
+
+      // Delete temp folder
+      try {
+        FileUtils.deleteDirectory(new File(OSCAR_TEMP_DIR));
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to delete temp folder. Check directory permissions.", e);
+      }
+    }
   }
 
   private static FILE_TYPE getInputFileType(String file) {
@@ -64,44 +141,23 @@ public class Engine {
     };
   }
 
-  public static void registerTagger(String name) {
-    if (tags.containsKey(name))
-      throw new RuntimeException("Tagger '%s' already exists.".formatted(name));
-
-    tags.put(name, new ArrayList<>());
-  }
-
-  public static void tag(String tagger, String tag) {
-    if (!tags.containsKey(tagger))
-      throw new RuntimeException("Tagger '%s' not found.".formatted(tagger));
-
-    tags.get(tagger).add(tag);
-  }
-
   private enum FILE_TYPE {
     JAR,
     CLASS,
     INVALID
   }
-/*
-  private static void copyManifest(String sourceJar, String targetJar) {
-    FileSystem targetZip;
-    FileSystem sourceZip;
 
-    try {
-      sourceZip = FileSystems.newFileSystem(sourceJar);
-      targetZip = FileSystems.newFileSystem(targetJar);
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to read source JAR file.");
-    }
+  private static List<File> getDirectoryContent(String dir) {
+    File dirFile = new File(dir);
+    int maxDirDepth = dirFile.getPath().split("/").length + 1;
 
-    Path sourceManifest = sourceZip.getPath("META-INF/MANIFEST.MF");
-    Path targetManifest = targetZip.getPath("META-INF/MANIFEST.MF");
-
-    try {
-      Files.copy(sourceManifest, targetManifest, StandardCopyOption.REPLACE_EXISTING);
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to write manifest to JAR file.");
-    }
-  }*/
+    return FileUtils.listFilesAndDirs(
+                        dirFile,
+                        FileFilterUtils.trueFileFilter(),
+                        FileFilterUtils.trueFileFilter()
+                    )
+                    .stream()
+                    .filter(f -> f.getPath().split("/").length == maxDirDepth)
+                    .collect(Collectors.toCollection(ArrayList::new));
+  }
 }
