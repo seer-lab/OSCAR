@@ -76,13 +76,13 @@ public class Engine {
         }
 
         Options.v().set_soot_classpath(OSCAR_EXTRACT_DIR);
-
-        //Options.v().set_output_jar(true);
-        //Options.v().set_process_dir(List.of(ConfigParser.TargetFile));
-        //Options.v().set_process_jar_dir(List.of(ConfigParser.TargetFile));
+        Options.v().set_process_dir(List.of(OSCAR_EXTRACT_DIR));
       }
 
-      case CLASS -> Options.v().set_soot_classpath(ConfigParser.TargetDirectory);
+      case CLASS -> {
+        Options.v().set_soot_classpath(ConfigParser.TargetDirectory);
+        Options.v().set_process_dir(List.of(ConfigParser.TargetDirectory));
+      }
     }
 
     SootClass sc = Scene.v().loadClassAndSupport(ConfigParser.MainClass);
