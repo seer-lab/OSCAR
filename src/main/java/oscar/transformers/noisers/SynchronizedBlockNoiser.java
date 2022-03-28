@@ -27,6 +27,7 @@ public class SynchronizedBlockNoiser extends CustomTransformer {
              .filter(JInvokeStmt.class::isInstance)
              .map(box -> ((JInvokeStmt) box))
              .filter(box -> box.getInvokeExpr().getMethod().isSynchronized())
+             .filter(box -> !box.getInvokeExpr().getMethod().getDeclaringClass().getName().equals("java.lang.Thread"))
              .toList();
 
     // Nothing to change, leave

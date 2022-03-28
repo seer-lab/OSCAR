@@ -1,3 +1,5 @@
+package resources.examples;
+
 import java.util.Random;
 
 public class RandomWaitAndLogExampleExample {
