@@ -2,9 +2,10 @@ package oscar.engine;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
+import oscar.controllers.SleepController;
+import oscar.utils.ClassWriter;
 import oscar.utils.ConfigParser;
 import oscar.utils.logger.LoggerFactory;
 import soot.*;
@@ -25,6 +26,12 @@ public class Engine {
   private static final String OSCAR_EXTRACT_DIR = OSCAR_TEMP_DIR + "/extract";
   private static final String OSCAR_GENERATED_DIR = OSCAR_TEMP_DIR + "/generated";
 
+  public static final HashSet<Class<?>> INJECTED_OSCAR_CLASSES = new HashSet<>();
+
+  static {
+    INJECTED_OSCAR_CLASSES.add(SleepController.class);
+  }
+
   private static FILE_TYPE targetFileType;
 
   public static void start() {
@@ -38,6 +45,7 @@ public class Engine {
     G.reset();
 
     logger.info("Initializing Soot engine...");
+
     Options.v().set_allow_phantom_refs(true);
     Options.v().set_whole_program(true);
     Options.v().set_prepend_classpath(true);
@@ -45,6 +53,8 @@ public class Engine {
     Options.v().set_include_all(true);
     Options.v().set_output_format(Options.output_format_class);
     Options.v().set_output_dir(ConfigParser.OutputDirectory);
+    Options.v().set_soot_classpath(OSCAR_EXTRACT_DIR);
+    Options.v().set_process_dir(List.of(OSCAR_EXTRACT_DIR));
     Options.v().set_force_overwrite(true);
 
     // Try to create temp folder
@@ -67,6 +77,7 @@ public class Engine {
           throw new RuntimeException("Failed to delete previously generated file. Check file permissions.", e);
         }
 
+        // Extract jar contents to directory
         ZipFile jar = new ZipFile(ConfigParser.TargetFile);
 
         try {
@@ -74,16 +85,18 @@ public class Engine {
         } catch (IOException e) {
           throw new RuntimeException("Failed to extract jar. Check permissions.", e);
         }
-
-        Options.v().set_soot_classpath(OSCAR_EXTRACT_DIR);
-        Options.v().set_process_dir(List.of(OSCAR_EXTRACT_DIR));
       }
 
       case CLASS -> {
-        Options.v().set_soot_classpath(ConfigParser.TargetDirectory);
-        Options.v().set_process_dir(List.of(ConfigParser.TargetDirectory));
+        try {
+          FileUtils.copyDirectory(new File(ConfigParser.TargetDirectory), new File(OSCAR_EXTRACT_DIR));
+        } catch (IOException e) {
+          throw new RuntimeException("Failed to copy target files to temporary directory.");
+        }
       }
     }
+
+    INJECTED_OSCAR_CLASSES.forEach(c -> ClassWriter.writeToFile(c, OSCAR_EXTRACT_DIR));
 
     SootClass sc = Scene.v().loadClassAndSupport(ConfigParser.MainClass);
     sc.setApplicationClass();
@@ -94,39 +107,40 @@ public class Engine {
   }
 
   public static void end() {
-    if (targetFileType == FILE_TYPE.JAR) {
-      ZipFile jar = new ZipFile(ConfigParser.OutputDirectory + "/out.jar");
+    switch (targetFileType) {
+      case JAR -> {
+        ZipFile jar = new ZipFile(ConfigParser.OutputDirectory + "/out.jar");
+        try {
+          for (File tempFile : getDirectoryContent(OSCAR_EXTRACT_DIR))
+            if (tempFile.isDirectory())
+              jar.addFolder(tempFile);
+            else
+              jar.addFile(tempFile);
 
-      try {
-        for (File tempFile : getDirectoryContent(OSCAR_EXTRACT_DIR))
-          if (tempFile.isDirectory())
-            jar.addFolder(tempFile);
-          else
-            jar.addFile(tempFile);
+          for (File tempFile : getDirectoryContent(OSCAR_GENERATED_DIR))
+            if (tempFile.isDirectory())
+              jar.addFolder(tempFile);
+            else
+              jar.addFile(tempFile);
+        } catch (ZipException e) {
+          throw new RuntimeException("Failed to add files from temp folder to zip.", e);
+        }
 
-        for (File tempFile : getDirectoryContent(OSCAR_GENERATED_DIR))
-          if (tempFile.isDirectory())
-            jar.addFolder(tempFile);
-          else
-            jar.addFile(tempFile);
-      } catch (ZipException e) {
-        throw new RuntimeException("Failed to add files from temp folder to zip.", e);
-      }
+        // Copy generated files over
+        try {
+          File srcDir = new File(OSCAR_GENERATED_DIR);
+          File destDir = new File(ConfigParser.TargetDirectory);
+          FileUtils.copyDirectory(srcDir, destDir);
+        } catch (IOException e) {
+          throw new RuntimeException("Failed to copy generated sources to output folder. Check directory permissions.", e);
+        }
 
-      // Copy generated files over
-      try {
-        File srcDir = new File(OSCAR_GENERATED_DIR);
-        File destDir = new File(ConfigParser.TargetDirectory);
-        FileUtils.copyDirectory(srcDir, destDir);
-      } catch (IOException e) {
-        throw new RuntimeException("Failed to copy generated sources to output folder. Check directory permissions.", e);
-      }
-
-      // Delete temp folder
-      try {
-        FileUtils.deleteDirectory(new File(OSCAR_TEMP_DIR));
-      } catch (IOException e) {
-        throw new RuntimeException("Failed to delete temp folder. Check directory permissions.", e);
+        // Delete temp folder
+        try {
+          FileUtils.deleteDirectory(new File(OSCAR_TEMP_DIR));
+        } catch (IOException e) {
+          throw new RuntimeException("Failed to delete temp folder. Check directory permissions.", e);
+        }
       }
     }
   }

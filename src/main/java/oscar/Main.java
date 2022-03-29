@@ -34,13 +34,20 @@ public class Main {
 
     transformers.forEach(PackManager.v().getPack("jtp")::add);
 
+    logger.info("Running Soot packs.");
+
     // Run Soot packs (note that our transformer pack is added to the phase "jtp")
     PackManager.v().runPacks();
+
+    logger.info("Writing Soot output.");
 
     // Write the result of packs in outputPath
     PackManager.v().writeOutput();
 
+    logger.info("Finishing.");
     // Finalize soot routines
     Engine.end();
+
+    System.exit(0);
   }
 }

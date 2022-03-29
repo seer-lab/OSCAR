@@ -2,3 +2,4 @@ log.txt*
 target
 output
 *.class
+.oscar_temp
