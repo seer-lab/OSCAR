@@ -2,12 +2,15 @@ package oscar;
 
 import org.apache.commons.cli.ParseException;
 import oscar.engine.Engine;
+import oscar.transformers.OscarControllerInjector;
 import oscar.transformers.noisers.SynchronizedBlockNoiser;
 import oscar.utils.ConfigParser;
 import oscar.utils.OptionsParser;
 import oscar.utils.logger.LoggerFactory;
 import soot.*;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -17,7 +20,7 @@ public class Main {
     try {
       OptionsParser.parse(args);
     } catch (ParseException e) {
-      throw new RuntimeException(e.getMessage());
+      throw new RuntimeException(e.getMessage(), e);
     }
 
     // Parse program configuration
@@ -28,7 +31,8 @@ public class Main {
     Engine.start();
 
     // Register transformers
-    List<Transform> transformers = List.of(
+    List<Transform> transformers = Arrays.asList(
+        new Transform("jtp.oci", new OscarControllerInjector()),
         new Transform("jtp.sbn", new SynchronizedBlockNoiser())
     );
 

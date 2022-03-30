@@ -1,6 +1,5 @@
 package oscar.utils;
 
-import oscar.engine.Engine;
 import oscar.utils.logger.LoggerFactory;
 
 import java.io.IOException;
@@ -8,6 +7,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.logging.Logger;
 
@@ -21,40 +21,40 @@ public final class ClassWriter {
     String filename = directoryAppended + "/" + classFile;
 
     if (url == null)
-      throw new RuntimeException("Failed to find class '%s'".formatted(classFile));
+      throw new RuntimeException("Failed to find class '" + classFile + "'.");
 
     byte[] classBytes;
 
-    logger.fine("Attempting to write class '%s' to file.".formatted(clazz.getName()));
+    logger.fine("Attempting to write class '" + clazz.getName() + "' to file.");
 
     try {
-      classBytes = Files.readAllBytes(Path.of(url.toURI()));
+      classBytes = Files.readAllBytes(Paths.get(url.toURI()));
     } catch (IOException | URISyntaxException e) {
-      throw new RuntimeException("Failed to read class '%s'".formatted(classFile));
+      throw new RuntimeException("Failed to read class '" + classFile + "'",e);
     }
 
     try {
-      Files.deleteIfExists(Path.of(directoryAppended));
+      Files.deleteIfExists(Paths.get(directoryAppended));
     } catch (IOException e) {
-      logger.fine("File '%s' seems to already exist.".formatted(filename));
+      logger.fine("File '" + filename + "' seems to already exist.");
     }
 
     try {
-      Files.createDirectories(Path.of(directoryAppended));
+      Files.createDirectories(Paths.get(directoryAppended));
     } catch (IOException e) {
-      logger.fine("Directory '%s' seems to already exist.".formatted(directoryAppended));
+      logger.fine("Directory '" + directoryAppended + "' seems to already exist.");
     }
 
     try {
-      Files.write(Path.of(filename), classBytes, StandardOpenOption.CREATE_NEW);
+      Files.write(Paths.get(filename), classBytes, StandardOpenOption.CREATE_NEW);
     } catch (IOException e) {
-      logger.fine("File '%s' seems to already exist, proceeding to write to it.".formatted(filename));
+      logger.fine("File '" + filename + "' seems to already exist, proceeding to write to it.");
     }
 
     try {
-      Files.write(Path.of(filename), classBytes, StandardOpenOption.WRITE);
+      Files.write(Paths.get(filename), classBytes, StandardOpenOption.WRITE);
     } catch (IOException e) {
-      throw new RuntimeException("Failed to find class '%s'".formatted(classFile));
+      throw new RuntimeException("Failed to find class '" + classFile + "'",e);
     }
   }
 }

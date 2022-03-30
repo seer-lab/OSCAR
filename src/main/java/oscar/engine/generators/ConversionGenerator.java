@@ -5,15 +5,22 @@ import soot.jimple.internal.JAssignStmt;
 import soot.jimple.internal.JStaticInvokeExpr;
 import soot.jimple.internal.JimpleLocal;
 
+import java.util.Collections;
 import java.util.List;
 
-public record ConversionGenerator(JimpleGenerator generator) {
+public class ConversionGenerator{
+  private final JimpleGenerator generator;
+
+  public ConversionGenerator(JimpleGenerator generator) {
+    this.generator = generator;
+  }
+
   private JAssignStmt valueOf(String originTypeClass, String valueOfMethodSig, Value valueLocal) {
     JimpleLocal local = generator.getLocal(RefType.v(originTypeClass));
     SootClass sootClass = Scene.v().getSootClass(originTypeClass);
 
     SootMethod longValueOf = sootClass.getMethod(valueOfMethodSig);
-    JStaticInvokeExpr valueOfLong = new JStaticInvokeExpr(longValueOf.makeRef(), List.of(valueLocal));
+    JStaticInvokeExpr valueOfLong = new JStaticInvokeExpr(longValueOf.makeRef(), Collections.singletonList(valueLocal));
 
     return new JAssignStmt(local, valueOfLong);
   }

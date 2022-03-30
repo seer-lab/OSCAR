@@ -9,16 +9,14 @@ import soot.jimple.internal.JIdentityStmt;
 import soot.jimple.internal.JNewArrayExpr;
 import soot.jimple.internal.JimpleLocal;
 
-import java.util.HashSet;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public final class JimpleGenerator {
   private final JimpleBody body;
   private final DefaultLocalGenerator localGenerator;
 
   public final StatementGenerator Statement;
-  public final ConversionGenerator Conversion;
+  public final ArithmeticGenerator Conversion;
   public final ArithmeticGenerator Arithmetic;
 
   public JimpleGenerator(JimpleBody body) {
@@ -26,7 +24,7 @@ public final class JimpleGenerator {
     this.localGenerator = new DefaultLocalGenerator(body);
 
     this.Statement = new StatementGenerator(this);
-    this.Conversion = new ConversionGenerator(this);
+    this.Conversion = new ArithmeticGenerator(this);
     this.Arithmetic = new ArithmeticGenerator(this);
   }
 
@@ -54,10 +52,10 @@ public final class JimpleGenerator {
 
   public void appendUnit(Unit unit) {
     Unit indexUnit = body.getUnits().stream()
-                                  .filter(Predicate.not(JIdentityStmt.class::isInstance))
+                                  .filter(JIdentityStmt.class::isInstance)
                                   .findFirst().get();
 
-    body.getUnits().insertBefore(unit, indexUnit);
+    body.getUnits().insertAfter(unit, indexUnit);
   }
 
   public JAssignStmt array(String arrayTypeName, int arrayDimensions, int arraySize) {

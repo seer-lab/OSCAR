@@ -3,7 +3,7 @@ package oscar.utils;
 import oscar.utils.logger.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -37,7 +37,7 @@ public abstract class ConfigParser {
 
     // Get required properties
     TargetFile = getRequiredProperty("target_file");
-    TargetDirectory = Path.of(TargetFile).getParent().toString();
+    TargetDirectory = Paths.get(TargetFile).getParent().toString();
     OutputDirectory = getRequiredProperty("output_dir");
     MainClass = getRequiredProperty("main_class");
   }
@@ -46,7 +46,7 @@ public abstract class ConfigParser {
     String value = props.getProperty(property);
 
     if (value == null)
-      throw new RuntimeException("Required property '%s' not set".formatted(property));
+      throw new RuntimeException("Required property '" + property + "' not set.");
 
     return value;
   }
@@ -55,7 +55,7 @@ public abstract class ConfigParser {
     String value = props.getProperty(property, defaultValue);
 
     if (!allowedValues.contains(value))
-      throw new RuntimeException("Invalid value '%s' for property '%s'.".formatted(value, property));
+      throw new RuntimeException("Invalid value '" + value + "' for property '" + property + "'.");
 
     return value;
   }

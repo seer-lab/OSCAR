@@ -4,7 +4,13 @@ import soot.Value;
 import soot.jimple.internal.JAssignStmt;
 import soot.jimple.internal.JRemExpr;
 
-public record ArithmeticGenerator(JimpleGenerator generator) {
+public class ArithmeticGenerator {
+  private final JimpleGenerator generator;
+
+  public ArithmeticGenerator(JimpleGenerator generator) {
+    this.generator = generator;
+  }
+
   public JAssignStmt modulo(Value valueA, Value valueB) {
     Value result = generator.getLocal(valueA.getType());
 

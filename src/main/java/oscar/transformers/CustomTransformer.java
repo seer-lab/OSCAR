@@ -20,6 +20,7 @@ public abstract class CustomTransformer extends BodyTransformer {
       "okhttp3.",
       "dagger.",
       "soot.",
+      "oscar.",
       "$"
   );
 

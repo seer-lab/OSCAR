@@ -3,13 +3,20 @@ package oscar.engine.generators;
 import soot.*;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
+import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.internal.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record StatementGenerator(JimpleGenerator generator) {
+public class StatementGenerator {
+  private final JimpleGenerator generator;
+
+  public StatementGenerator(JimpleGenerator generator) {
+    this.generator = generator;
+  }
+  
   public JimpleLocal instantiateClass(String className, List<Value> initArgs) {
     // Add a new local
     SootClass sootClass = generator.getSootClass(className);
@@ -37,15 +44,19 @@ public record StatementGenerator(JimpleGenerator generator) {
     return new JAssignStmt(resultLocal, invokeExpr);
   }
 
-  public JAssignStmt staticInvoke(String methodClass, String methodName, List<Value> args) {
+  public Stmt staticInvoke(String methodClass, String methodName, List<Value> args) {
     SootClass sootClass = generator.getSootClass(methodClass);
     SootMethod method = sootClass.getMethod(methodName);
-    JimpleLocal resultLocal = generator.getLocal(method.getReturnType());
 
     JStaticInvokeExpr invokeExpr =
         new JStaticInvokeExpr(method.makeRef(), args);
 
-    return new JAssignStmt(resultLocal, invokeExpr);
+    if (methodName.startsWith("void"))
+      return new JInvokeStmt(invokeExpr);
+    else {
+      JimpleLocal resultLocal = generator.getLocal(method.getReturnType());
+      return new JAssignStmt(resultLocal, invokeExpr);
+    }
   }
 
   public List<Unit> printf(String message, List<Value> args) {

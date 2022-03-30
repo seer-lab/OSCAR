@@ -44,7 +44,7 @@ public final class OptionsParser {
   private static String getOptionValue(String option) {
     if (!commandLine.hasOption(option) || commandLine.getOptionValue(option) == null) {
       String optionDescription = options.getOption(option).getDescription();
-      throw new RuntimeException("Expected '%s' for required option '%s'".formatted(optionDescription, option));
+      throw new RuntimeException("Expected '" + optionDescription + "' for required option '" + option + "'");
     }
 
     return commandLine.getOptionValue(option);
