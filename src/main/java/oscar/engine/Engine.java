@@ -4,7 +4,7 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
-import oscar.controllers.SleepController;
+import oscar.controllers.OscarController;
 import oscar.utils.ClassWriter;
 import oscar.utils.ConfigParser;
 import oscar.utils.logger.LoggerFactory;
@@ -29,10 +29,12 @@ public class Engine {
   public static final HashSet<Class<?>> INJECTED_OSCAR_CLASSES = new HashSet<>();
 
   static {
-    INJECTED_OSCAR_CLASSES.add(SleepController.class);
+    INJECTED_OSCAR_CLASSES.add(OscarController.class);
+    INJECTED_OSCAR_CLASSES.add(LoggerFactory.class);
   }
 
   private static FILE_TYPE targetFileType;
+  private static long currentLocationID = 0L;
 
   public static void start() {
     // Get target file type and check if valid
@@ -173,5 +175,9 @@ public class Engine {
                     .stream()
                     .filter(f -> f.getPath().split("/").length == maxDirDepth)
                     .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  private synchronized static long generateLocationID() {
+    return currentLocationID++;
   }
 }

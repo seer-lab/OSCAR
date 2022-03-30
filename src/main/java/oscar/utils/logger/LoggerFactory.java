@@ -18,6 +18,7 @@ public final class LoggerFactory {
     consoleHandler.setLevel(loggerLevel);
     consoleHandler.setFormatter(new LogFormatter());
 
+    /*
     // Configure file handler
     try {
       fileHandler = new FileHandler("log.txt", false);
@@ -26,6 +27,7 @@ public final class LoggerFactory {
     } catch (IOException | SecurityException e) {
       throw new RuntimeException("Failed to write to log file location in client.properties file.", e);
     }
+    */
   }
 
   public static Logger getInstance(Class<?> clazz) {
@@ -40,15 +42,16 @@ public final class LoggerFactory {
   }
 
   private static final class LogFormatter extends Formatter {
-    private static final String format = "[%3$s][%2$s][%1$tF %1$tT]: %4$s %n";
+    private static final String format = "[OSCAR][%3$s][%2$s][%1$tF %1$tT]: %4$s %n";
 
     @Override
     public synchronized String format(LogRecord lr) {
-      return String.format(format,
-                           new Date(lr.getMillis()),
-                           lr.getLoggerName(),
-                           lr.getLevel().getLocalizedName(),
-                           lr.getMessage()
+      return String.format(
+          format,
+          new Date(lr.getMillis()),
+          lr.getLoggerName(),
+          lr.getLevel().getLocalizedName(),
+          lr.getMessage()
       );
     }
   }
