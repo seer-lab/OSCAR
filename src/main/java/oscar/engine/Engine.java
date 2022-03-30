@@ -4,6 +4,7 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
+import oscar.controllers.ControllerOutputFile;
 import oscar.controllers.OscarController;
 import oscar.controllers.SleepNoise;
 import oscar.utils.ClassWriter;
@@ -28,14 +29,13 @@ public class Engine {
   private static final String OSCAR_EXTRACT_DIR = OSCAR_TEMP_DIR + "/extract";
   private static final String OSCAR_GENERATED_DIR = OSCAR_TEMP_DIR + "/generated";
 
-  public static final HashSet<Class<?>> INJECTED_OSCAR_CLASSES = new HashSet<>();
-
-  static {
-    INJECTED_OSCAR_CLASSES.add(OscarController.class);
-    INJECTED_OSCAR_CLASSES.add(LoggerFactory.class);
-    INJECTED_OSCAR_CLASSES.add(LoggerFormatter.class);
-    INJECTED_OSCAR_CLASSES.add(SleepNoise.class);
-  }
+  private static final List<Class<?>> injectedClasses = Arrays.asList(
+      OscarController.class,
+      LoggerFormatter.class,
+      SleepNoise.class,
+      LoggerFactory.class,
+      ControllerOutputFile.class
+  );
 
   private static FILE_TYPE targetFileType;
   private static long currentLocationID = 0L;
@@ -97,12 +97,12 @@ public class Engine {
         try {
           FileUtils.copyDirectory(new File(ConfigParser.TargetDirectory), new File(OSCAR_EXTRACT_DIR));
         } catch (IOException e) {
-          throw new RuntimeException("Failed to copy target files to temporary directory.",e);
+          throw new RuntimeException("Failed to copy target files to temporary directory.", e);
         }
         break;
     }
 
-    INJECTED_OSCAR_CLASSES.forEach(c -> ClassWriter.writeToFile(c, OSCAR_EXTRACT_DIR));
+    injectedClasses.forEach(c -> ClassWriter.writeToFile(c, OSCAR_EXTRACT_DIR));
 
     SootClass sc = Scene.v().loadClassAndSupport(ConfigParser.MainClass);
     sc.setApplicationClass();
