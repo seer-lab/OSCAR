@@ -1,5 +1,6 @@
 package oscar.controllers;
 
+import oscar.controllers.noise.SleepNoise;
 import oscar.utils.logger.LoggerFactory;
 
 import java.io.*;

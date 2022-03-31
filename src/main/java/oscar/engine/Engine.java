@@ -6,7 +6,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
 import oscar.controllers.ControllerOutputFile;
 import oscar.controllers.OscarController;
-import oscar.controllers.SleepNoise;
+import oscar.controllers.noise.NoisePlacement;
+import oscar.controllers.noise.SleepNoise;
 import oscar.utils.ClassWriter;
 import oscar.utils.ConfigParser;
 import oscar.utils.logger.LoggerFactory;
@@ -34,7 +35,8 @@ public class Engine {
       LoggerFormatter.class,
       SleepNoise.class,
       LoggerFactory.class,
-      ControllerOutputFile.class
+      ControllerOutputFile.class,
+      NoisePlacement.class
   );
 
   private static FILE_TYPE targetFileType;

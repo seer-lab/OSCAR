@@ -1,5 +1,7 @@
 package oscar.controllers;
 
+import oscar.controllers.noise.NoisePlacement;
+import oscar.controllers.noise.SleepNoise;
 import oscar.utils.logger.LoggerFactory;
 
 import java.io.FileInputStream;
@@ -7,6 +9,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public final class OscarController {
   private static final Logger logger = LoggerFactory.getInstance(OscarController.class);
@@ -17,6 +20,7 @@ public final class OscarController {
   private static final Random rand = new Random();
 
   private static final ConcurrentHashMap<Long, SleepNoise> noiseLocations = new ConcurrentHashMap<>(); // TODO Should this be a treemap?
+  private static final HashSet<NoisePlacement> activeNoisePlacements = new HashSet<>(Arrays.asList(NoisePlacement.values()));
   private static boolean loadedNoiseLocations = false;
   private static long maxSleepLength = 40L;
   private static Properties props = null;
@@ -42,8 +46,14 @@ public final class OscarController {
     }
   }
 
-  public static void sleep(long locationId) {
+  public static void sleep(long locationId, String noisePlacementTypeShorthand) {
     long sleepLength = 0;
+    NoisePlacement noisePlacementType = NoisePlacement.fromString(noisePlacementTypeShorthand);
+
+    if (!activeNoisePlacements.contains(noisePlacementType)) {
+      logger.fine("Skipping noise placement type '" + noisePlacementType.name() + "'.");
+      return;
+    }
 
     // Get sleep length
     if (noiseLocations.containsKey(locationId)) {
@@ -85,6 +95,15 @@ public final class OscarController {
       HashMap<Long, SleepNoise> readNoiseLocations = ControllerOutputFile.read(noiseLocationsFile);
       noiseLocations.putAll(readNoiseLocations);
       loadedNoiseLocations = true;
+    }
+
+    // Read which noise placements
+    String noisePlacements = props.getProperty("noise_placements");
+    if (noisePlacements != null) {
+      activeNoisePlacements.clear();
+      activeNoisePlacements.addAll(Arrays.stream(noisePlacements.split(","))
+                                         .map(NoisePlacement::fromString)
+                                         .collect(Collectors.toSet()));
     }
   }
 }

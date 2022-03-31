@@ -1,4 +1,4 @@
-package oscar.controllers;
+package oscar.controllers.noise;
 
 public class SleepNoise {
   private final long length;

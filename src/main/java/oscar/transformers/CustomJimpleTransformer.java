@@ -1,12 +1,15 @@
 package oscar.transformers;
 
+import oscar.engine.generators.JimpleGenerator;
 import soot.Body;
 import soot.BodyTransformer;
+import soot.UnitPatchingChain;
+import soot.jimple.JimpleBody;
 
 import java.util.List;
 import java.util.Map;
 
-public abstract class CustomTransformer extends BodyTransformer {
+public abstract class CustomJimpleTransformer extends BodyTransformer {
   protected static final List<String> blacklistedClasses = List.of(
       "java.",
       "sun.",
