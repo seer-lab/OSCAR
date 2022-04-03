@@ -1,48 +1,46 @@
-package oscar.controllers;
+package oscar.controller;
 
-import oscar.controllers.noise.NoisePlacement;
-import oscar.controllers.noise.SleepNoise;
+import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.SleepNoise;
+import oscar.controller.util.ControllerArgs;
+import oscar.controller.util.ControllerConfigFile;
+import oscar.controller.util.ControllerOutput;
 import oscar.utils.logger.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public final class OscarController {
-  private static final Logger logger = LoggerFactory.getInstance(OscarController.class);
-  private final static String OSCAR_FOLDER = ".oscar";
-  private final static String OSCAR_PROPERTIES = OSCAR_FOLDER + "/" + "config.properties";
-  private final static String OSCAR_OUTPUT_CONFIG = OSCAR_FOLDER + "/" + "noised_locations";
-
+public final class Controller {
+  private static final Logger logger = LoggerFactory.getInstance(Controller.class);
   private static final Random rand = new Random();
 
   private static final ConcurrentHashMap<Long, SleepNoise> noiseLocations = new ConcurrentHashMap<>(); // TODO Should this be a treemap?
   private static final HashSet<NoisePlacement> activeNoisePlacements = new HashSet<>(Arrays.asList(NoisePlacement.values()));
   private static boolean loadedNoiseLocations = false;
-  private static long maxSleepLength = 40L;
-  private static Properties props = null;
 
-  public static void start() {
+  public static ControllerArgs args;
+
+  private static String start(String[] argv) {
     logger.info("Starting OSCAR noising controller.");
 
-    logger.info("Looking for config file in location '" + OSCAR_PROPERTIES + "'.");
+    logger.info("Parsing arguments.");
 
-    try {
-      props = new Properties();
-      props.load(new FileInputStream(OSCAR_PROPERTIES));
+    args = ControllerArgs.parse(argv);
+
+    logger.info("Arguments parsed.");
+
+    if (args.ConfigFile != null)
       readConfigFile();
-    } catch (IOException e) {
-      logger.info("Failed to find client.properties file in '" + OSCAR_PROPERTIES + "'.");
-    }
+
+    return args.InjectedArgs;
   }
 
   public static void end() {
-    if (!loadedNoiseLocations) {
-      String filename = OSCAR_OUTPUT_CONFIG + "_" + System.currentTimeMillis() + ".txt";
-      ControllerOutputFile.write(filename, noiseLocations);
+    if (args.OutputLocation != null) {
+      String filename = args.OutputLocation + "/oscar_output_" + System.currentTimeMillis() + ".txt";
+      ControllerOutput.write(filename, noiseLocations);
     }
   }
 
@@ -60,7 +58,7 @@ public final class OscarController {
       sleepLength = noiseLocations.get(locationId).getLength();
     } else {
       if (rand.nextBoolean()) {
-        sleepLength = Math.abs(rand.nextLong() % maxSleepLength);
+        sleepLength = Math.abs(rand.nextLong() % args.MaxSpeedLength);
         noiseLocations.put(locationId, new SleepNoise(sleepLength));
       } else
         noiseLocations.put(locationId, new SleepNoise(0L));
@@ -80,19 +78,20 @@ public final class OscarController {
   }
 
   public static void readConfigFile() {
+    logger.info("Looking for config file in location '" + args.ConfigFile + "'.");
+
+    Properties props = ControllerConfigFile.getConfigFile(args.ConfigFile);
+
     logger.info("Found client.properties file. Reading properties.");
 
     // Read basic properties
-    try {
-      maxSleepLength = Long.parseLong(props.getProperty("max_sleep_length", "40"));
-    } catch (NumberFormatException e) {
-      throw new RuntimeException("Invalid property value for 'max_sleep_length'.", e);
-    }
+    args.MaxSpeedLength = ControllerConfigFile.parseLong(props, "max_sleep_length", "400");
+    args.MinSpeedLength = ControllerConfigFile.parseLong(props, "min_sleep_length", "0");
 
     // Read noise location file, if provided
     String noiseLocationsFile = props.getProperty("noise_locations_file");
     if (noiseLocationsFile != null) {
-      HashMap<Long, SleepNoise> readNoiseLocations = ControllerOutputFile.read(noiseLocationsFile);
+      HashMap<Long, SleepNoise> readNoiseLocations = ControllerOutput.read(noiseLocationsFile);
       noiseLocations.putAll(readNoiseLocations);
       loadedNoiseLocations = true;
     }
@@ -102,8 +101,8 @@ public final class OscarController {
     if (noisePlacements != null) {
       activeNoisePlacements.clear();
       activeNoisePlacements.addAll(Arrays.stream(noisePlacements.split(","))
-                                         .map(NoisePlacement::fromString)
-                                         .collect(Collectors.toSet()));
+          .map(NoisePlacement::fromString)
+          .collect(Collectors.toSet()));
     }
   }
 }

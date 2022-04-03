@@ -1,6 +1,6 @@
-package oscar.controllers;
+package oscar.controller.util;
 
-import oscar.controllers.noise.SleepNoise;
+import oscar.controller.noise.SleepNoise;
 import oscar.utils.logger.LoggerFactory;
 
 import java.io.*;
@@ -11,8 +11,8 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-public final class ControllerOutputFile {
-  private static final Logger logger = LoggerFactory.getInstance(ControllerOutputFile.class);
+public final class ControllerOutput {
+  private static final Logger logger = LoggerFactory.getInstance(ControllerOutput.class);
 
   public static void write(String filename, Map<Long, SleepNoise> noiseLocations) {
     logger.info("Writing output to file '" + filename + "'.");

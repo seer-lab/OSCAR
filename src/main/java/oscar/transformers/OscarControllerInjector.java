@@ -22,6 +22,9 @@ public class OscarControllerInjector extends CustomJimpleTransformer {
       return;
 
     JimpleGenerator generator = new JimpleGenerator((JimpleBody) body);
+
+    // Add commander Parse
+
     // Add Logger initializer statement
     Stmt loggerInitStmt = generator.Statement.staticInvoke("oscar.utils.logger.LoggerFactory", "void initialize()", List.of());
     body.getUnits().insertAfter(loggerInitStmt, body.getUnits().getFirst());

@@ -1,4 +1,4 @@
-package oscar.controllers.noise;
+package oscar.controller.noise;
 
 import java.util.Arrays;
 import java.util.List;

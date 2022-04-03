@@ -4,10 +4,10 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
-import oscar.controllers.ControllerOutputFile;
-import oscar.controllers.OscarController;
-import oscar.controllers.noise.NoisePlacement;
-import oscar.controllers.noise.SleepNoise;
+import oscar.controller.util.ControllerOutput;
+import oscar.controller.Controller;
+import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.SleepNoise;
 import oscar.utils.ClassWriter;
 import oscar.utils.ConfigParser;
 import oscar.utils.logger.LoggerFactory;
@@ -31,11 +31,11 @@ public class Engine {
   private static final String OSCAR_GENERATED_DIR = OSCAR_TEMP_DIR + "/generated";
 
   private static final List<Class<?>> injectedClasses = Arrays.asList(
-      OscarController.class,
+      Controller.class,
       LoggerFormatter.class,
       SleepNoise.class,
       LoggerFactory.class,
-      ControllerOutputFile.class,
+      ControllerOutput.class,
       NoisePlacement.class
   );
 
