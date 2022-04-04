@@ -9,6 +9,7 @@ import oscar.utils.logger.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -18,16 +19,22 @@ public final class Controller {
 
   private static final ConcurrentHashMap<Long, SleepNoise> noiseLocations = new ConcurrentHashMap<>(); // TODO Should this be a treemap?
   private static final HashSet<NoisePlacement> activeNoisePlacements = new HashSet<>(Arrays.asList(NoisePlacement.values()));
-  private static boolean loadedNoiseLocations = false;
 
   public static ControllerArgs args;
 
   private static String start(String[] argv) {
     logger.info("Starting OSCAR noising controller.");
-
     logger.info("Parsing arguments.");
 
     args = ControllerArgs.parse(argv);
+
+    // Set Logger level
+    if (args.Verbose)
+      LoggerFactory.setLevel(Level.ALL);
+
+    if (args.Quiet)
+      LoggerFactory.setLevel(Level.OFF);
+
 
     logger.info("Arguments parsed.");
 
@@ -57,11 +64,8 @@ public final class Controller {
     if (noiseLocations.containsKey(locationId)) {
       sleepLength = noiseLocations.get(locationId).getLength();
     } else {
-      if (rand.nextBoolean()) {
-        sleepLength = Math.abs(rand.nextLong() % args.MaxSpeedLength);
-        noiseLocations.put(locationId, new SleepNoise(sleepLength));
-      } else
-        noiseLocations.put(locationId, new SleepNoise(0L));
+      sleepLength = args.MinSleepLength + Math.abs(rand.nextLong() % args.MaxSleepLength);
+      noiseLocations.put(locationId, new SleepNoise(sleepLength));
     }
 
     // Sleep for a determined amount of time
@@ -85,15 +89,14 @@ public final class Controller {
     logger.info("Found client.properties file. Reading properties.");
 
     // Read basic properties
-    args.MaxSpeedLength = ControllerConfigFile.parseLong(props, "max_sleep_length", "400");
-    args.MinSpeedLength = ControllerConfigFile.parseLong(props, "min_sleep_length", "0");
+    args.MaxSleepLength = ControllerConfigFile.parseLong(props, "max_sleep_length", "400");
+    args.MinSleepLength = ControllerConfigFile.parseLong(props, "min_sleep_length", "0");
 
     // Read noise location file, if provided
     String noiseLocationsFile = props.getProperty("noise_locations_file");
     if (noiseLocationsFile != null) {
       HashMap<Long, SleepNoise> readNoiseLocations = ControllerOutput.read(noiseLocationsFile);
       noiseLocations.putAll(readNoiseLocations);
-      loadedNoiseLocations = true;
     }
 
     // Read which noise placements

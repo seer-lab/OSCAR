@@ -28,17 +28,11 @@ public final class OptionsParser {
     PropertiesFile = getOptionValue("p");
 
     // Initialize Logger
-    {
-      Level logLevel = Level.INFO;
+    if (commandLine.hasOption("v"))
+      LoggerFactory.setLevel(Level.ALL);
 
-      if (commandLine.hasOption("v"))
-        logLevel = Level.ALL;
-
-      if (commandLine.hasOption("q"))
-        logLevel = Level.SEVERE;
-
-      LoggerFactory.initialize(logLevel);
-    }
+    if (commandLine.hasOption("q"))
+      LoggerFactory.setLevel(Level.OFF);
   }
 
   private static String getOptionValue(String option) {
