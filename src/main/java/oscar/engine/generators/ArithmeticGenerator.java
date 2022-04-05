@@ -5,14 +5,14 @@ import soot.jimple.internal.JAssignStmt;
 import soot.jimple.internal.JRemExpr;
 
 public class ArithmeticGenerator {
-  private final JimpleGenerator generator;
+  private final LocalGenerator localGenerator;
 
-  public ArithmeticGenerator(JimpleGenerator generator) {
-    this.generator = generator;
+  public ArithmeticGenerator(LocalGenerator localGenerator) {
+    this.localGenerator = localGenerator;
   }
 
   public JAssignStmt modulo(Value valueA, Value valueB) {
-    Value result = generator.getLocal(valueA.getType());
+    Value result = localGenerator.fromType(valueA.getType());
 
     return new JAssignStmt(result, new JRemExpr(valueA, valueB));
   }

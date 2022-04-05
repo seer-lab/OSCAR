@@ -22,7 +22,7 @@ public final class Controller {
 
   public static ControllerArgs args;
 
-  private static String start(String[] argv) {
+  private static String[] start(String[] argv) {
     logger.info("Starting OSCAR noising controller.");
     logger.info("Parsing arguments.");
 
@@ -41,7 +41,7 @@ public final class Controller {
     if (args.ConfigFile != null)
       readConfigFile();
 
-    return args.InjectedArgs;
+    return args.InjectedArgs.split(" ");
   }
 
   public static void end() {

@@ -6,17 +6,16 @@ import soot.jimple.internal.JStaticInvokeExpr;
 import soot.jimple.internal.JimpleLocal;
 
 import java.util.Collections;
-import java.util.List;
 
 public class ConversionGenerator{
-  private final JimpleGenerator generator;
+  private final LocalGenerator localGenerator;
 
-  public ConversionGenerator(JimpleGenerator generator) {
-    this.generator = generator;
+  public ConversionGenerator(LocalGenerator localGenerator) {
+    this.localGenerator = localGenerator;
   }
 
   private JAssignStmt valueOf(String originTypeClass, String valueOfMethodSig, Value valueLocal) {
-    JimpleLocal local = generator.getLocal(RefType.v(originTypeClass));
+    JimpleLocal local = localGenerator.fromType(RefType.v(originTypeClass));
     SootClass sootClass = Scene.v().getSootClass(originTypeClass);
 
     SootMethod longValueOf = sootClass.getMethod(valueOfMethodSig);
