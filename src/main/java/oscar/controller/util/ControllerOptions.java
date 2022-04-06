@@ -1,13 +1,17 @@
 package oscar.controller.util;
 
+import oscar.controller.Controller;
 import oscar.utils.logger.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public final class ControllerOptions {
+  private static final Logger logger = LoggerFactory.getInstance(ControllerOptions.class);
+
   public static final List<ControllerOption> CONTROLLER_OPTIONS = Arrays.asList(
       new ControllerOption("InjectedArgs", "Inject arguments into the program", "--args", "-a"),
       new ControllerOption("ConfigFile", "Set config file location to load", "--config_file", "-c"),
@@ -24,8 +28,6 @@ public final class ControllerOptions {
   public String OutputLocation = null;
   public Long MaxSleepLength = 400L;
   public Long MinSleepLength = 0L;
-  public Boolean Verbose = false;
-  public Boolean Quiet = false;
 
 
   public static ControllerOptions parse(String[] argv) {
@@ -72,9 +74,11 @@ public final class ControllerOptions {
             throw new RuntimeException("Invalid value for 'min_sleep_length', must be bigger than 0.");
           break;
         case "Verbose":
-          LoggerFactory.setLevel(Level.ALL);
+          logger.info("Setting logger level to verbose (FINEST).");
+          LoggerFactory.setLevel(Level.FINEST);
           break;
         case "Quiet":
+          logger.info("Setting logger level to quiet (OFF).");
           LoggerFactory.setLevel(Level.OFF);
           break;
         case "Help":

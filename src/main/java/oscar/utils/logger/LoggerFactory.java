@@ -8,6 +8,7 @@ public final class LoggerFactory {
   private static final ConsoleHandler consoleHandler = new ConsoleHandler();
   static {
     consoleHandler.setFormatter(new LoggerFormatter());
+    consoleHandler.setLevel(Level.ALL);
   }
 
   // private static FileHandler fileHandler;

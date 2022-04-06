@@ -51,14 +51,13 @@ public final class Controller {
   }
 
   public static void sleep(long locationId, String noisePlacementTypeShorthand) {
-    long sleepLength = 0;
     NoisePlacement noisePlacementType = NoisePlacement.fromString(noisePlacementTypeShorthand);
+    long sleepLength;
 
     if (!activeNoisePlacements.contains(noisePlacementType)) {
       logger.fine("Skipping noise placement type '" + noisePlacementType.name() + "'.");
       return;
     }
-
     // Get sleep length
     if (options.OutputLocation != null && noiseLocations.containsKey(locationId)) {
       sleepLength = noiseLocations.get(locationId).getLength();
@@ -69,8 +68,9 @@ public final class Controller {
 
     // Sleep for a determined amount of time
     try {
-      logger.fine("Sleeping for " + sleepLength + " ms for location '" + locationId + "'");
-      // Thread.yield(); TODO should i add this here?
+      logger.fine("Sleeping for " + sleepLength + " ms for location '" + locationId + "'.");
+      //logger.fine("asdsadasdaa");
+      Thread.yield(); // TODO should i add this here?
       Thread.sleep(sleepLength);
     } catch (InterruptedException e) {
       throw new RuntimeException("OSCAR sleep statement was interrupted.", e);
