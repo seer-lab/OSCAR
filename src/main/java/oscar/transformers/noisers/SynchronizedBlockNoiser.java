@@ -16,7 +16,7 @@ public class SynchronizedBlockNoiser extends CustomJimpleTransformer {
   @Override
   protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
     // First we filter out blacklisted methods
-    if (!isClassBlacklisted(body.getMethod().getDeclaringClass().getName()))
+    if (isClassBlacklisted(body.getMethod().getDeclaringClass().getName()))
       return;
 
     // Find invocations of synchronized methods
@@ -31,7 +31,6 @@ public class SynchronizedBlockNoiser extends CustomJimpleTransformer {
     // Nothing to change, leave
     if (syncMethodInvocations.isEmpty())
       return;
-
 
     for (JInvokeStmt syncMethodInvocation : syncMethodInvocations) {
       // Create statement to insert sleep noise before and after statement

@@ -3,6 +3,7 @@ package oscar;
 import org.apache.commons.cli.ParseException;
 import oscar.engine.Engine;
 import oscar.transformers.injectors.ControllerInjector;
+import oscar.transformers.injectors.ExitCapture;
 import oscar.transformers.noisers.SynchronizedBlockNoiser;
 import oscar.utils.ConfigParser;
 import oscar.utils.OptionsParser;
@@ -32,6 +33,7 @@ public class Main {
     // Register transformers
     List<Transform> transformers = Arrays.asList(
         new Transform("jtp.oci", new ControllerInjector()),
+        new Transform("jtp.oec", new ExitCapture()),
         new Transform("jtp.sbn", new SynchronizedBlockNoiser())
     );
 

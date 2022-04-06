@@ -41,7 +41,7 @@ public class Engine {
       ControllerConfigFile.class,
 
       LoggerFormatter.class,
-      SleepNoise.class,
+      SleepNoise.class, // TODO stop using this class?
       LoggerFactory.class,
       NoisePlacement.class
   );

@@ -29,21 +29,15 @@ public final class Controller {
 
     logger.info("Arguments parsed.");
 
+    // Read the configuration file if it exists
     if (options.ConfigFile != null)
       readConfigFile();
-
-    // Register shutdown hook.
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> captureShutdown());
 
     return options.InjectedArgs.split(" ");
   }
 
   private static void captureShutdown() {
     logger.info("Unexpected ending captured.");
-
-
-
-
   }
 
   public static void end() {
@@ -53,6 +47,7 @@ public final class Controller {
     }
 
     logger.info("OSCAR noising controller routine ended.");
+    System.exit(0);
   }
 
   public static void sleep(long locationId, String noisePlacementTypeShorthand) {
@@ -68,7 +63,7 @@ public final class Controller {
     if (options.OutputLocation != null && noiseLocations.containsKey(locationId)) {
       sleepLength = noiseLocations.get(locationId).getLength();
     } else {
-      sleepLength = options.MinSleepLength + Math.abs(rand.nextLong() % options.MaxSleepLength);
+      sleepLength = options.MinSleepLength + Math.abs(rand.nextLong() % (options.MaxSleepLength - options.MinSleepLength));
       // noiseLocations.put(locationId, new SleepNoise(sleepLength)); \\ TODO fix this
     }
 
@@ -107,6 +102,19 @@ public final class Controller {
       activeNoisePlacements.addAll(Arrays.stream(noisePlacements.split(","))
                                          .map(NoisePlacement::fromString)
                                          .collect(Collectors.toSet()));
+    }
+  }
+
+  // Capture exit codes
+  public static void exit(int code) {
+    if (code == 0) {
+      logger.info("Detected exit code 0. Exiting gracefully.");
+      end();
+      System.exit(0);
+    } else {
+      logger.info("Detected exit code " + code + ". Exiting gracefully.");
+      end();
+      System.exit(code);
     }
   }
 }

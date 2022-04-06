@@ -84,6 +84,8 @@ public final class ControllerOptions {
       }
     }
 
+    if (args.MinSleepLength > args.MaxSleepLength)
+      throw new RuntimeException("Minimum sleep length should be lower than maximum.");
     return args;
   }
 

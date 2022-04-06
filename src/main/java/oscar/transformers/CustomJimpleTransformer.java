@@ -28,6 +28,6 @@ public abstract class CustomJimpleTransformer extends BodyTransformer {
   );
 
   protected static boolean isClassBlacklisted(String className) {
-    return blacklistedClasses.stream().noneMatch(className::startsWith);
+    return blacklistedClasses.stream().anyMatch(className::startsWith);
   }
 }
