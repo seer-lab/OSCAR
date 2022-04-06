@@ -6,11 +6,11 @@ public class Main {
   private static int currData = -1;
 
   public static void main(String[] args) throws InterruptedException {
-    int threadCount = 500;
+    int threadCount = Integer.parseInt(args[0]);
 
     CountDownLatch countDownLatch = new CountDownLatch(threadCount);
     Executor executor = Executors.newFixedThreadPool(16);
-    System.out.println("Launching Threads.");
+    System.out.println("Launching " + threadCount + " threads.");
 
     for (int i = 0; i < threadCount; i++)
       executor.execute(new Thread(new DRThread(i, countDownLatch)));
@@ -24,6 +24,8 @@ public class Main {
     }
 
     System.out.println("\nData: " + currData);
+
+    System.exit(0);
   }
 
   synchronized static public void setData(int data) {

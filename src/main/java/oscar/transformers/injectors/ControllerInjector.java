@@ -8,10 +8,7 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.ParameterRef;
 import soot.jimple.Stmt;
-import soot.jimple.internal.JAssignStmt;
-import soot.jimple.internal.JIdentityStmt;
-import soot.jimple.internal.JimpleLocal;
-import soot.jimple.internal.JimpleLocalBox;
+import soot.jimple.internal.*;
 import soot.jimple.parser.node.AStaticModifier;
 
 import java.util.Collections;
@@ -54,7 +51,7 @@ public class ControllerInjector extends CustomJimpleTransformer {
     oldMainBody.getMethod().setActiveBody(newMainBody);
     JimpleGenerator newMainGenerator = new JimpleGenerator(newMainBody);
     JimpleLocal mainIdentityLocal = newMainGenerator.Local.arrayFromType(RefType.v("java.lang.String"), 1);
-    ParameterRef newMainParamRef = new ParameterRef(RefType.v("java.lang.String[]"), 0);
+    ParameterRef newMainParamRef = new ParameterRef(ArrayType.v(RefType.v("java.lang.String"), 1),0);
     JIdentityStmt identityStmt = newMainGenerator.Statement.identity(mainIdentityLocal, newMainParamRef);
     newMainBody.getUnits().add(identityStmt);
     oldMainBody.getMethod().setActiveBody(newMainBody);
@@ -76,6 +73,17 @@ public class ControllerInjector extends CustomJimpleTransformer {
         List.of(oscarStartStmt.getLeftOp())
     );
     newMainUnits.insertAfter(callOrigMainStmt, newMainUnits.getLast());
+
+    // Insert end statement
+    Stmt endStatement = newMainGenerator.Statement.staticInvoke(
+        "oscar.controller.Controller",
+        "void end()",
+        List.of()
+    );
+    newMainUnits.insertAfter(endStatement, newMainUnits.getLast());
+
+    // Insert return statement at end
+    newMainUnits.insertAfter(new JReturnVoidStmt(), newMainUnits.getLast());
 
     oldMainBody.validate();
     newMainBody.validate();

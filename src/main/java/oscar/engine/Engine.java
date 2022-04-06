@@ -4,7 +4,8 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
-import oscar.controller.util.ControllerArgs;
+import oscar.controller.util.ControllerOption;
+import oscar.controller.util.ControllerOptions;
 import oscar.controller.util.ControllerConfigFile;
 import oscar.controller.util.ControllerOutput;
 import oscar.controller.Controller;
@@ -35,7 +36,8 @@ public class Engine {
   private static final List<Class<?>> injectedClasses = Arrays.asList(
       Controller.class,
       ControllerOutput.class,
-      ControllerArgs.class,
+      ControllerOptions.class,
+      ControllerOption.class,
       ControllerConfigFile.class,
 
       LoggerFormatter.class,
