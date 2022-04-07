@@ -4,8 +4,6 @@ import oscar.engine.Engine;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCapture;
 import oscar.transformers.noisers.SynchronizedBlockNoiser;
-import oscar.utils.logger.LoggerFactory;
-import java.util.logging.Logger;
 
 public class Main {
   public static void main(String[] args) {
