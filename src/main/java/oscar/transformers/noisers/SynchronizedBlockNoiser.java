@@ -12,7 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SynchronizedBlockNoiser extends CustomJimpleTransformer {
+public final class SynchronizedBlockNoiser extends CustomJimpleTransformer {
+  public SynchronizedBlockNoiser(String mainClass) {
+    super("jtp", "sbn", mainClass);
+  }
+
   @Override
   protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
     // First we filter out blacklisted methods
@@ -22,11 +26,11 @@ public class SynchronizedBlockNoiser extends CustomJimpleTransformer {
     // Find invocations of synchronized methods
     List<JInvokeStmt> syncMethodInvocations =
         body.getUnits().stream()
-                 .filter(JInvokeStmt.class::isInstance)
-                 .map(box -> ((JInvokeStmt) box))
-                 .filter(box -> box.getInvokeExpr().getMethod().isSynchronized())
-                 .filter(box -> !box.getInvokeExpr().getMethod().getDeclaringClass().getName().equals("java.lang.Thread"))
-                 .collect(Collectors.toList());
+            .filter(JInvokeStmt.class::isInstance)
+            .map(box -> ((JInvokeStmt) box))
+            .filter(box -> box.getInvokeExpr().getMethod().isSynchronized())
+            .filter(box -> !box.getInvokeExpr().getMethod().getDeclaringClass().getName().equals("java.lang.Thread"))
+            .collect(Collectors.toList());
 
     // Nothing to change, leave
     if (syncMethodInvocations.isEmpty())
@@ -41,7 +45,7 @@ public class SynchronizedBlockNoiser extends CustomJimpleTransformer {
     body.validate();
   }
 
-  private void generateNoiseStatement(Body body, Unit location, NoisePlacement noisePlacement) {
+  private static void generateNoiseStatement(Body body, Unit location, NoisePlacement noisePlacement) {
     // Initialize jimple generator
     JimpleGenerator generator = new JimpleGenerator((JimpleBody) body);
 
@@ -52,7 +56,11 @@ public class SynchronizedBlockNoiser extends CustomJimpleTransformer {
     String noisePlacementShorthand = noisePlacement.getShorthand();
 
     JAssignStmt idAssignStmt = new JAssignStmt(idLocal, LongConstant.v(noiseLocationID));
-    Stmt noiseStmt = generator.Statement.staticInvoke("oscar.controller.Controller", "void sleep(long,java.lang.String)", List.of(idLocal, StringConstant.v(noisePlacementShorthand)));
+    Stmt noiseStmt = generator.Statement.staticInvoke(
+        "oscar.controller.Controller",
+        "void sleep(long,java.lang.String)",
+        List.of(idLocal, StringConstant.v(noisePlacementShorthand))
+    );
 
     if (noisePlacement == NoisePlacement.SYNC_BASED_BEFORE_SYNC_BLOCK) {
       body.getUnits().insertBefore(idAssignStmt, location);

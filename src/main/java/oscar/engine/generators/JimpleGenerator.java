@@ -1,10 +1,6 @@
 package oscar.engine.generators;
 
-import soot.*;
-import soot.javaToJimple.DefaultLocalGenerator;
-import soot.jimple.IntConstant;
 import soot.jimple.JimpleBody;
-import soot.jimple.internal.*;
 
 public final class JimpleGenerator {
   public final StatementGenerator Statement;

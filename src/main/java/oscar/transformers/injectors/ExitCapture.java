@@ -9,8 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 public class ExitCapture extends CustomJimpleTransformer {
+  public ExitCapture(String mainClass) {
+    super("jtp", "ec", mainClass);
+  }
+
   @Override
-  protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
+  protected final void internalTransform(Body body, String phaseName, Map<String, String> options) {
     // Check if class is blacklisted
     if (isClassBlacklisted(body.getMethod().getDeclaringClass().getName()))
       return;
@@ -30,7 +34,7 @@ public class ExitCapture extends CustomJimpleTransformer {
         continue;
 
       SootMethodRefImpl methodRef = new SootMethodRefImpl(
-          new SootClass("oscar.controller.Controller"),
+          Scene.v().getSootClass("oscar.controller.Controller"),
           "exit",
           List.of(IntType.v()),
           VoidType.v(),

@@ -1,57 +1,35 @@
 package oscar;
 
-import org.apache.commons.cli.ParseException;
 import oscar.engine.Engine;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCapture;
 import oscar.transformers.noisers.SynchronizedBlockNoiser;
-import oscar.utils.ConfigParser;
-import oscar.utils.OptionsParser;
 import oscar.utils.logger.LoggerFactory;
-import soot.*;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class Main {
   public static void main(String[] args) {
-    // Parse program CLI
-    try {
-      OptionsParser.parse(args);
-    } catch (ParseException e) {
-      throw new RuntimeException(e.getMessage(), e);
+    if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
+      System.out.println("Usage: oscar <targetfile> <mainclass> <outputdirectory>");
+      System.exit(0);
     }
-
-    // Parse program configuration
-    ConfigParser.parse(OptionsParser.PropertiesFile);
-    Logger logger = LoggerFactory.getInstance(Main.class);
+    if (args.length != 3) {
+      System.out.println("Invalid number of arguments, expected 3. Use --help or -h for help.");
+      System.exit(1);
+    }
+    String targetFile = args[0];
+    String mainClass = args[1];
+    String outputDirectory = args[2];
 
     // Init soot
-    Engine.start();
+    Engine engine = new Engine(targetFile, mainClass, outputDirectory);
 
-    // Register transformers
-    List<Transform> transformers = Arrays.asList(
-        new Transform("jtp.oci", new ControllerInjector()),
-        new Transform("jtp.oec", new ExitCapture()),
-        new Transform("jtp.sbn", new SynchronizedBlockNoiser())
-    );
+    // Add packs and run
+    engine.registerTransformer(new ControllerInjector(mainClass));
+    engine.registerTransformer(new ExitCapture(mainClass));
+    engine.registerTransformer(new SynchronizedBlockNoiser(mainClass));
 
-    transformers.forEach(PackManager.v().getPack("jtp")::add);
-
-    logger.info("Running Soot packs.");
-
-    // Run Soot packs (note that our transformer pack is added to the phase "jtp")
-    PackManager.v().runPacks();
-
-    logger.info("Writing Soot output.");
-
-    // Write the result of packs in outputPath
-    PackManager.v().writeOutput();
-
-    logger.info("Finishing.");
-    // Finalize soot routines
-    Engine.end();
+    engine.run();
 
     System.exit(0);
   }

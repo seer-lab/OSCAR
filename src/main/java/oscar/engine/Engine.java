@@ -11,8 +11,11 @@ import oscar.controller.util.ControllerOutput;
 import oscar.controller.Controller;
 import oscar.controller.noise.NoisePlacement;
 import oscar.controller.noise.SleepNoise;
+
+import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.injectors.ExitCapture;
+import oscar.transformers.noisers.SynchronizedBlockNoiser;
 import oscar.utils.ClassWriter;
-import oscar.utils.ConfigParser;
 import oscar.utils.logger.LoggerFactory;
 import oscar.utils.logger.LoggerFormatter;
 import soot.*;
@@ -26,7 +29,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class Engine {
+public final class Engine {
   private static final Logger logger = LoggerFactory.getInstance(Engine.class);
 
   private static final String OSCAR_TEMP_DIR = ".oscar_temp";
@@ -49,9 +52,23 @@ public class Engine {
   private static FILE_TYPE targetFileType;
   private static long currentLocationID = 0L;
 
-  public static void start() {
+  private final String targetFile;
+  private final String mainClass;
+  private final String targetDirectory;
+  private final String outputDirectory;
+
+  private final HashMap<String, ArrayList<Transform>> transformers = new HashMap<>();
+
+  public Engine(String targetFile, String mainClass, String outputDirectory) {
+    this.targetFile = targetFile;
+    this.mainClass = mainClass;
+    this.targetDirectory = Paths.get(targetFile).getParent().toString(); ;
+    this.outputDirectory = outputDirectory;
+  }
+
+  public void run() {
     // Get target file type and check if valid
-    targetFileType = getInputFileType(ConfigParser.TargetFile);
+    targetFileType = getInputFileType(targetFile);
 
     if (targetFileType == FILE_TYPE.INVALID)
       throw new RuntimeException("Invalid input file type.");
@@ -67,10 +84,11 @@ public class Engine {
     Options.v().set_validate(true);
     Options.v().set_include_all(true);
     Options.v().set_output_format(Options.output_format_class);
-    Options.v().set_output_dir(ConfigParser.OutputDirectory);
+    Options.v().set_output_dir(outputDirectory);
     Options.v().set_soot_classpath(OSCAR_EXTRACT_DIR);
     Options.v().set_process_dir(Collections.singletonList(OSCAR_EXTRACT_DIR));
     Options.v().set_force_overwrite(true);
+    Options.v().set_num_threads(1); // This will hopefully enforce an order
 
     // Try to create temp folder
     try {
@@ -87,13 +105,13 @@ public class Engine {
 
         // Delete target jar if exists
         try {
-          Files.deleteIfExists(Paths.get(ConfigParser.OutputDirectory + "/out.jar"));
+          Files.deleteIfExists(Paths.get(outputDirectory + "/out.jar"));
         } catch (IOException e) {
           throw new RuntimeException("Failed to delete previously generated file. Check file permissions.", e);
         }
 
         // Extract jar contents to directory
-        ZipFile jar = new ZipFile(ConfigParser.TargetFile);
+        ZipFile jar = new ZipFile(targetFile);
 
         try {
           jar.extractAll(OSCAR_EXTRACT_DIR);
@@ -104,7 +122,7 @@ public class Engine {
 
       case CLASS:
         try {
-          FileUtils.copyDirectory(new File(ConfigParser.TargetDirectory), new File(OSCAR_EXTRACT_DIR));
+          FileUtils.copyDirectory(new File(targetDirectory), new File(OSCAR_EXTRACT_DIR));
         } catch (IOException e) {
           throw new RuntimeException("Failed to copy target files to temporary directory.", e);
         }
@@ -113,17 +131,33 @@ public class Engine {
 
     injectedClasses.forEach(c -> ClassWriter.writeToFile(c, OSCAR_EXTRACT_DIR));
 
-    SootClass sc = Scene.v().loadClassAndSupport(ConfigParser.MainClass);
+    SootClass sc = Scene.v().loadClassAndSupport(mainClass);
     sc.setApplicationClass();
 
     Scene.v().loadNecessaryClasses();
 
     logger.info("Soot engine initialization complete.");
+
+    logger.info("Registering Soot packs.");
+    transformers.forEach((p, t) -> t.forEach(PackManager.v().getPack(p)::add));
+    logger.info("Soot packs registered.");
+
+    // Run Soot packs
+    logger.info("Running Soot packs.");
+    PackManager.v().runPacks();
+    logger.info("Soot packs finished running.");
+
+    end();
   }
 
-  public static void end() {
+  public void end() {
+    // Write the result of packs in outputPath
+    logger.info("Writing Soot output.");
+    PackManager.v().writeOutput();
+
+    // If output is jar, create jar
     if (targetFileType == FILE_TYPE.JAR) {
-      ZipFile jar = new ZipFile(ConfigParser.OutputDirectory + "/out.jar");
+      ZipFile jar = new ZipFile(outputDirectory + "/out.jar");
       try {
         for (File tempFile : getDirectoryContent(OSCAR_EXTRACT_DIR))
           if (tempFile.isDirectory())
@@ -143,7 +177,7 @@ public class Engine {
       // Copy generated files over
       try {
         File srcDir = new File(OSCAR_GENERATED_DIR);
-        File destDir = new File(ConfigParser.TargetDirectory);
+        File destDir = new File(targetDirectory);
         FileUtils.copyDirectory(srcDir, destDir);
       } catch (IOException e) {
         throw new RuntimeException("Failed to copy generated sources to output folder. Check directory permissions.", e);
@@ -156,6 +190,14 @@ public class Engine {
         throw new RuntimeException("Failed to delete temp folder. Check directory permissions.", e);
       }
     }
+  }
+
+  public void registerTransformer(CustomJimpleTransformer transformer) {
+    transformers.putIfAbsent(transformer.getPhase(), new ArrayList<>());
+    transformers.get(transformer.getPhase()).add(new Transform(transformer.getSubPhase(), transformer));
+    logger.info("Registered transformer " + transformer.getClass().getSimpleName()
+                    + " with subphase " + transformer.getSubPhase()
+                    + " in phase " + transformer.getPhase());
   }
 
   private static FILE_TYPE getInputFileType(String file) {

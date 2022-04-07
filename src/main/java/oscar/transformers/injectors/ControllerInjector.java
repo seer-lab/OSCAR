@@ -2,21 +2,20 @@ package oscar.transformers.injectors;
 
 import oscar.engine.generators.JimpleGenerator;
 import oscar.transformers.CustomJimpleTransformer;
-import oscar.utils.ConfigParser;
 import soot.*;
-import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.ParameterRef;
 import soot.jimple.Stmt;
 import soot.jimple.internal.*;
-import soot.jimple.parser.node.AStaticModifier;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-public class ControllerInjector extends CustomJimpleTransformer {
+public final class ControllerInjector extends CustomJimpleTransformer {
+  public ControllerInjector(String mainClass) {
+    super("jtp", "ci", mainClass);
+  }
+
   @Override
   protected void internalTransform(Body oldMainBody, String phaseName, Map<String, String> options) {
     // Check if class name is Main class name and method body is name
@@ -26,7 +25,7 @@ public class ControllerInjector extends CustomJimpleTransformer {
     if (!oldMainBody.getMethod().isMain())
       return;
 
-    if (!mainClassName.equals(ConfigParser.MainClass))
+    if (!mainClassName.equals(this.mainClass))
       return;
 
     // Create new main method with original main's active body to then be wrapped
@@ -51,7 +50,7 @@ public class ControllerInjector extends CustomJimpleTransformer {
     oldMainBody.getMethod().setActiveBody(newMainBody);
     JimpleGenerator newMainGenerator = new JimpleGenerator(newMainBody);
     JimpleLocal mainIdentityLocal = newMainGenerator.Local.arrayFromType(RefType.v("java.lang.String"), 1);
-    ParameterRef newMainParamRef = new ParameterRef(ArrayType.v(RefType.v("java.lang.String"), 1),0);
+    ParameterRef newMainParamRef = new ParameterRef(ArrayType.v(RefType.v("java.lang.String"), 1), 0);
     JIdentityStmt identityStmt = newMainGenerator.Statement.identity(mainIdentityLocal, newMainParamRef);
     newMainBody.getUnits().add(identityStmt);
     oldMainBody.getMethod().setActiveBody(newMainBody);

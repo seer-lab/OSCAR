@@ -1,33 +1,49 @@
 package oscar.transformers;
 
-import oscar.engine.generators.JimpleGenerator;
-import soot.Body;
 import soot.BodyTransformer;
-import soot.UnitPatchingChain;
-import soot.jimple.JimpleBody;
 
-import java.util.List;
-import java.util.Map;
+import java.util.stream.Stream;
 
 public abstract class CustomJimpleTransformer extends BodyTransformer {
-  protected static final List<String> blacklistedClasses = List.of(
-      "java.",
-      "sun.",
-      "jdk.",
-      "javax.",
-      "com.",
-      "org.",
-      "kotlin.",
-      "android.",
-      "io.",
-      "okhttp3.",
-      "dagger.",
-      "soot.",
-      "oscar.",
-      "$"
-  );
+  protected final String mainClass;
+  protected final String phase;
+  protected final String subphase;
+
+
+  public CustomJimpleTransformer(String phase, String subphase, String mainClass) {
+    this.mainClass = mainClass;
+    this.subphase = phase + "." + subphase;
+    this.phase = phase;
+  }
+
+  public String getMainClass() {
+    return mainClass;
+  }
+
+  public String getPhase() {
+    return phase;
+  }
+
+  public String getSubPhase() {
+    return subphase;
+  }
 
   protected static boolean isClassBlacklisted(String className) {
-    return blacklistedClasses.stream().anyMatch(className::startsWith);
+    return Stream.of(
+        "java.",
+        "sun.",
+        "jdk.",
+        "javax.",
+        "com.",
+        "org.",
+        "kotlin.",
+        "android.",
+        "io.",
+        "okhttp3.",
+        "dagger.",
+        "soot.",
+        "oscar.",
+        "$"
+    ).anyMatch(className::startsWith);
   }
 }

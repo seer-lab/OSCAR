@@ -1,10 +1,13 @@
 package oscar.controller.util;
 
-import oscar.controller.Controller;
+import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.SleepNoise;
 import oscar.utils.logger.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -29,9 +32,11 @@ public final class ControllerOptions {
   public Long MaxSleepLength = 400L;
   public Long MinSleepLength = 0L;
 
+  public final ConcurrentHashMap<Long, SleepNoise> NoiseLocations = new ConcurrentHashMap<>(); // TODO Should this be a treemap?
+  public final HashSet<NoisePlacement> ActiveNoisePlacements = new HashSet<>(Arrays.asList(NoisePlacement.values()));
 
   public static ControllerOptions parse(String[] argv) {
-    ControllerOptions args = new ControllerOptions();
+    ControllerOptions options = new ControllerOptions();
 
     for (int i = 0; i < argv.length; i++) {
       String arg = argv[i];
@@ -48,29 +53,29 @@ public final class ControllerOptions {
 
       switch (matchingArgs.get(0).getName()) {
         case "InjectedArgs":
-          args.InjectedArgs = argv[i + 1];
+          options.InjectedArgs = argv[i + 1];
           i++;
           break;
         case "ConfigFile":
-          args.ConfigFile = argv[i + 1];
+          options.ConfigFile = argv[i + 1];
+          ControllerConfigFile.readFile(options);
           i++;
           break;
         case "OutputLocation":
-          args.OutputLocation = argv[i + 1];
+          options.OutputLocation = argv[i + 1];
           i++;
           break;
         case "MaxSleepLength":
-          args.MaxSleepLength = parseLong(argv[i + 1]);
+          options.MaxSleepLength = parseLong(argv[i + 1]);
           i++;
-
-          if (args.MaxSleepLength < 0)
+          if (options.MaxSleepLength < 0)
             throw new RuntimeException("Invalid value for 'max_sleep_length', must be bigger than 0.");
           break;
         case "MinSleepLength":
-          args.MinSleepLength = parseLong(argv[i + 1]);
+          options.MinSleepLength = parseLong(argv[i + 1]);
           i++;
 
-          if (args.MinSleepLength < 0)
+          if (options.MinSleepLength < 0)
             throw new RuntimeException("Invalid value for 'min_sleep_length', must be bigger than 0.");
           break;
         case "Verbose":
@@ -88,9 +93,9 @@ public final class ControllerOptions {
       }
     }
 
-    if (args.MinSleepLength > args.MaxSleepLength)
+    if (options.MinSleepLength > options.MaxSleepLength)
       throw new RuntimeException("Minimum sleep length should be lower than maximum.");
-    return args;
+    return options;
   }
 
   private static void printHelp() {
