@@ -36,6 +36,9 @@ public final class Controller {
   }
 
   public static void sleep(long locationId, String noisePlacementTypeShorthand) {
+    if (options.DisableNoise)
+      return;
+
     NoisePlacement noisePlacementType = NoisePlacement.fromString(noisePlacementTypeShorthand);
     long sleepLength;
 
@@ -47,14 +50,13 @@ public final class Controller {
     if (options.OutputLocation != null && options.NoiseLocations.containsKey(locationId)) {
       sleepLength = options.NoiseLocations.get(locationId).getLength();
     } else {
-      sleepLength = options.MinSleepLength + Math.abs(rand.nextLong() % (options.MaxSleepLength - options.MinSleepLength));
+      sleepLength = options.MinSleepLength + Math.abs(rand.nextLong() % (1 + options.MaxSleepLength - options.MinSleepLength));
       // noiseLocations.put(locationId, new SleepNoise(sleepLength)); \\ TODO fix this
     }
 
     // Sleep for a determined amount of time
     try {
       logger.fine("Sleeping for " + sleepLength + " ms for location '" + locationId + "'.");
-      //logger.fine("asdsadasdaa");
       Thread.yield(); // TODO should i add this here?
       Thread.sleep(sleepLength);
     } catch (InterruptedException e) {

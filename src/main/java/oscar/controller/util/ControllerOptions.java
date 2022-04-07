@@ -21,6 +21,7 @@ public final class ControllerOptions {
       new ControllerOption("OutputLocation", "Set output file location", "--output", "-o"),
       new ControllerOption("MaxSleepLength", "Set maximum sleep length", "--max_sleep_length", "-M"),
       new ControllerOption("MinSleepLength", "Set minimum sleep length", "--min_sleep_length", "-m"),
+      new ControllerOption("DisableNoise", "Disable all noise", "--disable-noise", "-d"),
       new ControllerOption("Verbose", "Enable full logging.", "--verbose", "-v"),
       new ControllerOption("Quiet", "Disable logging.", "--quiet", "-q"),
       new ControllerOption("Help", "Print Help.", "--help", "-h")
@@ -31,6 +32,10 @@ public final class ControllerOptions {
   public String OutputLocation = null;
   public Long MaxSleepLength = 400L;
   public Long MinSleepLength = 0L;
+  public boolean DisableNoise = false;
+
+  public boolean Verbose = false;
+  public boolean Quiet = false;
 
   public final ConcurrentHashMap<Long, SleepNoise> NoiseLocations = new ConcurrentHashMap<>(); // TODO Should this be a treemap?
   public final HashSet<NoisePlacement> ActiveNoisePlacements = new HashSet<>(Arrays.asList(NoisePlacement.values()));
@@ -78,11 +83,20 @@ public final class ControllerOptions {
           if (options.MinSleepLength < 0)
             throw new RuntimeException("Invalid value for 'min_sleep_length', must be bigger than 0.");
           break;
+        case "DisableNoise":
+          options.DisableNoise = true;
+          break;
         case "Verbose":
+          if (options.Quiet)
+            continue;
+
           logger.info("Setting logger level to verbose (FINEST).");
           LoggerFactory.setLevel(Level.FINEST);
           break;
         case "Quiet":
+          if (options.Verbose)
+            continue;
+
           logger.info("Setting logger level to quiet (OFF).");
           LoggerFactory.setLevel(Level.OFF);
           break;
