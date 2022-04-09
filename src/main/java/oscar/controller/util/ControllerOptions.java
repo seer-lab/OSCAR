@@ -16,15 +16,16 @@ public final class ControllerOptions {
   private static final Logger logger = LoggerFactory.getInstance(ControllerOptions.class);
 
   public static final List<ControllerOption> CONTROLLER_OPTIONS = Arrays.asList(
-      new ControllerOption("InjectedArgs", "Inject arguments into the program", "--args", "-a"),
-      new ControllerOption("ConfigFile", "Set config file location to load", "--config_file", "-c"),
-      new ControllerOption("OutputLocation", "Set output file location", "--output", "-o"),
-      new ControllerOption("MaxSleepLength", "Set maximum sleep length", "--max_sleep_length", "-M"),
-      new ControllerOption("MinSleepLength", "Set minimum sleep length", "--min_sleep_length", "-m"),
-      new ControllerOption("DisableNoise", "Disable all noise", "--disable-noise", "-d"),
-      new ControllerOption("Verbose", "Enable full logging.", "--verbose", "-v"),
-      new ControllerOption("Quiet", "Disable logging.", "--quiet", "-q"),
-      new ControllerOption("Help", "Print Help.", "--help", "-h")
+      new ControllerOption("InjectedArgs", "Inject arguments into the program", "String", "", "-a", "--args"),
+      new ControllerOption("ConfigFile", "Set config file location to load", "String", "", "-c", "--config_file"),
+      new ControllerOption("OutputLocation", "Set location for outputted files", "String", "", "-o", "--output"),
+      new ControllerOption("MaxSleepLength", "Set maximum sleep length", "Long", "0", "-M", "--max_sleep_length"),
+      new ControllerOption("MinSleepLength", "Set minimum sleep length", "Long", "400", "-m", "--min_sleep_length"),
+      new ControllerOption("DisableNoise", "Disable all noise", "Flag", "False", "-d", "--disable-noise"),
+      new ControllerOption("NoisePlacements", "List of active noise placements.", "List<String>", "All", "-np", "--noise-placements"),
+      new ControllerOption("Verbose", "Enable full logging.", "Flag", "False" ,"-v", "--verbose"),
+      new ControllerOption("Quiet", "Disable logging.", "Flag", "False" ,"-q", "--quiet"),
+      new ControllerOption("Help", "Print Help.", "Flag", "-", "-h", "--help")
   );
 
   public String InjectedArgs = "";
@@ -33,6 +34,7 @@ public final class ControllerOptions {
   public Long MaxSleepLength = 400L;
   public Long MinSleepLength = 0L;
   public boolean DisableNoise = false;
+  public final HashSet<NoisePlacement> NoisePlacements = NoisePlacement.getAll();
 
   public boolean Verbose = false;
   public boolean Quiet = false;
@@ -83,6 +85,9 @@ public final class ControllerOptions {
           if (options.MinSleepLength < 0)
             throw new RuntimeException("Invalid value for 'min_sleep_length', must be bigger than 0.");
           break;
+        case "NoisePlacements":
+          options.NoisePlacements.clear();
+          break;
         case "DisableNoise":
           options.DisableNoise = true;
           break;
@@ -123,7 +128,12 @@ public final class ControllerOptions {
     System.out.println("OSCAR options include:");
 
     for (ControllerOption option : CONTROLLER_OPTIONS)
-      System.out.printf("\t%-30s%s\n", option.getAliasesString(), option.getDescription());
+      System.out.printf("\t%-30s%s\t%-10s\t%s\n",
+                        option.getAliasesString(),
+                        option.getDescription(),
+                        option.getType(),
+                        option.getDefaultVal()
+      );
 
     System.out.println("");
 

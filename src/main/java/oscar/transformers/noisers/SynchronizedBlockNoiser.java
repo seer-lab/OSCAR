@@ -38,8 +38,8 @@ public final class SynchronizedBlockNoiser extends CustomJimpleTransformer {
 
     for (JInvokeStmt syncMethodInvocation : syncMethodInvocations) {
       // Create statement to insert sleep noise before and after statement
-      generateNoiseStatement(body, syncMethodInvocation, NoisePlacement.SYNC_BASED_BEFORE_SYNC_BLOCK);
-      generateNoiseStatement(body, syncMethodInvocation, NoisePlacement.SYNC_BASED_AFTER_SYNC_BLOCK);
+      generateNoiseStatement(body, syncMethodInvocation, NoisePlacement.BEFORE_SYNC_BLOCK);
+      generateNoiseStatement(body, syncMethodInvocation, NoisePlacement.AFTER_SYNC_BLOCK);
     }
 
     body.validate();
@@ -62,10 +62,10 @@ public final class SynchronizedBlockNoiser extends CustomJimpleTransformer {
         List.of(idLocal, StringConstant.v(noisePlacementShorthand))
     );
 
-    if (noisePlacement == NoisePlacement.SYNC_BASED_BEFORE_SYNC_BLOCK) {
+    if (noisePlacement == NoisePlacement.BEFORE_SYNC_BLOCK) {
       body.getUnits().insertBefore(idAssignStmt, location);
       body.getUnits().insertBefore(noiseStmt, location);
-    } else if (noisePlacement == NoisePlacement.SYNC_BASED_AFTER_SYNC_BLOCK) {
+    } else if (noisePlacement == NoisePlacement.AFTER_SYNC_BLOCK) {
       body.getUnits().insertAfter(noiseStmt, location);
       body.getUnits().insertAfter(idAssignStmt, location);
     } else

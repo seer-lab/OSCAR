@@ -1,39 +1,62 @@
 package oscar.controller.noise;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public enum NoisePlacement {
-  SYNC_BASED_BEFORE_SYNC_BLOCK,
-  SYNC_BASED_AFTER_SYNC_BLOCK;
+  BEFORE_SYNC_BLOCK(NoisePlacementType.SYNC_BASED),
+  AFTER_SYNC_BLOCK(NoisePlacementType.SYNC_BASED);
 
-  private final String shorthand;
+  private final NoisePlacementType type;
 
-  NoisePlacement() {
-    this.shorthand = Arrays.stream(name().split("_"))
-                           .map(s -> s.charAt(0))
-                           .map(Object::toString)
-                           .map(String::toLowerCase)
-                           .reduce("", String::concat);
+  NoisePlacement(NoisePlacementType type) {
+    this.type = type;
   }
 
   public String getShorthand() {
-    return shorthand;
+    return type.getShorthand() + generateShorthand(this.getClass());
+  }
+
+  public NoisePlacementType getType() {
+    return type;
+  }
+
+  public static HashSet<NoisePlacement> getAll() {
+    return Arrays.stream(values()).collect(Collectors.toCollection(HashSet::new));
   }
 
   public static NoisePlacement fromString(String shorthand) {
     List<NoisePlacement> results = Arrays.stream(NoisePlacement.values())
-                                         .filter(np -> np.shorthand.equals(shorthand.toLowerCase()))
+                                         .filter(np -> np.getShorthand().equals(shorthand.toLowerCase()))
                                          .collect(Collectors.toList());
 
     if (results.size() > 1)
-      throw new RuntimeException("More than one noise placement type matches shorthand.");
+      throw new RuntimeException("More than one noise placement matches shorthand '" + shorthand + "'.");
 
     if (results.size() == 0)
       throw new RuntimeException("No noise placement matches shorthand '" + shorthand + "'.");
 
     return results.get(0);
+  }
+
+  public enum NoisePlacementType {
+    SYNC_BASED;
+
+    NoisePlacementType() {}
+
+    public String getShorthand() {
+      return generateShorthand(this.getClass());
+    }
+  }
+
+  private static String generateShorthand(Class<?> clazz) {
+    return Arrays.stream(clazz.getSimpleName().split("_"))
+                 .map(s -> s.charAt(0))
+                 .map(Object::toString)
+                 .map(String::toLowerCase)
+                 .reduce("", String::concat);
   }
 }
 

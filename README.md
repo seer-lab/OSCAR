@@ -43,4 +43,4 @@ OSCAR Noise Injector 2022
 ###### Note:
 
 - Sleep lengths should be integers
-- Arguments need to be inside quotes as such: "-a -b -c"
+- Injected arguments need to be inside quotes as such: "-a -b -c"

@@ -5,6 +5,7 @@ import oscar.controller.util.ControllerOptions;
 import oscar.controller.util.ControllerOutput;
 import oscar.utils.logger.LoggerFactory;
 
+import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -27,7 +28,7 @@ public final class Controller {
 
   public static void end() {
     if (options.OutputLocation != null) {
-      String filename = options.OutputLocation + "/oscar_output_" + System.currentTimeMillis() + ".txt";
+      String filename = options.OutputLocation + File.separator + "oscar_output_" + new Date() + ".txt";
       ControllerOutput.write(filename, options.NoiseLocations);
     }
 

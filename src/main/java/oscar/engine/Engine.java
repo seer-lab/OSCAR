@@ -4,17 +4,9 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
-import oscar.controller.util.ControllerOption;
-import oscar.controller.util.ControllerOptions;
-import oscar.controller.util.ControllerConfigFile;
-import oscar.controller.util.ControllerOutput;
-import oscar.controller.Controller;
-import oscar.controller.noise.NoisePlacement;
-import oscar.controller.noise.SleepNoise;
 
+import oscar.controller.Controller;
 import oscar.transformers.CustomJimpleTransformer;
-import oscar.transformers.injectors.ExitCapture;
-import oscar.transformers.noisers.SynchronizedBlockNoiser;
 import oscar.utils.ClassWriter;
 import oscar.utils.logger.LoggerFactory;
 import oscar.utils.logger.LoggerFormatter;
@@ -33,20 +25,13 @@ public final class Engine {
   private static final Logger logger = LoggerFactory.getInstance(Engine.class);
 
   private static final String OSCAR_TEMP_DIR = ".oscar_temp";
-  private static final String OSCAR_EXTRACT_DIR = OSCAR_TEMP_DIR + "/extract";
-  private static final String OSCAR_GENERATED_DIR = OSCAR_TEMP_DIR + "/generated";
+  private static final String OSCAR_EXTRACT_DIR = OSCAR_TEMP_DIR + File.separator + "extract";
+  private static final String OSCAR_GENERATED_DIR = OSCAR_TEMP_DIR + File.separator + "generated";
 
+  // Inject additional classes, not included in controller package
   private static final List<Class<?>> injectedClasses = Arrays.asList(
-      Controller.class,
-      ControllerOutput.class,
-      ControllerOptions.class,
-      ControllerOption.class,
-      ControllerConfigFile.class,
-
       LoggerFormatter.class,
-      SleepNoise.class, // TODO stop using this class?
-      LoggerFactory.class,
-      NoisePlacement.class
+      LoggerFactory.class
   );
 
   private static FILE_TYPE targetFileType;
@@ -62,7 +47,7 @@ public final class Engine {
   public Engine(String targetFile, String mainClass, String outputDirectory) {
     this.targetFile = targetFile;
     this.mainClass = mainClass;
-    this.targetDirectory = Paths.get(targetFile).getParent().toString(); ;
+    this.targetDirectory = Paths.get(targetFile).getParent().toString();
     this.outputDirectory = outputDirectory;
   }
 
@@ -105,7 +90,7 @@ public final class Engine {
 
         // Delete target jar if exists
         try {
-          Files.deleteIfExists(Paths.get(outputDirectory + "/out.jar"));
+          Files.deleteIfExists(Paths.get(outputDirectory + File.separator + "out.jar"));
         } catch (IOException e) {
           throw new RuntimeException("Failed to delete previously generated file. Check file permissions.", e);
         }
@@ -129,6 +114,7 @@ public final class Engine {
         break;
     }
 
+    ClassWriter.writeClassPackageToFile(Controller.class, OSCAR_EXTRACT_DIR);
     injectedClasses.forEach(c -> ClassWriter.writeToFile(c, OSCAR_EXTRACT_DIR));
 
     SootClass sc = Scene.v().loadClassAndSupport(mainClass);
@@ -157,7 +143,7 @@ public final class Engine {
 
     // If output is jar, create jar
     if (targetFileType == FILE_TYPE.JAR) {
-      ZipFile jar = new ZipFile(outputDirectory + "/out.jar");
+      ZipFile jar = new ZipFile(outputDirectory + File.separator + "out.jar");
       try {
         for (File tempFile : getDirectoryContent(OSCAR_EXTRACT_DIR))
           if (tempFile.isDirectory())
@@ -228,7 +214,7 @@ public final class Engine {
 
   private static List<File> getDirectoryContent(String dir) {
     File dirFile = new File(dir);
-    int maxDirDepth = dirFile.getPath().split("/").length + 1;
+    int maxDirDepth = dirFile.getPath().split(File.separator).length + 1;
 
     return FileUtils.listFilesAndDirs(
                         dirFile,
@@ -236,7 +222,7 @@ public final class Engine {
                         FileFilterUtils.trueFileFilter()
                     )
                     .stream()
-                    .filter(f -> f.getPath().split("/").length == maxDirDepth)
+                    .filter(f -> f.getPath().split(File.separator).length == maxDirDepth)
                     .collect(Collectors.toCollection(ArrayList::new));
   }
 

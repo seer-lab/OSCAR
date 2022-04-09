@@ -1,13 +1,13 @@
 package oscar.utils;
 
+import org.apache.commons.io.FileUtils;
 import oscar.utils.logger.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.logging.Logger;
 
 public final class ClassWriter {
@@ -29,7 +29,7 @@ public final class ClassWriter {
     try {
       classBytes = Files.readAllBytes(Paths.get(url.toURI()));
     } catch (IOException | URISyntaxException e) {
-      throw new RuntimeException("Failed to read class '" + classFile + "'",e);
+      throw new RuntimeException("Failed to read class '" + classFile + "'", e);
     }
 
     try {
@@ -53,7 +53,36 @@ public final class ClassWriter {
     try {
       Files.write(Paths.get(filename), classBytes, StandardOpenOption.WRITE);
     } catch (IOException e) {
-      throw new RuntimeException("Failed to find class '" + classFile + "'",e);
+      throw new RuntimeException("Failed to find class '" + classFile + "'", e);
+    }
+  }
+
+  public static void writeClassPackageToFile(Class<?> clazz, String directory) {
+    String classFile = clazz.getSimpleName() + ".class";
+    URL url = clazz.getResource(classFile);
+
+    if (url == null)
+      throw new RuntimeException("Failed to find class '" + classFile + "'.");
+
+    String packagePathLocation = Paths.get(url.getPath())
+                                      .getParent()
+                                      .toString()
+                                      .replace("%20", " ");
+
+    String packageOutputLocation = url.getPath()
+                                                .substring(
+                                                    0,
+                                                    url.getPath().length() - classFile.length() - 1
+                                                )
+                                                .replace("%20", " ")
+                                                .split(File.separator + "oscar" + File.separator)[1];
+
+    packageOutputLocation = directory + File.separator + "oscar" + File.separator + packageOutputLocation;
+
+    try {
+      FileUtils.copyDirectory(new File(packagePathLocation), new File(packageOutputLocation));
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to copy package '" + packagePathLocation + "'.", e);
     }
   }
 }
