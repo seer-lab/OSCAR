@@ -16,7 +16,7 @@ public enum NoisePlacement {
   }
 
   public String getShorthand() {
-    return type.getShorthand() + generateShorthand(this.getClass());
+    return type.getShorthand() + generateShorthand(name());
   }
 
   public NoisePlacementType getType() {
@@ -47,12 +47,12 @@ public enum NoisePlacement {
     NoisePlacementType() {}
 
     public String getShorthand() {
-      return generateShorthand(this.getClass());
+      return generateShorthand(name());
     }
   }
 
-  private static String generateShorthand(Class<?> clazz) {
-    return Arrays.stream(clazz.getSimpleName().split("_"))
+  private static String generateShorthand(String name) {
+    return Arrays.stream(name.split("_"))
                  .map(s -> s.charAt(0))
                  .map(Object::toString)
                  .map(String::toLowerCase)

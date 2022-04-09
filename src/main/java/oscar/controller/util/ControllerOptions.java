@@ -22,9 +22,9 @@ public final class ControllerOptions {
       new ControllerOption("MaxSleepLength", "Set maximum sleep length", "Long", "0", "-M", "--max_sleep_length"),
       new ControllerOption("MinSleepLength", "Set minimum sleep length", "Long", "400", "-m", "--min_sleep_length"),
       new ControllerOption("DisableNoise", "Disable all noise", "Flag", "False", "-d", "--disable-noise"),
-      new ControllerOption("NoisePlacements", "List of active noise placements.", "List<String>", "All", "-np", "--noise-placements"),
-      new ControllerOption("Verbose", "Enable full logging.", "Flag", "False" ,"-v", "--verbose"),
-      new ControllerOption("Quiet", "Disable logging.", "Flag", "False" ,"-q", "--quiet"),
+      new ControllerOption("NoisePlacements", "Set the list of active noise placements.", "List<String>", "All", "-np", "--noise-placements"),
+      new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-v", "--verbose"),
+      new ControllerOption("Quiet", "Disable logging.", "Flag", "False", "-q", "--quiet"),
       new ControllerOption("Help", "Print Help.", "Flag", "-", "-h", "--help")
   );
 
@@ -87,6 +87,11 @@ public final class ControllerOptions {
           break;
         case "NoisePlacements":
           options.NoisePlacements.clear();
+
+          // Read all noise placements
+          while (i + 1 < argv.length && !argv[i + 1].contains("-")) {
+            options.NoisePlacements.add(NoisePlacement.fromString(argv[++i]));
+          }
           break;
         case "DisableNoise":
           options.DisableNoise = true;
@@ -128,11 +133,12 @@ public final class ControllerOptions {
     System.out.println("OSCAR options include:");
 
     for (ControllerOption option : CONTROLLER_OPTIONS)
-      System.out.printf("\t%-30s%s\t%-10s\t%s\n",
-                        option.getAliasesString(),
-                        option.getDescription(),
-                        option.getType(),
-                        option.getDefaultVal()
+      System.out.printf(
+          "\t%-25s\t%-15s\t%-10s\t%s\n",
+          option.getAliasesString(),
+          option.getType(),
+          option.getDefaultVal(),
+          option.getDescription()
       );
 
     System.out.println("");
