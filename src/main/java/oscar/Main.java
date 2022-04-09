@@ -6,6 +6,8 @@ import oscar.transformers.injectors.ExitCapture;
 import oscar.transformers.noisers.SynchronizedBlockNoiser;
 
 public class Main {
+  public static final String VERSION = "0.0.2";
+
   public static void main(String[] args) {
     if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
       System.out.println("Usage: oscar <targetfile> <mainclass> <outputdirectory>");

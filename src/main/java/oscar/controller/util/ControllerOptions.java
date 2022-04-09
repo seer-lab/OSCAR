@@ -1,9 +1,11 @@
 package oscar.controller.util;
 
+import oscar.Main;
 import oscar.controller.noise.NoisePlacement;
 import oscar.controller.noise.SleepNoise;
 import oscar.utils.logger.LoggerFactory;
 
+import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +25,9 @@ public final class ControllerOptions {
       new ControllerOption("MinSleepLength", "Set minimum sleep length", "Long", "400", "-m", "--min_sleep_length"),
       new ControllerOption("DisableNoise", "Disable all noise", "Flag", "False", "-d", "--disable-noise"),
       new ControllerOption("NoisePlacements", "Set the list of active noise placements.", "List<String>", "All", "-np", "--noise-placements"),
-      new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-v", "--verbose"),
+      new ControllerOption("PrintNoisePlacements", "Print all possible noise placements.", "Flag", "-", "-pnp", "--print-noise-placements"),
+      new ControllerOption("Version", "Print OSCAR version.", "Flag", "-", "-v", "--version"),
+      new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),
       new ControllerOption("Quiet", "Disable logging.", "Flag", "False", "-q", "--quiet"),
       new ControllerOption("Help", "Print Help.", "Flag", "-", "-h", "--help")
   );
@@ -93,6 +97,10 @@ public final class ControllerOptions {
             options.NoisePlacements.add(NoisePlacement.fromString(argv[++i]));
           }
           break;
+        case "PrintNoisePlacements":
+          printNoiseLocations();
+          System.exit(0);
+          break;
         case "DisableNoise":
           options.DisableNoise = true;
           break;
@@ -110,6 +118,11 @@ public final class ControllerOptions {
           logger.info("Setting logger level to quiet (OFF).");
           LoggerFactory.setLevel(Level.OFF);
           break;
+        case "Version":
+          System.out.println("OSCAR " + Main.VERSION);
+          System.exit(0);
+          break;
+
         case "Help":
           printHelp();
           System.exit(0);
@@ -129,7 +142,7 @@ public final class ControllerOptions {
     System.out.println("\tor: java -jar <mainclass> [oscar_options]");
     System.out.println("\t\t(to execute a jar file)");
 
-    System.out.println("");
+    System.out.println();
     System.out.println("OSCAR options include:");
 
     for (ControllerOption option : CONTROLLER_OPTIONS)
@@ -141,9 +154,35 @@ public final class ControllerOptions {
           option.getDescription()
       );
 
-    System.out.println("");
+    System.out.println();
 
     System.out.println("OSCAR Noise Injector 2022");
+  }
+
+  private static void printNoiseLocations() {
+    System.out.println("Possible noising locations:");
+
+    System.out.printf(
+        "\t%-25s\t%-25s\t%-25s\n",
+        "Type",
+        "Name",
+        "Shorthand code"
+    );
+
+    System.out.printf(
+        "\t%-25s\t%-25s\t%-25s\n",
+        "-------------------------",
+        "-------------------------",
+        "-------------------------"
+    );
+
+    for (NoisePlacement np : NoisePlacement.values())
+      System.out.printf(
+          "\t%-25s\t%-25s\t%-25s\n",
+          np.getType().name().replace("_", " "),
+          np.name().replace("_", " "),
+          np.getShorthand()
+      );
   }
 
   private static int parseInt(String arg) {
