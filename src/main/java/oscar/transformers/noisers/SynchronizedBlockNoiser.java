@@ -50,8 +50,8 @@ public final class SynchronizedBlockNoiser extends CustomJimpleTransformer {
     JimpleGenerator generator = new JimpleGenerator((JimpleBody) body);
 
     // Create statement to insert sleep noise with a random id
-    long noiseLocationID = Engine.generateLocationID();
-    JimpleLocal idLocal = generator.Local.fromType(LongType.v());
+    generator.Statement.instantiateClass("oscar.controller.noise.NoisePlacement")
+    JimpleLocal noisePlacementLocal = generator.Local.fromType();
 
     String noisePlacementShorthand = noisePlacement.getShorthand();
 

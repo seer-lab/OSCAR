@@ -2,14 +2,13 @@ package oscar.controller.util;
 
 import oscar.Main;
 import oscar.controller.noise.NoisePlacement;
-import oscar.controller.noise.SleepNoise;
+import oscar.controller.noise.NoisePlacementCategory;
+import oscar.controller.util.output.*;
 import oscar.utils.logger.LoggerFactory;
 
-import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -20,30 +19,33 @@ public final class ControllerOptions {
   public static final List<ControllerOption> CONTROLLER_OPTIONS = Arrays.asList(
       new ControllerOption("InjectedArgs", "Inject arguments into the program", "String", "", "-a", "--args"),
       new ControllerOption("ConfigFile", "Set config file location to load", "String", "", "-c", "--config_file"),
-      new ControllerOption("OutputLocation", "Set location for outputted files", "String", "", "-o", "--output"),
+      new ControllerOption("ConsoleOutput", "Enable output of noising locations signals to console", "Flag", "False", "-co", "--console-output"),
+      new ControllerOption("FileOutput", "Enable output of noising locations signals to a file", "String", "", "-fo", "--file-output"),
+      new ControllerOption("LazyFileOutput", "Enable lazy output of noising locations signals to a file", "String", "", "-lfo", "--lazy-file-output"),
       new ControllerOption("MaxSleepLength", "Set maximum sleep length", "Long", "0", "-M", "--max_sleep_length"),
       new ControllerOption("MinSleepLength", "Set minimum sleep length", "Long", "400", "-m", "--min_sleep_length"),
       new ControllerOption("DisableNoise", "Disable all noise", "Flag", "False", "-d", "--disable-noise"),
-      new ControllerOption("NoisePlacements", "Set the list of active noise placements.", "List<String>", "All", "-np", "--noise-placements"),
+      new ControllerOption("NoisePlacements", "Set the list of active noise placement types.", "List<String>", "All", "-np", "--noise-placements"),
+      new ControllerOption("NoiseCategories", "Set the list of active noise placement categories.", "List<String>", "All", "-np", "--noise-categories"),
       new ControllerOption("PrintNoisePlacements", "Print all possible noise placements.", "Flag", "-", "-pnp", "--print-noise-placements"),
       new ControllerOption("Version", "Print OSCAR version.", "Flag", "-", "-v", "--version"),
       new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),
       new ControllerOption("Quiet", "Disable logging.", "Flag", "False", "-q", "--quiet"),
-      new ControllerOption("Help", "Print Help.", "Flag", "-", "-h", "--help")
+      new ControllerOption("Help", "Print Help.", "Flag", "False", "-h", "--help")
   );
 
   public String InjectedArgs = "";
   public String ConfigFile = null;
-  public String OutputLocation = null;
+  public ControllerOutput ControllerOutput = null;
   public Long MaxSleepLength = 400L;
   public Long MinSleepLength = 0L;
   public boolean DisableNoise = false;
   public final HashSet<NoisePlacement> NoisePlacements = NoisePlacement.getAll();
+  public final HashSet<NoisePlacementCategory> NoiseCategories = NoisePlacementCategory.getAll();
 
   public boolean Verbose = false;
   public boolean Quiet = false;
 
-  public final ConcurrentHashMap<Long, SleepNoise> NoiseLocations = new ConcurrentHashMap<>(); // TODO Should this be a treemap?
   public final HashSet<NoisePlacement> ActiveNoisePlacements = new HashSet<>(Arrays.asList(NoisePlacement.values()));
 
   public static ControllerOptions parse(String[] argv) {
@@ -72,9 +74,25 @@ public final class ControllerOptions {
           ControllerConfigFile.readFile(options);
           i++;
           break;
-        case "OutputLocation":
-          options.OutputLocation = argv[i + 1];
+        case "FileOutput":
+          if (options.ControllerOutput != null)
+            throw new RuntimeException("Output method already set.");
+
+          options.ControllerOutput = new RegularFileOutput();
           i++;
+          break;
+        case "LazyFileOutput":
+          if (options.ControllerOutput != null)
+            throw new RuntimeException("Output method already set.");
+
+          options.ControllerOutput = new LazyFileOutput();
+          i++;
+          break;
+        case "ConsoleOutput":
+          if (options.ControllerOutput != null)
+            throw new RuntimeException("Output method already set.");
+
+          options.ControllerOutput = new ConsoleOutput();
           break;
         case "MaxSleepLength":
           options.MaxSleepLength = parseLong(argv[i + 1]);
@@ -93,9 +111,15 @@ public final class ControllerOptions {
           options.NoisePlacements.clear();
 
           // Read all noise placements
-          while (i + 1 < argv.length && !argv[i + 1].contains("-")) {
+          while (i + 1 < argv.length && !argv[i + 1].contains("-"))
             options.NoisePlacements.add(NoisePlacement.fromString(argv[++i]));
-          }
+          break;
+        case "NoiseCategories":
+          options.NoiseCategories.clear();
+
+          // Read all noise placement categories
+          while (i + 1 < argv.length && !argv[i + 1].contains("-"))
+            options.NoiseCategories.add(NoisePlacementCategory.fromString(argv[++i]));
           break;
         case "PrintNoisePlacements":
           printNoiseLocations();
@@ -179,7 +203,7 @@ public final class ControllerOptions {
     for (NoisePlacement np : NoisePlacement.values())
       System.out.printf(
           "\t%-25s\t%-25s\t%-25s\n",
-          np.getType().name().replace("_", " "),
+          np.getCategory().name().replace("_", " "),
           np.name().replace("_", " "),
           np.getShorthand()
       );

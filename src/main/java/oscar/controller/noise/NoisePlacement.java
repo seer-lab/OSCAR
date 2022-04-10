@@ -6,21 +6,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum NoisePlacement {
-  BEFORE_SYNC_BLOCK(NoisePlacementType.SYNC_BASED),
-  AFTER_SYNC_BLOCK(NoisePlacementType.SYNC_BASED);
+  BEFORE_SYNC_BLOCK(NoisePlacementCategory.SYNCHRONIZATION_BASED),
+  AFTER_SYNC_BLOCK(NoisePlacementCategory.SYNCHRONIZATION_BASED);
 
-  private final NoisePlacementType type;
+  private final NoisePlacementCategory category;
 
-  NoisePlacement(NoisePlacementType type) {
-    this.type = type;
+  NoisePlacement(NoisePlacementCategory category) {
+    this.category = category;
   }
 
   public String getShorthand() {
-    return type.getShorthand() + generateShorthand(name());
+    return category.getShorthand() + generateShorthand(name());
   }
 
-  public NoisePlacementType getType() {
-    return type;
+  public NoisePlacementCategory getCategory() {
+    return category;
   }
 
   public static HashSet<NoisePlacement> getAll() {
@@ -41,17 +41,7 @@ public enum NoisePlacement {
     return results.get(0);
   }
 
-  public enum NoisePlacementType {
-    SYNC_BASED;
-
-    NoisePlacementType() {}
-
-    public String getShorthand() {
-      return generateShorthand(name());
-    }
-  }
-
-  private static String generateShorthand(String name) {
+  static String generateShorthand(String name) {
     return Arrays.stream(name.split("_"))
                  .map(s -> s.charAt(0))
                  .map(Object::toString)
