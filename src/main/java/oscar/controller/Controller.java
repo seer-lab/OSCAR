@@ -26,7 +26,8 @@ public final class Controller {
   }
 
   public static void end() {
-    options.ControllerOutput.terminate();
+    if (options.ControllerOutput != null)
+      options.ControllerOutput.terminate();
 
     logger.info("OSCAR noising controller routine ended.");
     System.exit(0);
@@ -54,7 +55,7 @@ public final class Controller {
    * Make the injected program sleep
    *
    * @param placement instrumented location type
-   * @param uuid           instrumented location generated uuid
+   * @param uuid      instrumented location generated uuid
    */
   public static void sleep(NoisePlacement placement, String uuid) {
     if (options.DisableNoise)

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -19,7 +20,7 @@ public abstract class FileOutput implements ControllerOutput {
   public FileOutput() {
     logger.info("Initializing File controller output.");
 
-    this.filepath = "oscar_output" + File.separator + "oscar_output_" + new Date() + ".txt";
+    this.filepath = "oscar_output" + File.separator + "oscar_output_" + Instant.now() + ".txt";
     File file = new File(filepath);
 
     logger.fine("Creating directories for output file'" + filepath + "'.");
