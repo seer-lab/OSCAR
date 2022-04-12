@@ -5,19 +5,12 @@ import soot.BodyTransformer;
 import java.util.stream.Stream;
 
 public abstract class CustomJimpleTransformer extends BodyTransformer {
-  protected final String mainClass;
   protected final String phase;
   protected final String subphase;
 
-
-  public CustomJimpleTransformer(String phase, String subphase, String mainClass) {
-    this.mainClass = mainClass;
+  public CustomJimpleTransformer(String phase, String subphase) {
     this.subphase = phase + "." + subphase;
     this.phase = phase;
-  }
-
-  public String getMainClass() {
-    return mainClass;
   }
 
   public String getPhase() {

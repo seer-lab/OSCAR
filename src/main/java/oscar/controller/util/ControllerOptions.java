@@ -2,7 +2,7 @@ package oscar.controller.util;
 
 import oscar.Main;
 import oscar.controller.noise.NoisePlacement;
-import oscar.controller.noise.NoisePlacementCategory;
+import oscar.controller.noise.NoiseCategory;
 import oscar.controller.util.output.*;
 import oscar.utils.logger.LoggerFactory;
 
@@ -41,12 +41,10 @@ public final class ControllerOptions {
   public Long MinSleepLength = 0L;
   public boolean DisableNoise = false;
   public final HashSet<NoisePlacement> NoisePlacements = NoisePlacement.getAll();
-  public final HashSet<NoisePlacementCategory> NoiseCategories = NoisePlacementCategory.getAll();
+  public final HashSet<NoiseCategory> NoiseCategories = NoiseCategory.getAll();
 
   public boolean Verbose = false;
   public boolean Quiet = false;
-
-  public final HashSet<NoisePlacement> ActiveNoisePlacements = new HashSet<>(Arrays.asList(NoisePlacement.values()));
 
   public static ControllerOptions parse(String[] argv) {
     ControllerOptions options = new ControllerOptions();
@@ -119,7 +117,7 @@ public final class ControllerOptions {
 
           // Read all noise placement categories
           while (i + 1 < argv.length && !argv[i + 1].contains("-"))
-            options.NoiseCategories.add(NoisePlacementCategory.fromString(argv[++i]));
+            options.NoiseCategories.add(NoiseCategory.fromString(argv[++i]));
           break;
         case "PrintNoisePlacements":
           printNoiseLocations();

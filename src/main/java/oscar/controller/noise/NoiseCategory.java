@@ -5,19 +5,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public enum NoisePlacementCategory {
+public enum NoiseCategory {
   SYNCHRONIZATION_BASED;
 
-  NoisePlacementCategory() {}
+  NoiseCategory() {}
 
   public String getShorthand() {
     return NoisePlacement.generateShorthand(name());
   }
 
-  public static NoisePlacementCategory fromString(String shorthand) {
-    List<NoisePlacementCategory> results = Arrays.stream(NoisePlacementCategory.values())
-                                                 .filter(np -> np.getShorthand().equals(shorthand.toLowerCase()))
-                                                 .collect(Collectors.toList());
+  public static NoiseCategory fromString(String shorthand) {
+    List<NoiseCategory> results = Arrays.stream(NoiseCategory.values())
+                                        .filter(np -> np.getShorthand().equals(shorthand.toLowerCase()))
+                                        .collect(Collectors.toList());
 
     if (results.size() > 1)
       throw new RuntimeException("More than one noise placement categories match shorthand '" + shorthand + "'.");
@@ -28,7 +28,7 @@ public enum NoisePlacementCategory {
     return results.get(0);
   }
 
-  public static HashSet<NoisePlacementCategory> getAll() {
+  public static HashSet<NoiseCategory> getAll() {
     return Arrays.stream(values()).collect(Collectors.toCollection(HashSet::new));
   }
 }

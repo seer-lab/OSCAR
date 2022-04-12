@@ -4,6 +4,9 @@ import oscar.engine.Engine;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCapture;
 import oscar.transformers.noisers.SynchronizedBlockNoiser;
+import oscar.transformers.noisers.SynchronizedMethodCallNoiser;
+
+import java.util.List;
 
 public class Main {
   public static final String VERSION = "0.0.2";
@@ -25,9 +28,12 @@ public class Main {
     Engine engine = new Engine(targetFile, mainClass, outputDirectory);
 
     // Add packs and run
-    engine.registerTransformer(new ControllerInjector(mainClass));
-    engine.registerTransformer(new ExitCapture(mainClass));
-    engine.registerTransformer(new SynchronizedBlockNoiser(mainClass));
+    List.of(
+        new ControllerInjector(mainClass),
+        new ExitCapture(),
+        new SynchronizedBlockNoiser(),
+        new SynchronizedMethodCallNoiser()
+    ).forEach(engine::registerTransformer);
 
     engine.run();
 

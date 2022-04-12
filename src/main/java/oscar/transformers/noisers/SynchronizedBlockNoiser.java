@@ -1,5 +1,6 @@
 package oscar.transformers.noisers;
 
+import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
 import oscar.engine.generators.JimpleGenerator;
 import oscar.transformers.CustomJimpleTransformer;
@@ -12,8 +13,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class SynchronizedBlockNoiser extends CustomJimpleTransformer {
-  public SynchronizedBlockNoiser(String mainClass) {
-    super("jtp", "sbn", mainClass);
+  public SynchronizedBlockNoiser() {
+    super("jtp", "sbn");
   }
 
   @Override
@@ -22,52 +23,34 @@ public final class SynchronizedBlockNoiser extends CustomJimpleTransformer {
     if (isClassBlacklisted(body.getMethod().getDeclaringClass().getName()))
       return;
 
-    // Find invocations of synchronized methods
-    List<JInvokeStmt> syncMethodInvocations =
-        body.getUnits().stream()
-            .filter(JInvokeStmt.class::isInstance)
-            .map(box -> ((JInvokeStmt) box))
-            .filter(box -> box.getInvokeExpr().getMethod().isSynchronized())
-            .filter(box -> !box.getInvokeExpr().getMethod().getDeclaringClass().getName().equals("java.lang.Thread"))
-            .collect(Collectors.toList());
+    // Find monitor calls for synchronized blocks
+    List<Unit> monitorCalls = getMonitorCalls((JimpleBody) body);
 
-    // Nothing to change, leave
-    if (syncMethodInvocations.isEmpty())
+    // No statements with sync method calls or blocks found, leave
+    if (monitorCalls.isEmpty())
       return;
 
-    for (JInvokeStmt syncMethodInvocation : syncMethodInvocations) {
-      // Create statement to insert sleep noise before and after statement
-      generateNoiseStatement(body, syncMethodInvocation, NoisePlacement.BEFORE_SYNC_BLOCK);
-      generateNoiseStatement(body, syncMethodInvocation, NoisePlacement.AFTER_SYNC_BLOCK);
+    JimpleGenerator generator = new JimpleGenerator((JimpleBody) body);
+
+    // Create statement to insert sleep noise before and after sync blocks
+    for (Unit monitorCall : monitorCalls) {
+      if (monitorCall instanceof JEnterMonitorStmt) {
+        body.getUnits().insertBefore(generator.Statement.sleep(NoisePlacement.BEFORE_SYNC_BLOCK), monitorCall);
+        body.getUnits().insertBefore(generator.Statement.signal(NoiseCategory.SYNCHRONIZATION_BASED), monitorCall);
+      } else if (monitorCall instanceof JExitMonitorStmt) {
+        List<Unit> units = generator.Statement.sleep(NoisePlacement.AFTER_SYNC_BLOCK);
+        body.getUnits().insertAfter(units, monitorCall);
+      } else
+        throw new RuntimeException("Invalid monitor call statement");
     }
 
     body.validate();
   }
 
-  private static void generateNoiseStatement(Body body, Unit location, NoisePlacement noisePlacement) {
-    // Initialize jimple generator
-    JimpleGenerator generator = new JimpleGenerator((JimpleBody) body);
-
-    // Create statement to insert sleep noise with a random id
-    generator.Statement.instantiateClass("oscar.controller.noise.NoisePlacement")
-    JimpleLocal noisePlacementLocal = generator.Local.fromType();
-
-    String noisePlacementShorthand = noisePlacement.getShorthand();
-
-    JAssignStmt idAssignStmt = new JAssignStmt(idLocal, LongConstant.v(noiseLocationID));
-    Stmt noiseStmt = generator.Statement.staticInvoke(
-        "oscar.controller.Controller",
-        "void sleep(long,java.lang.String)",
-        List.of(idLocal, StringConstant.v(noisePlacementShorthand))
-    );
-
-    if (noisePlacement == NoisePlacement.BEFORE_SYNC_BLOCK) {
-      body.getUnits().insertBefore(idAssignStmt, location);
-      body.getUnits().insertBefore(noiseStmt, location);
-    } else if (noisePlacement == NoisePlacement.AFTER_SYNC_BLOCK) {
-      body.getUnits().insertAfter(noiseStmt, location);
-      body.getUnits().insertAfter(idAssignStmt, location);
-    } else
-      throw new RuntimeException("Invalid noise placement type");
+  private static List<Unit> getMonitorCalls(JimpleBody body) {
+    return body.getUnits()
+               .stream()
+               .filter(s -> s instanceof JEnterMonitorStmt || s instanceof JExitMonitorStmt)
+               .collect(Collectors.toList());
   }
 }

@@ -1,11 +1,14 @@
 package oscar.engine.generators;
 
+import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseCategory;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class StatementGenerator {
   private final LocalGenerator localGenerator;
@@ -92,11 +95,46 @@ public class StatementGenerator {
     return statements;
   }
 
-  public JInvokeStmt sleep(JimpleLocal sleepLengthLocal) {
-    SootClass threadClass = Scene.v().getSootClass("java.lang.Thread");
-    SootMethod sleepMethod = threadClass.getMethod("void sleep(long)");
+  public List<Unit> sleep(NoisePlacement noisePlacement) {
+    // Instantiate enum value
+    JimpleLocal enumLocal = localGenerator.fromType(RefType.v(noisePlacement.getClass().getName()));
+    StaticFieldRef enumField = Jimple.v().newStaticFieldRef(new AbstractSootFieldRef(
+        Scene.v().getSootClass(noisePlacement.getClass().getName()),
+        noisePlacement.name(),
+        enumLocal.getType(),
+        true
+    ));
 
-    return new JInvokeStmt(new JStaticInvokeExpr(sleepMethod.makeRef(), List.of(sleepLengthLocal)));
+    JAssignStmt enumAssign = new JAssignStmt(enumLocal, enumField);
+
+    Stmt noiseStmt = staticInvoke(
+        "oscar.controller.Controller",
+        "void sleep(oscar.controller.noise.NoisePlacement,java.lang.String)",
+        List.of(enumLocal, StringConstant.v(UUID.randomUUID().toString()))
+    );
+
+    return List.of(enumAssign, noiseStmt);
+  }
+
+  public List<Unit> signal(NoiseCategory category) {
+    // Instantiate enum value
+    JimpleLocal enumLocal = localGenerator.fromType(RefType.v(category.getClass().getName()));
+    StaticFieldRef enumField = Jimple.v().newStaticFieldRef(new AbstractSootFieldRef(
+        Scene.v().getSootClass(category.getClass().getName()),
+        category.name(),
+        enumLocal.getType(),
+        true
+    ));
+
+    JAssignStmt enumAssign = new JAssignStmt(enumLocal, enumField);
+
+    Stmt noiseStmt = staticInvoke(
+        "oscar.controller.Controller",
+        "void signal(oscar.controller.noise.NoiseCategory,java.lang.String)",
+        List.of(enumLocal, StringConstant.v(UUID.randomUUID().toString()))
+    );
+
+    return List.of(enumAssign, noiseStmt);
   }
 
 

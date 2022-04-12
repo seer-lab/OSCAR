@@ -83,6 +83,13 @@ public final class Engine {
       throw new RuntimeException("Failed to delete temp folder. Check directory permissions.", e);
     }
 
+    // Delete output folder if exists
+    try {
+      FileUtils.deleteDirectory(new File(outputDirectory));
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to delete output directory. Check file permissions.", e);
+    }
+
     // Check if JAR file and process accordingly
     switch (targetFileType) {
       case JAR:

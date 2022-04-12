@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ExitCapture extends CustomJimpleTransformer {
-  public ExitCapture(String mainClass) {
-    super("jtp", "ec", mainClass);
+  public ExitCapture() {
+    super("jtp", "ec");
   }
 
   @Override

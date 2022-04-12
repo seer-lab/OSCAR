@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 public final class ControllerInjector extends CustomJimpleTransformer {
+  private final String mainClass;
+
   public ControllerInjector(String mainClass) {
-    super("jtp", "ci", mainClass);
+    super("jtp", "ci");
+    this.mainClass = mainClass;
   }
 
   @Override

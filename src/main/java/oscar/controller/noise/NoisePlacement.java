@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum NoisePlacement {
-  BEFORE_SYNC_BLOCK(NoisePlacementCategory.SYNCHRONIZATION_BASED),
-  AFTER_SYNC_BLOCK(NoisePlacementCategory.SYNCHRONIZATION_BASED);
+  BEFORE_SYNC_METHOD_CALL(NoiseCategory.SYNCHRONIZATION_BASED),
+  AFTER_SYNC_METHOD_CALL(NoiseCategory.SYNCHRONIZATION_BASED),
+  BEFORE_SYNC_BLOCK(NoiseCategory.SYNCHRONIZATION_BASED),
+  AFTER_SYNC_BLOCK(NoiseCategory.SYNCHRONIZATION_BASED);
 
-  private final NoisePlacementCategory category;
+  private final NoiseCategory category;
 
-  NoisePlacement(NoisePlacementCategory category) {
+  NoisePlacement(NoiseCategory category) {
     this.category = category;
   }
 
@@ -19,7 +21,7 @@ public enum NoisePlacement {
     return category.getShorthand() + generateShorthand(name());
   }
 
-  public NoisePlacementCategory getCategory() {
+  public NoiseCategory getCategory() {
     return category;
   }
 

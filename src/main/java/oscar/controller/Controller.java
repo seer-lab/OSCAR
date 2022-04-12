@@ -1,6 +1,7 @@
 package oscar.controller;
 
-import oscar.controller.noise.InstrumentedLocation;
+import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseCategory;
 import oscar.controller.util.ControllerOptions;
 import oscar.utils.logger.LoggerFactory;
 
@@ -34,26 +35,33 @@ public final class Controller {
   /**
    * Signal the controller that a noise location has been reached
    *
-   * @param instrumentedLocation instrumented location data
+   * @param category instrumented location placement category
+   * @param uuid     instrumented location generated uuid
    */
-  public static void signal(InstrumentedLocation instrumentedLocation) {
+  public static void signal(NoiseCategory category, String uuid) {
     long threadID = Thread.currentThread().getId();
 
+    if (!options.NoiseCategories.contains(category)) {
+      logger.fine("Skipping noise category '" + category.name() + "'.");
+      return;
+    }
+
     if (options.ControllerOutput != null)
-      options.ControllerOutput.write(instrumentedLocation.getUUID() + " " + threadID);
+      options.ControllerOutput.write(threadID + " " + uuid);
   }
 
   /**
    * Make the injected program sleep
    *
-   * @param instrumentedLocation instrumented location data
+   * @param placement instrumented location type
+   * @param uuid           instrumented location generated uuid
    */
-  public static void sleep(InstrumentedLocation instrumentedLocation) {
+  public static void sleep(NoisePlacement placement, String uuid) {
     if (options.DisableNoise)
       return;
 
-    if (!options.ActiveNoisePlacements.contains(instrumentedLocation.getNoisePlacement())) {
-      logger.fine("Skipping noise placement type '" + instrumentedLocation.getNoisePlacement().name() + "'.");
+    if (!options.NoisePlacements.contains(placement)) {
+      logger.fine("Skipping noise placement type '" + placement.name() + "'.");
       return;
     }
 
