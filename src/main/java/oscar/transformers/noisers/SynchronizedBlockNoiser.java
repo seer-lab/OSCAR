@@ -1,7 +1,6 @@
 package oscar.transformers.noisers;
 
 import oscar.controller.noise.NoisePlacement;
-import oscar.engine.Engine;
 import oscar.engine.generators.JimpleGenerator;
 import oscar.transformers.CustomJimpleTransformer;
 import soot.*;
