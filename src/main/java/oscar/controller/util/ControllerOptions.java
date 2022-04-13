@@ -20,8 +20,8 @@ public final class ControllerOptions {
       new ControllerOption("InjectedArgs", "Inject arguments into the program", "String", "", "-a", "--args"),
       new ControllerOption("ConfigFile", "Set config file location to load", "String", "", "-c", "--config_file"),
       new ControllerOption("ConsoleOutput", "Enable output of noising locations signals to console", "Flag", "False", "-co", "--console-output"),
-      new ControllerOption("FileOutput", "Enable output of noising locations signals to a file", "String", "", "-fo", "--file-output"),
-      new ControllerOption("LazyFileOutput", "Enable lazy output of noising locations signals to a file", "String", "", "-lfo", "--lazy-file-output"),
+      new ControllerOption("FileOutput", "Enable output of noising locations signals to a file", "Flag", "False", "-fo", "--file-output"),
+      new ControllerOption("LazyFileOutput", "Enable lazy output of noising locations signals to a file", "Flag", "False", "-lfo", "--lazy-file-output"),
       new ControllerOption("MaxSleepLength", "Set maximum sleep length", "Long", "0", "-M", "--max_sleep_length"),
       new ControllerOption("MinSleepLength", "Set minimum sleep length", "Long", "400", "-m", "--min_sleep_length"),
       new ControllerOption("DisableNoise", "Disable all noise", "Flag", "False", "-d", "--disable-noise"),
@@ -77,14 +77,12 @@ public final class ControllerOptions {
             throw new RuntimeException("Output method already set.");
 
           options.ControllerOutput = new RegularFileOutput();
-          i++;
           break;
         case "LazyFileOutput":
           if (options.ControllerOutput != null)
             throw new RuntimeException("Output method already set.");
 
           options.ControllerOutput = new LazyFileOutput();
-          i++;
           break;
         case "ConsoleOutput":
           if (options.ControllerOutput != null)
@@ -93,12 +91,18 @@ public final class ControllerOptions {
           options.ControllerOutput = new ConsoleOutput();
           break;
         case "MaxSleepLength":
+          if (options.DisableNoise)
+            throw new RuntimeException("Noise disabled.");
+
           options.MaxSleepLength = parseLong(argv[i + 1]);
           i++;
           if (options.MaxSleepLength < 0)
             throw new RuntimeException("Invalid value for 'max_sleep_length', must be bigger than 0.");
           break;
         case "MinSleepLength":
+          if (options.DisableNoise)
+            throw new RuntimeException("Noise disabled.");
+
           options.MinSleepLength = parseLong(argv[i + 1]);
           i++;
 
