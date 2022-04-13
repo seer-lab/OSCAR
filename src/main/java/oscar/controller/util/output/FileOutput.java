@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.util.Date;
 import java.util.logging.Logger;
 
 public abstract class FileOutput implements ControllerOutput {

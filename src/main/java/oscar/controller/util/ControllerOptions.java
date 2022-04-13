@@ -182,11 +182,34 @@ public final class ControllerOptions {
   }
 
   private static void printNoiseLocations() {
+    System.out.println("Possible noising categories:");
+
+    System.out.printf(
+        "\t%-25s\t%-25s\n",
+        "Category",
+        "Shorthand code"
+    );
+
+    System.out.printf(
+        "\t%-25s\t%-25s\n",
+        "-------------------------",
+        "-------------------------"
+    );
+
+    for (NoiseCategory nc : NoiseCategory.values())
+      System.out.printf(
+          "\t%-25s\t%-25s\n",
+          nc.name().replace("_", " "),
+          nc.getShorthand()
+      );
+
+    System.out.println();
+
     System.out.println("Possible noising locations:");
 
     System.out.printf(
         "\t%-25s\t%-25s\t%-25s\n",
-        "Type",
+        "Category",
         "Name",
         "Shorthand code"
     );

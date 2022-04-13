@@ -1,7 +1,10 @@
 public class PrintID {
+  private static volatile int count;
 
   public static void main(String[] args) {
     int threadCount = Integer.parseInt(args[0]);
+
+    count = threadCount;
 
     System.out.println("Launching " + threadCount + " threads.");
 
@@ -11,12 +14,15 @@ public class PrintID {
     System.out.flush();
     System.out.close();
 
+    while (count != 0) {
+      Thread.onSpinWait();
+    }
+
     System.exit(0);
   }
 
-  private static void printID() {
-    synchronized (PrintID.class) {
-      System.out.println(Thread.currentThread().getId());
-    }
+  private synchronized static void printID() {
+    System.out.println(Thread.currentThread().getId());
+    count--;
   }
 }

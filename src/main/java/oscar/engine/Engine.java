@@ -124,8 +124,12 @@ public final class Engine {
     ClassWriter.writeClassPackageToFile(Controller.class, OSCAR_EXTRACT_DIR);
     injectedClasses.forEach(c -> ClassWriter.writeToFile(c, OSCAR_EXTRACT_DIR));
 
-    SootClass sc = Scene.v().loadClassAndSupport(mainClass);
-    sc.setApplicationClass();
+    try {
+      SootClass sc = Scene.v().loadClassAndSupport(mainClass);
+      sc.setApplicationClass();
+    } catch (NullPointerException e) {
+      throw new RuntimeException("Failed to load main class. Check path.", e);
+    }
 
     Scene.v().loadNecessaryClasses();
 
