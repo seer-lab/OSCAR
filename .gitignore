@@ -3,3 +3,5 @@ target
 /output
 *.class
 .oscar_temp
+.idea
+testscript/.idea

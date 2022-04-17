@@ -14,10 +14,11 @@ argparser = argparse.ArgumentParser(
 )
 
 argparser.add_argument('program_dir', help='location of program to run.')
-argparser.add_argument('main_class', help='name of program\'s main class to run.')
+argparser.add_argument('executable', help='Name of program\'s main class to run or jar file name.')
 argparser.add_argument('program_args', type=str, help='Arguments to be passed to program.')
 
 argparser.add_argument('-c', '--count', default=30, type=int, help='Number of times to run program.')
+argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
 
 argv = argparser.parse_args()
 
@@ -47,10 +48,21 @@ if os.path.isdir('oscar_output'):
 for i in range(0, argv.count):
     print(f'Running {i + 1}/{argv.count}')
 
-    result = subprocess.run(
-        f'java {argv.main_class} {argv.program_args}',
-        shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+    if not argv.jar:
+        result = subprocess.run(
+            f'java {argv.executable} {argv.program_args}',
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+    else:
+        result = subprocess.run(
+            f'java -jar {argv.executable} {argv.program_args}',
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+
+    if result.returncode != 0:
+        print(result.stderr.decode('utf-8'))
+        print(result.stdout.decode('utf-8'))
+        exit(1)
 
 print(f'Finished running. Analyzing files.')
 
@@ -63,9 +75,11 @@ files = os.listdir('.')
 interleavings = []
 
 for file in files:
-    content = open(file, 'r').read().encode('utf-8')
+    content = open(file, 'r').read()
 
-    hashed_content = hashlib.sha512(content).hexdigest()
+    hashed_content = hashlib.sha512(content.encode('utf-8')).hexdigest()
     interleavings.append(hashed_content)
+
+    print(content)
 
 print(f'Found {len(set(interleavings))} unique interleavings in a total of {len(interleavings)}.')
