@@ -64,10 +64,8 @@ interleavings = []
 
 for file in files:
     content = open(file, 'r').read().encode('utf-8')
-    print(content)
+
     hashed_content = hashlib.sha512(content).hexdigest()
     interleavings.append(hashed_content)
 
-print(interleavings)
-print(set(interleavings))
-print(f'Found {set(interleavings).__len__()} unique interleavings.')
+print(f'Found {len(set(interleavings))} unique interleavings in a total of {len(interleavings)}.')

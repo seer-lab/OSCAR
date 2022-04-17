@@ -158,6 +158,10 @@ public final class ControllerOptions {
 
     if (options.MinSleepLength > options.MaxSleepLength)
       throw new RuntimeException("Minimum sleep length should be lower than maximum.");
+
+    if (options.MinSleepLength + options.MaxSleepLength == 0)
+      options.DisableNoise = true;
+
     return options;
   }
 

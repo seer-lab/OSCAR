@@ -38,7 +38,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testscript.py" />
-      <option name="PARAMETERS" value="../output PrintID &quot;-a 80 -fo -m 0 -M 0&quot; -c 30" />
+      <option name="PARAMETERS" value="../output PrintID &quot;-a 5 -fo -m 100 -M 2000&quot; -c 30" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />

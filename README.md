@@ -28,15 +28,21 @@ Usage:
                 (to execute a jar file)
 
 OSCAR options include:
-        --args -a                     Inject arguments into the program
-        --config_file -c              Set config file location to load
-        --output -o                   Set output file location
-        --max_sleep_length -M         Set maximum sleep length
-        --min_sleep_length -m         Set minimum sleep length
-        --disable-noise -d            Disable all noise
-        --verbose -v                  Enable full logging.
-        --quiet -q                    Disable logging.
-        --help -h                     Print Help.
+        -a --args                       String                          Inject arguments into the program
+        -c --config_file                String                          Set config file location to load
+        -co --console-output            Flag            False           Enable output of noising locations signals to console
+        -fo --file-output               Flag            False           Enable output of noising locations signals to a file
+        -lfo --lazy-file-output         Flag            False           Enable lazy output of noising locations signals to a file
+        -M --max_sleep_length           Long            0               Set maximum sleep length
+        -m --min_sleep_length           Long            400             Set minimum sleep length
+        -d --disable-noise              Flag            False           Disable all noise
+        -np --noise-placements          List<String>    All             Set the list of active noise placements.
+        -nc --noise-categories          List<String>    All             Set the list of active noise categories.
+        -pnp --print-noise-placements   Flag            -               Print all possible noise placements.
+        -v --version                    Flag            -               Print OSCAR version.
+        -vb --verbose                   Flag            False           Enable full logging.
+        -q --quiet                      Flag            False           Disable logging.
+        -h --help                       Flag            False           Print Help.
 
 OSCAR Noise Injector 2022
 ```
