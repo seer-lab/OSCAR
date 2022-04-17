@@ -25,8 +25,8 @@ public final class Engine {
   private static final Logger logger = LoggerFactory.getInstance(Engine.class);
 
   private static final String OSCAR_TEMP_DIR = ".oscar_temp";
-  private static final String OSCAR_EXTRACT_DIR = OSCAR_TEMP_DIR + File.separator + "extract";
-  private static final String OSCAR_GENERATED_DIR = OSCAR_TEMP_DIR + File.separator + "generated";
+  private static final String OSCAR_TEMP_EXTRACT_DIR = OSCAR_TEMP_DIR + File.separator + "extract";
+  private static final String OSCAR_TEMP_GENERATED_DIR = OSCAR_TEMP_DIR + File.separator + "generated";
 
   // Inject additional classes, not included in controller package
   private static final List<Class<?>> injectedClasses = Arrays.asList(
@@ -70,8 +70,8 @@ public final class Engine {
     Options.v().set_include_all(true);
     Options.v().set_output_format(Options.output_format_class);
     Options.v().set_output_dir(outputDirectory);
-    Options.v().set_soot_classpath(OSCAR_EXTRACT_DIR);
-    Options.v().set_process_dir(Collections.singletonList(OSCAR_EXTRACT_DIR));
+    Options.v().set_soot_classpath(OSCAR_TEMP_EXTRACT_DIR);
+    Options.v().set_process_dir(Collections.singletonList(OSCAR_TEMP_EXTRACT_DIR));
     Options.v().set_force_overwrite(true);
     Options.v().set_num_threads(1); // This will hopefully enforce an order
 
@@ -93,7 +93,7 @@ public final class Engine {
     // Check if JAR file and process accordingly
     switch (targetFileType) {
       case JAR:
-        Options.v().set_output_dir(OSCAR_GENERATED_DIR);
+        Options.v().set_output_dir(OSCAR_TEMP_GENERATED_DIR);
 
         // Delete target jar if exists
         try {
@@ -106,7 +106,7 @@ public final class Engine {
         ZipFile jar = new ZipFile(targetFile);
 
         try {
-          jar.extractAll(OSCAR_EXTRACT_DIR);
+          jar.extractAll(OSCAR_TEMP_EXTRACT_DIR);
         } catch (IOException e) {
           throw new RuntimeException("Failed to extract jar. Check permissions.", e);
         }
@@ -114,15 +114,15 @@ public final class Engine {
 
       case CLASS:
         try {
-          FileUtils.copyDirectory(new File(targetDirectory), new File(OSCAR_EXTRACT_DIR));
+          FileUtils.copyDirectory(new File(targetDirectory), new File(OSCAR_TEMP_EXTRACT_DIR));
         } catch (IOException e) {
           throw new RuntimeException("Failed to copy target files to temporary directory.", e);
         }
         break;
     }
 
-    ClassWriter.writeClassPackageToFile(Controller.class, OSCAR_EXTRACT_DIR);
-    injectedClasses.forEach(c -> ClassWriter.writeToFile(c, OSCAR_EXTRACT_DIR));
+    ClassWriter.writeClassPackageToFile(Controller.class, OSCAR_TEMP_EXTRACT_DIR);
+    injectedClasses.forEach(c -> ClassWriter.writeToFile(c, OSCAR_TEMP_EXTRACT_DIR));
 
     try {
       SootClass sc = Scene.v().loadClassAndSupport(mainClass);
@@ -154,15 +154,23 @@ public final class Engine {
 
     // If output is jar, create jar
     if (targetFileType == FILE_TYPE.JAR) {
-      ZipFile jar = new ZipFile(outputDirectory + File.separator + "out.jar");
+      // Try to create output folder
       try {
-        for (File tempFile : getDirectoryContent(OSCAR_EXTRACT_DIR))
+        Files.createDirectory(Paths.get(outputDirectory));
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to delete output folder. Check directory permissions.", e);
+      }
+
+      ZipFile jar = new ZipFile(outputDirectory + File.separator + "oscar_out.jar");
+
+      try {
+        for (File tempFile : getDirectoryContent(OSCAR_TEMP_EXTRACT_DIR))
           if (tempFile.isDirectory())
             jar.addFolder(tempFile);
           else
             jar.addFile(tempFile);
 
-        for (File tempFile : getDirectoryContent(OSCAR_GENERATED_DIR))
+        for (File tempFile : getDirectoryContent(OSCAR_TEMP_GENERATED_DIR))
           if (tempFile.isDirectory())
             jar.addFolder(tempFile);
           else
@@ -171,14 +179,16 @@ public final class Engine {
         throw new RuntimeException("Failed to add files from temp folder to zip.", e);
       }
 
+      /*
       // Copy generated files over
       try {
-        File srcDir = new File(OSCAR_GENERATED_DIR);
+        File srcDir = new File(OSCAR_TEMP_GENERATED_DIR);
         File destDir = new File(targetDirectory);
         FileUtils.copyDirectory(srcDir, destDir);
       } catch (IOException e) {
         throw new RuntimeException("Failed to copy generated sources to output folder. Check directory permissions.", e);
       }
+       */
 
       // Delete temp folder
       try {
