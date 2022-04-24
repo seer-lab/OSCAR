@@ -3,8 +3,9 @@ package oscar;
 import oscar.engine.Engine;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCapture;
-import oscar.transformers.noisers.SynchronizedBlockNoiser;
-import oscar.transformers.noisers.SynchronizedMethodCallNoiser;
+import oscar.transformers.noisers.sync_based.SynchronizedBlockNoiser;
+import oscar.transformers.noisers.sync_based.SynchronizedMethodCallNoiser;
+import oscar.transformers.noisers.thread_based.ThreadCreationNoiser;
 
 import java.util.List;
 
@@ -26,15 +27,6 @@ public class Main {
 
     // Init soot
     Engine engine = new Engine(targetFile, mainClass, outputDirectory);
-
-    // Add packs and run
-    List.of(
-        new ControllerInjector(mainClass),
-        new ExitCapture(),
-        new SynchronizedBlockNoiser(),
-        new SynchronizedMethodCallNoiser()
-    ).forEach(engine::registerTransformer);
-
     engine.run();
 
     System.exit(0);

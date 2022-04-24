@@ -1,5 +1,6 @@
 package oscar.transformers;
 
+import oscar.engine.Engine;
 import soot.BodyTransformer;
 
 import java.util.stream.Stream;

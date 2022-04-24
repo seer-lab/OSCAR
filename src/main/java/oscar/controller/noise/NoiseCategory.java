@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum NoiseCategory {
-  SYNCHRONIZATION_BASED;
+  SYNCHRONIZATION_BASED,
+  THREAD_BASED;
 
   NoiseCategory() {}
 

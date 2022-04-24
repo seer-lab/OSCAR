@@ -75,11 +75,13 @@ files = os.listdir('.')
 interleavings = []
 
 for file in files:
-    content = open(file, 'r').read()
+    content = open(file, 'r') #.read()
 
-    hashed_content = hashlib.sha512(content.encode('utf-8')).hexdigest()
+    content_clean = ""
+    for line in content:
+        content_clean += line.split(" ")[1]
+
+    hashed_content = hashlib.sha512(content_clean.encode('utf-8')).hexdigest()
     interleavings.append(hashed_content)
 
-    print(content)
-
-print(f'Found {len(set(interleavings))} unique interleavings in a total of {len(interleavings)}.')
+print(f'Found {len(set(interleavings))} unique types of interleavings in a total of {len(interleavings)}.')

@@ -4,4 +4,5 @@ target
 *.class
 .oscar_temp
 .idea
-testscript/.idea
+testscript/.idea/workspace.xml
+

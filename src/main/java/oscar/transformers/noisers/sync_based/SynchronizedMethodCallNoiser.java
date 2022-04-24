@@ -1,4 +1,4 @@
-package oscar.transformers.noisers;
+package oscar.transformers.noisers.sync_based;
 
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;

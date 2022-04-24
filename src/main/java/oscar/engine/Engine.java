@@ -7,6 +7,12 @@ import org.apache.commons.io.filefilter.*;
 
 import oscar.controller.Controller;
 import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.injectors.ControllerInjector;
+import oscar.transformers.injectors.ExitCapture;
+import oscar.transformers.noisers.sync_based.SynchronizedBlockNoiser;
+import oscar.transformers.noisers.sync_based.SynchronizedMethodCallNoiser;
+import oscar.transformers.noisers.thread_based.ThreadCreationNoiser;
+import oscar.transformers.noisers.thread_based.ThreadCreationTagger;
 import oscar.utils.ClassWriter;
 import oscar.utils.logger.LoggerFactory;
 import oscar.utils.logger.LoggerFormatter;
@@ -49,6 +55,16 @@ public final class Engine {
     this.mainClass = mainClass;
     this.targetDirectory = Paths.get(targetFile).getParent().toString();
     this.outputDirectory = outputDirectory;
+
+    // Register all transformers
+    List.of(
+        new ControllerInjector(mainClass),
+        new ExitCapture(),
+        new SynchronizedBlockNoiser(),
+        new SynchronizedMethodCallNoiser(),
+        new ThreadCreationTagger(), // Must be before ThreadCreationNoiser
+        new ThreadCreationNoiser()
+    ).forEach(this::registerTransformer);
   }
 
   public void run() {
