@@ -12,7 +12,8 @@ public enum NoisePlacement {
   AFTER_SYNC_BLOCK(NoiseCategory.SYNCHRONIZATION_BASED),
 
   BEFORE_THREAD_LAUNCH(NoiseCategory.THREAD_BASED),
-  AFTER_THREAD_LAUNCH(NoiseCategory.THREAD_BASED);
+  AFTER_THREAD_LAUNCH(NoiseCategory.THREAD_BASED),
+  BEFORE_THREAD_ROUTINE(NoiseCategory.THREAD_BASED);
 
   private final NoiseCategory category;
 

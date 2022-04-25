@@ -10,13 +10,16 @@ public class PrintIDThread {
 
     System.out.println("Launching " + threadCount + " threads.");
 
+    Thread t = new Thread(() -> "foo".contains("bar"));
+
     for (int i = 0; i < threadCount; i++)
       new Thread(PrintIDThread::printID).start();
 
-    for (int i = 0; i < threadCount; i++)
-      new Thread(new Foo()).start();
+    new Thread(new Foo()).run();
 
     List.of(1, 2, 3).forEach(PrintIDThread::printInt);
+
+    t.start();
 
     System.out.flush();
     System.out.close();

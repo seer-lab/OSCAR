@@ -49,6 +49,9 @@ public final class Controller {
 
     if (options.ControllerOutput != null)
       options.ControllerOutput.write(threadID + " " + uuid);
+
+    if (!options.Quiet)
+      logger.fine("[" + "SIGNAL" + "]" + "[" + category.name() + "]" + "[" + uuid + "]");
   }
 
   /**
@@ -72,7 +75,14 @@ public final class Controller {
 
     // Sleep for a determined amount of time
     try {
-      logger.fine("Sleeping for " + sleepLength + " ms.");
+      if (!options.Quiet) {
+        logger.fine("[" + "SLEEP" + "]" +
+                        "[" + placement.getCategory().name() + "]" +
+                        "[" + placement.name() + "]" +
+                        "[" + uuid + "]: "
+                        + sleepLength + " MS."
+        );
+      }
       Thread.yield(); // TODO should i add this here?
       Thread.sleep(sleepLength);
     } catch (InterruptedException e) {
