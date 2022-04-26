@@ -35,25 +35,29 @@ public class StatementGenerator {
     return (JimpleLocal) classInvokeExpr.getBase();
   }
 
-  public JAssignStmt virtualInvoke(JimpleLocal refLocal, String methodClass, String methodName, List<Value> args) {
+  public Stmt virtualInvoke(JimpleLocal refLocal, String methodClass, String methodSignature, List<Value> args) {
     SootClass sootClass = Scene.v().getSootClass(methodClass);
-    SootMethod method = sootClass.getMethod(methodName);
-    JimpleLocal resultLocal = localGenerator.fromType(method.getReturnType());
+    SootMethod method = sootClass.getMethod(methodSignature);
 
     JVirtualInvokeExpr invokeExpr =
         new JVirtualInvokeExpr(refLocal, method.makeRef(), args);
 
-    return new JAssignStmt(resultLocal, invokeExpr);
+    if (methodSignature.startsWith("void"))
+      return new JInvokeStmt(invokeExpr);
+    else {
+      JimpleLocal resultLocal = localGenerator.fromType(method.getReturnType());
+      return new JAssignStmt(resultLocal, invokeExpr);
+    }
   }
 
-  public Stmt staticInvoke(String methodClass, String methodName, List<Value> args) {
+  public Stmt staticInvoke(String methodClass, String methodSignature, List<Value> args) {
     SootClass sootClass = Scene.v().getSootClass(methodClass);
-    SootMethod method = sootClass.getMethod(methodName);
+    SootMethod method = sootClass.getMethod(methodSignature);
 
     JStaticInvokeExpr invokeExpr =
         new JStaticInvokeExpr(method.makeRef(), args);
 
-    if (methodName.startsWith("void"))
+    if (methodSignature.startsWith("void"))
       return new JInvokeStmt(invokeExpr);
     else {
       JimpleLocal resultLocal = localGenerator.fromType(method.getReturnType());

@@ -2,23 +2,29 @@ package oscar.transformers.noisers.sync_based;
 
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
+import oscar.engine.Engine;
 import oscar.engine.generators.JimpleGenerator;
 import oscar.transformers.CustomJimpleTransformer;
+import oscar.utils.logger.LoggerFactory;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public final class SynchronizedBlockNoiser extends CustomJimpleTransformer {
+
   public SynchronizedBlockNoiser() {
     super("jtp", "sbn");
   }
 
   @Override
   protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
+    Engine.startTransformer(this.getClass(), body);
+
     // First we filter out blacklisted methods
     if (isClassBlacklisted(body.getMethod().getDeclaringClass().getName()))
       return;
@@ -45,6 +51,8 @@ public final class SynchronizedBlockNoiser extends CustomJimpleTransformer {
     }
 
     body.validate();
+
+    Engine.endTransformer(this.getClass(), body);
   }
 
   private static List<Unit> getMonitorCalls(JimpleBody body) {

@@ -1,5 +1,6 @@
 package oscar.transformers.injectors;
 
+import oscar.engine.Engine;
 import oscar.engine.generators.JimpleGenerator;
 import oscar.transformers.CustomJimpleTransformer;
 import soot.*;
@@ -21,6 +22,8 @@ public final class ControllerInjector extends CustomJimpleTransformer {
 
   @Override
   protected void internalTransform(Body oldMainBody, String phaseName, Map<String, String> options) {
+    Engine.startTransformer(this.getClass(), oldMainBody);
+
     // Check if class name is Main class name and method body is name
     SootClass mainClass = oldMainBody.getMethod().getDeclaringClass();
     String mainClassName = mainClass.getName();
@@ -89,5 +92,7 @@ public final class ControllerInjector extends CustomJimpleTransformer {
 
     oldMainBody.validate();
     newMainBody.validate();
+
+    Engine.endTransformer(this.getClass(), oldMainBody);
   }
 }

@@ -2,13 +2,17 @@ package oscar.transformers.noisers.thread_based;
 
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
+import oscar.engine.Engine;
 import oscar.engine.generators.JimpleGenerator;
 import oscar.transformers.CustomJimpleTransformer;
 import oscar.transformers.noisers.NoiserTag;
 import soot.*;
 import soot.jimple.JimpleBody;
+import soot.jimple.ParameterRef;
+import soot.jimple.Stmt;
 import soot.jimple.internal.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,6 +24,8 @@ public final class ThreadCreationTagger extends CustomJimpleTransformer {
 
   @Override
   protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
+    Engine.startTransformer(this.getClass(), body);
+
     // First we filter out blacklisted methods
     if (isClassBlacklisted(body.getMethod().getDeclaringClass().getName()))
       return;
@@ -30,19 +36,13 @@ public final class ThreadCreationTagger extends CustomJimpleTransformer {
     // Tag all runnable methods and lambdas launched by thread creation
     getRunnableMethods((JimpleBody) body).forEach(sc -> sc.addTag(NoiserTag.THREAD_LAUNCHED));
 
-    // Get all thread start and run statements for noising
-    JimpleGenerator generator = new JimpleGenerator((JimpleBody) body);
-
+    // Get all thread start and run statements and then wrap them for noising
     List<JInvokeStmt> invokeStmts = getStartAndRunStatements((JimpleBody) body);
-
-    for (JInvokeStmt stmt : invokeStmts) {
-      body.getUnits().insertBefore(generator.Statement.sleep(NoisePlacement.BEFORE_THREAD_LAUNCH), stmt);
-      body.getUnits().insertBefore(generator.Statement.signal(NoiseCategory.THREAD_BASED), stmt);
-
-      body.getUnits().insertAfter(generator.Statement.sleep(NoisePlacement.AFTER_THREAD_LAUNCH), stmt);
-    }
+    invokeStmts.forEach(s -> wrapThreadLaunch((JimpleBody) body, s));
 
     body.validate();
+
+    Engine.endTransformer(this.getClass(), body);
   }
 
   private static List<SootClass> getRunnableClasses(JimpleBody body) {
@@ -96,5 +96,57 @@ public final class ThreadCreationTagger extends CustomJimpleTransformer {
     String className = ref.getDeclaringClass().getName();
 
     return List.of("start", "run").contains(methodName) && className.equals("java.lang.Thread");
+  }
+
+  private static void wrapThreadLaunch(JimpleBody body, JInvokeStmt threadLaunchStmt) {
+    JimpleGenerator generator = new JimpleGenerator(body);
+    List<ValueBox> threadLaunchStmtUseBoxes = threadLaunchStmt.getInvokeExprBox().getValue().getUseBoxes();
+    JimpleLocal threadLocal = (JimpleLocal) threadLaunchStmtUseBoxes.get(0).getValue();
+    SootClass bodyClass = body.getMethod().getDeclaringClass();
+
+    // Create new wrapper method
+    SootMethod method = new SootMethod(
+        "thread_launch_wrapper_" + Engine.generateRandomString(8),
+        List.of(Scene.v().getType("java.lang.Thread")),
+        VoidType.v()
+    );
+
+    method.setActiveBody(new JimpleBody());
+    method.setModifiers(Modifier.STATIC + Modifier.PRIVATE);
+    method.setPhantom(false);
+    bodyClass.addMethod(method);
+
+    JimpleLocal identityLocal = generator.Local.fromType(Scene.v().getType("java.lang.Thread"));
+    ParameterRef paramRef = new ParameterRef(Scene.v().getRefType("java.lang.Thread"), 0);
+    JIdentityStmt identityStmt = generator.Statement.identity(identityLocal, paramRef);
+
+    UnitPatchingChain wrapperUnits = method.getActiveBody().getUnits();
+    wrapperUnits.add(identityStmt);
+
+    // Create new thread launch statement
+    Stmt newThreadLaunchStmt = generator.Statement.virtualInvoke(
+        identityLocal,
+        threadLaunchStmt.getInvokeExpr().getMethod().getDeclaringClass().getName(),
+        threadLaunchStmt.getInvokeExpr().getMethod().getSubSignature(),
+        List.of()
+    );
+
+    threadLaunchStmtUseBoxes.remove(0);
+    threadLaunchStmtUseBoxes.add(new JimpleLocalBox(method.getActiveBody().getParameterLocal(0)));
+
+    // Create an ordered list of all the new statements to be inserted
+    List<Unit> newStmts = new ArrayList<>();
+    newStmts.addAll(generator.Statement.sleep(NoisePlacement.BEFORE_THREAD_LAUNCH));
+    newStmts.addAll(generator.Statement.signal(NoiseCategory.THREAD_BASED));
+    newStmts.add(newThreadLaunchStmt);
+    newStmts.addAll(generator.Statement.sleep(NoisePlacement.AFTER_THREAD_LAUNCH));
+    newStmts.add(new JReturnVoidStmt());
+
+    wrapperUnits.insertAfter(newStmts, identityStmt);
+
+    // Replace original thread run call for wrapper call
+    Stmt wrapperCall = generator.Statement.staticInvoke(bodyClass.getName(), method.getSubSignature(), List.of(threadLocal));
+    body.getUnits().insertAfter(wrapperCall, threadLaunchStmt);
+    body.getUnits().remove(threadLaunchStmt);
   }
 }

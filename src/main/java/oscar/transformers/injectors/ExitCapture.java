@@ -1,5 +1,6 @@
 package oscar.transformers.injectors;
 
+import oscar.engine.Engine;
 import oscar.transformers.CustomJimpleTransformer;
 import soot.*;
 import soot.jimple.InvokeExpr;
@@ -15,6 +16,8 @@ public class ExitCapture extends CustomJimpleTransformer {
 
   @Override
   protected final void internalTransform(Body body, String phaseName, Map<String, String> options) {
+    Engine.startTransformer(this.getClass(), body);
+
     // Check if class is blacklisted
     if (isClassBlacklisted(body.getMethod().getDeclaringClass().getName()))
       return;
@@ -45,5 +48,7 @@ public class ExitCapture extends CustomJimpleTransformer {
     }
 
     body.validate();
+
+    Engine.endTransformer(this.getClass(), body);
   }
 }

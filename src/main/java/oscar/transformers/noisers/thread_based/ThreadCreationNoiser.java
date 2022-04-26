@@ -2,6 +2,7 @@ package oscar.transformers.noisers.thread_based;
 
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
+import oscar.engine.Engine;
 import oscar.engine.generators.JimpleGenerator;
 import oscar.transformers.CustomJimpleTransformer;
 import oscar.transformers.noisers.NoiserTag;
@@ -21,6 +22,8 @@ public final class ThreadCreationNoiser extends CustomJimpleTransformer {
 
   @Override
   protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
+    Engine.startTransformer(this.getClass(), body);
+
     // First we filter out blacklisted methods
     if (isClassBlacklisted(body.getMethod().getDeclaringClass().getName()))
       return;
@@ -39,5 +42,7 @@ public final class ThreadCreationNoiser extends CustomJimpleTransformer {
     body.getUnits().insertAfter(generator.Statement.sleep(NoisePlacement.BEFORE_THREAD_ROUTINE), identityStmt);
 
     body.validate();
+
+    Engine.endTransformer(this.getClass(), body);
   }
 }

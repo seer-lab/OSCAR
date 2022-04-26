@@ -34,6 +34,8 @@ public final class Engine {
   private static final String OSCAR_TEMP_EXTRACT_DIR = OSCAR_TEMP_DIR + File.separator + "extract";
   private static final String OSCAR_TEMP_GENERATED_DIR = OSCAR_TEMP_DIR + File.separator + "generated";
 
+  private static final Random random = new Random();
+
   // Inject additional classes, not included in controller package
   private static final List<Class<?>> injectedClasses = Arrays.asList(
       LoggerFormatter.class,
@@ -215,12 +217,24 @@ public final class Engine {
     }
   }
 
+  public static void startTransformer(Class<? extends CustomJimpleTransformer> transformerClass, Body body) {
+    logger.info("Starting transformer '" +
+                    transformerClass.getSimpleName() + "' for class '" +
+                    body.getClass().getSimpleName() + ".");
+  }
+
+  public static void endTransformer(Class<? extends CustomJimpleTransformer> transformerClass, Body body) {
+    logger.info("Finished transformer '" + transformerClass.getSimpleName() +
+                    transformerClass.getSimpleName() + "' for class '" +
+                    body.getClass().getSimpleName() + ".");
+  }
+
   public void registerTransformer(CustomJimpleTransformer transformer) {
     transformers.putIfAbsent(transformer.getPhase(), new ArrayList<>());
     transformers.get(transformer.getPhase()).add(new Transform(transformer.getSubPhase(), transformer));
-    logger.info("Registered transformer " + transformer.getClass().getSimpleName()
-                    + " with subphase " + transformer.getSubPhase()
-                    + " in phase " + transformer.getPhase());
+    logger.info("Registered transformer " + transformer.getClass().getSimpleName() +
+                    " with subphase " + transformer.getSubPhase() +
+                    " in phase " + transformer.getPhase());
   }
 
   private static FILE_TYPE getInputFileType(String file) {
@@ -263,7 +277,15 @@ public final class Engine {
                     .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  public synchronized static long generateLocationID() {
-    return currentLocationID++;
+  public static String generateRandomString(int size) {
+    byte[] arr = new byte[size];
+    random.nextBytes(arr);
+
+    StringBuilder sb = new StringBuilder();
+    for (byte b : arr) {
+      sb.append(String.format("%02X", b));
+    }
+
+    return sb.toString();
   }
 }
