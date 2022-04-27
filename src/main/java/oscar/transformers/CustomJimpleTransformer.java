@@ -35,12 +35,12 @@ public abstract class CustomJimpleTransformer extends BodyTransformer {
 
     CustomJimpleBody customBody = new CustomJimpleBody((JimpleBody) body);
 
-    Engine.startTransformer(clazz, body);
+    Engine.startTransformer(clazz, customBody.v());
 
     routine.accept(customBody);
     customBody.v().validate();
 
-    Engine.endTransformer(clazz, body);
+    Engine.endTransformer(clazz, customBody.v());
   }
 
   public String getPhase() {

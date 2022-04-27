@@ -60,13 +60,14 @@ public final class Engine {
 
     // Register all transformers
     List.of(
-        new ControllerInjector(),
-        new ExitCapture(),
         new SynchronizedBlockNoiser(),
         new SynchronizedMethodCallNoiser(),
         new ThreadCreationTagger(), // Must be before ThreadCreationNoiser
         new ThreadCreationNoiser(),
-        new ReentrantLockNoiser()
+        new ReentrantLockNoiser(),
+
+        new ControllerInjector(),
+        new ExitCapture()
     ).forEach(this::registerTransformer);
   }
 
@@ -92,8 +93,6 @@ public final class Engine {
     Options.v().set_soot_classpath(OSCAR_TEMP_EXTRACT_DIR);
     Options.v().set_process_dir(Collections.singletonList(OSCAR_TEMP_EXTRACT_DIR));
     Options.v().set_force_overwrite(true);
-
-    // Options.v().setPhaseOption("cg.spark", "enabled: true");
 
     // Try to create temp folder
     try {

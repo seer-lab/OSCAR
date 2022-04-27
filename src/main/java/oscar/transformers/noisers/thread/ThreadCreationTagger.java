@@ -34,8 +34,7 @@ public final class ThreadCreationTagger extends CustomJimpleTransformer {
 
     // Replace original calls with calls to wrapped method
     for (JInvokeStmt stmt : invokeStmts) {
-      Stmt wrapper = wrapThreadLaunch(body, stmt);
-      body.v().getUnits().insertAfter(wrapper, stmt);
+      body.v().getUnits().insertAfter(wrapThreadLaunch(body, stmt), stmt);
       body.v().getUnits().remove(stmt);
     }
   }
@@ -48,7 +47,8 @@ public final class ThreadCreationTagger extends CustomJimpleTransformer {
                .map(JInvokeStmt::getInvokeExpr)
                .filter(JSpecialInvokeExpr.class::isInstance)
                .map(JSpecialInvokeExpr.class::cast)
-               .filter(e -> e.getMethod().getSignature().equals("<java.lang.Thread: void <init>(java.lang.Runnable)>"))
+               .filter(e -> e.getMethod().getDeclaringClass().getName().equals("<java.lang.Thread"))
+               .filter(e -> e.getMethod().getName().equals("<init>"))
                .filter(e -> e.getArgCount() != 0)
                .map(e -> e.getArg(0))
                .filter(JimpleLocal.class::isInstance)
