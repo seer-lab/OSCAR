@@ -14,7 +14,7 @@ public class RegularFileOutput extends FileOutput {
 
   @Override
   public void write(String output) {
-    logger.info("Writing to file '" + filepath + "'.");
+    logger.fine("Writing to file '" + filepath + "'.");
 
     try {
       writer.write(output + "\n");

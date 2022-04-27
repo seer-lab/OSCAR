@@ -1,18 +1,21 @@
-import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class PrintIDThread {
   public static void main(String[] args) throws InterruptedException {
-    Thread t = new Thread(new Routine());
+    ArrayList<Thread> threads = new ArrayList<>();
 
-    t.start();
+    for (int i = 0; i < 10; i++) {
+      Thread t = new Thread(PrintIDThread::routine);
+      threads.add(t);
+      t.start();
+    }
 
-    Thread.sleep(1000);
+    for (Thread t : threads)
+      t.join();
   }
 
-  static class Routine implements Runnable {
-    @Override
-    public void run() {
-      System.out.println("I am running.");
-    }
+  private static void routine() {
+    System.out.println(Thread.currentThread().getId());
   }
 }

@@ -17,7 +17,7 @@ public class LazyFileOutput extends FileOutput {
 
   @Override
   public void write(String output) {
-    logger.info("Writing to buffer.");
+    logger.fine("Writing to buffer.");
 
     buffer.add(output + "\n");
   }

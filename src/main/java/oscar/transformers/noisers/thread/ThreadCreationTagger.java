@@ -4,7 +4,6 @@ import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
 import oscar.engine.CustomJimpleBody;
 import oscar.engine.Engine;
-import oscar.engine.generators.JimpleGenerator;
 import oscar.transformers.CustomJimpleTransformer;
 import oscar.transformers.noisers.NoiserTag;
 import soot.*;
@@ -34,8 +33,11 @@ public final class ThreadCreationTagger extends CustomJimpleTransformer {
 
     // Replace original calls with calls to wrapped method
     for (JInvokeStmt stmt : invokeStmts) {
-      body.v().getUnits().insertAfter(wrapThreadLaunch(body, stmt), stmt);
-      body.v().getUnits().remove(stmt);
+      body.v().getUnits().insertBefore(body.g().Statement.sleep(NoisePlacement.BEFORE_THREAD_LAUNCH), stmt);
+      body.v().getUnits().insertBefore(body.g().Statement.signal(NoiseCategory.THREAD_BASED), stmt);
+      body.v().getUnits().insertAfter(body.g().Statement.sleep(NoisePlacement.AFTER_THREAD_LAUNCH), stmt);
+      //body.v().getUnits().insertAfter(wrapThreadLaunch(body, stmt), stmt);
+      //body.v().getUnits().remove(stmt);
     }
   }
 
