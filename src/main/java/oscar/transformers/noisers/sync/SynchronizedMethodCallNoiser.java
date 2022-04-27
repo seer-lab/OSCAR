@@ -1,0 +1,41 @@
+package oscar.transformers.noisers.sync;
+
+import oscar.controller.noise.NoiseCategory;
+import oscar.controller.noise.NoisePlacement;
+import oscar.engine.CustomJimpleBody;
+import oscar.engine.generators.JimpleGenerator;
+import oscar.transformers.CustomJimpleTransformer;
+import soot.*;
+import soot.jimple.*;
+import soot.jimple.internal.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public final class SynchronizedMethodCallNoiser extends CustomJimpleTransformer {
+  public SynchronizedMethodCallNoiser() {
+    super("jtp", "smcn", SynchronizedMethodCallNoiser.class, SynchronizedMethodCallNoiser::routine);
+  }
+
+  public static void routine(CustomJimpleBody body) {
+    // Find invocations of synchronized methods
+    List<JInvokeStmt> syncMethodInvocations = getSyncMethodInvocations(body.v());
+
+    // Create statement to insert sleep noise before and after sync blocks
+    for (Unit invocation : syncMethodInvocations) {
+      body.v().getUnits().insertBefore(body.g().Statement.sleep(NoisePlacement.BEFORE_SYNC_BLOCK), invocation);
+      body.v().getUnits().insertBefore(body.g().Statement.signal(NoiseCategory.SYNCHRONIZATION_BASED), invocation);
+
+      body.v().getUnits().insertAfter(body.g().Statement.sleep(NoisePlacement.AFTER_SYNC_BLOCK), invocation);
+    }
+  }
+
+  private static List<JInvokeStmt> getSyncMethodInvocations(JimpleBody body) {
+    return body.getUnits().stream()
+               .filter(JInvokeStmt.class::isInstance)
+               .map(box -> ((JInvokeStmt) box))
+               .filter(box -> box.getInvokeExpr().getMethod().isSynchronized())
+               .filter(box -> !box.getInvokeExpr().getMethod().getDeclaringClass().getName().equals("java.lang.Thread"))
+               .collect(Collectors.toList());
+  }
+}

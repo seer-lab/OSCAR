@@ -1,42 +1,18 @@
 import java.util.List;
 
 public class PrintIDThread {
-  private static volatile int count;
-
-  public static void main(String[] args) {
-    int threadCount = Integer.parseInt(args[0]);
-
-    count = threadCount;
-
-    System.out.println("Launching " + threadCount + " threads.");
-
-    Thread t = new Thread(() -> "foo".contains("bar"));
-
-    for (int i = 0; i < threadCount; i++)
-      new Thread(PrintIDThread::printID).start();
-
-    new Thread(new Foo()).run();
-
-    List.of(1, 2, 3).forEach(PrintIDThread::printInt);
+  public static void main(String[] args) throws InterruptedException {
+    Thread t = new Thread(new Routine());
 
     t.start();
 
-    System.out.flush();
-    System.out.close();
+    Thread.sleep(1000);
+  }
 
-    while (count != 0) {
-      Thread.onSpinWait();
+  static class Routine implements Runnable {
+    @Override
+    public void run() {
+      System.out.println("I am running.");
     }
-
-    System.exit(0);
-  }
-
-  private synchronized static void printID() {
-    System.out.println(Thread.currentThread().getId());
-    count--;
-  }
-
-  private synchronized static void printInt(int i) {
-    System.out.println(i);
   }
 }

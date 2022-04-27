@@ -9,10 +9,11 @@ import oscar.controller.Controller;
 import oscar.transformers.CustomJimpleTransformer;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCapture;
-import oscar.transformers.noisers.sync_based.SynchronizedBlockNoiser;
-import oscar.transformers.noisers.sync_based.SynchronizedMethodCallNoiser;
-import oscar.transformers.noisers.thread_based.ThreadCreationNoiser;
-import oscar.transformers.noisers.thread_based.ThreadCreationTagger;
+import oscar.transformers.noisers.lock.ReentrantLockNoiser;
+import oscar.transformers.noisers.sync.SynchronizedBlockNoiser;
+import oscar.transformers.noisers.sync.SynchronizedMethodCallNoiser;
+import oscar.transformers.noisers.thread.ThreadCreationNoiser;
+import oscar.transformers.noisers.thread.ThreadCreationTagger;
 import oscar.utils.ClassWriter;
 import oscar.utils.logger.LoggerFactory;
 import oscar.utils.logger.LoggerFormatter;
@@ -43,29 +44,29 @@ public final class Engine {
   );
 
   private static FILE_TYPE targetFileType;
-  private static long currentLocationID = 0L;
 
   private final String targetFile;
-  private final String mainClass;
+  private static String mainClass = null;
   private final String targetDirectory;
   private final String outputDirectory;
 
   private final HashMap<String, ArrayList<Transform>> transformers = new HashMap<>();
 
   public Engine(String targetFile, String mainClass, String outputDirectory) {
+    Engine.mainClass = mainClass;
     this.targetFile = targetFile;
-    this.mainClass = mainClass;
     this.targetDirectory = Paths.get(targetFile).getParent().toString();
     this.outputDirectory = outputDirectory;
 
     // Register all transformers
     List.of(
-        new ControllerInjector(mainClass),
+        new ControllerInjector(),
         new ExitCapture(),
         new SynchronizedBlockNoiser(),
         new SynchronizedMethodCallNoiser(),
         new ThreadCreationTagger(), // Must be before ThreadCreationNoiser
-        new ThreadCreationNoiser()
+        new ThreadCreationNoiser(),
+        new ReentrantLockNoiser()
     ).forEach(this::registerTransformer);
   }
 
@@ -91,7 +92,8 @@ public final class Engine {
     Options.v().set_soot_classpath(OSCAR_TEMP_EXTRACT_DIR);
     Options.v().set_process_dir(Collections.singletonList(OSCAR_TEMP_EXTRACT_DIR));
     Options.v().set_force_overwrite(true);
-    Options.v().set_num_threads(1); // This will hopefully enforce an order
+
+    // Options.v().setPhaseOption("cg.spark", "enabled: true");
 
     // Try to create temp folder
     try {
@@ -121,6 +123,7 @@ public final class Engine {
         }
 
         // Extract jar contents to directory
+        //noinspection resource
         ZipFile jar = new ZipFile(targetFile);
 
         try {
@@ -142,12 +145,14 @@ public final class Engine {
     ClassWriter.writeClassPackageToFile(Controller.class, OSCAR_TEMP_EXTRACT_DIR);
     injectedClasses.forEach(c -> ClassWriter.writeToFile(c, OSCAR_TEMP_EXTRACT_DIR));
 
+    /* TODO does not seem necessary
     try {
       SootClass sc = Scene.v().loadClassAndSupport(mainClass);
       sc.setApplicationClass();
     } catch (NullPointerException e) {
       throw new RuntimeException("Failed to load main class. Check path.", e);
     }
+    */
 
     Scene.v().loadNecessaryClasses();
 
@@ -179,6 +184,7 @@ public final class Engine {
         throw new RuntimeException("Failed to delete output folder. Check directory permissions.", e);
       }
 
+      //noinspection resource
       ZipFile jar = new ZipFile(outputDirectory + File.separator + "oscar_out.jar");
 
       try {
@@ -197,7 +203,7 @@ public final class Engine {
         throw new RuntimeException("Failed to add files from temp folder to zip.", e);
       }
 
-      /*
+      /* TODO does not seem necessary
       // Copy generated files over
       try {
         File srcDir = new File(OSCAR_TEMP_GENERATED_DIR);
@@ -218,15 +224,15 @@ public final class Engine {
   }
 
   public static void startTransformer(Class<? extends CustomJimpleTransformer> transformerClass, Body body) {
-    logger.info("Starting transformer '" +
-                    transformerClass.getSimpleName() + "' for class '" +
-                    body.getClass().getSimpleName() + ".");
+    logger.fine("Starting transformer '" +
+                    transformerClass.getSimpleName() + "' for method '" +
+                    body.getMethod().getSignature() + "'.");
   }
 
   public static void endTransformer(Class<? extends CustomJimpleTransformer> transformerClass, Body body) {
-    logger.info("Finished transformer '" + transformerClass.getSimpleName() +
-                    transformerClass.getSimpleName() + "' for class '" +
-                    body.getClass().getSimpleName() + ".");
+    logger.fine("Finished transformer '" +
+                    transformerClass.getSimpleName() + "' for method '" +
+                    body.getMethod().getSignature() + "'.");
   }
 
   public void registerTransformer(CustomJimpleTransformer transformer) {
@@ -287,5 +293,9 @@ public final class Engine {
     }
 
     return sb.toString();
+  }
+
+  public static String getMainClass() {
+    return mainClass;
   }
 }

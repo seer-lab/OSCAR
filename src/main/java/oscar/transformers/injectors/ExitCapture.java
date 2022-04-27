@@ -1,9 +1,11 @@
 package oscar.transformers.injectors;
 
+import oscar.engine.CustomJimpleBody;
 import oscar.engine.Engine;
 import oscar.transformers.CustomJimpleTransformer;
 import soot.*;
 import soot.jimple.InvokeExpr;
+import soot.jimple.JimpleBody;
 import soot.jimple.internal.JInvokeStmt;
 
 import java.util.List;
@@ -11,19 +13,12 @@ import java.util.Map;
 
 public class ExitCapture extends CustomJimpleTransformer {
   public ExitCapture() {
-    super("jtp", "ec");
+    super("jtp", "ec", ExitCapture.class, ExitCapture::routine);
   }
 
-  @Override
-  protected final void internalTransform(Body body, String phaseName, Map<String, String> options) {
-    Engine.startTransformer(this.getClass(), body);
-
-    // Check if class is blacklisted
-    if (isClassBlacklisted(body.getMethod().getDeclaringClass().getName()))
-      return;
-
+  private static void routine(CustomJimpleBody body) {
     // Cycle all methods to find calls to system.exit
-    for (Unit unit : body.getUnits()) {
+    for (Unit unit : body.v().getUnits()) {
       if (!(unit instanceof JInvokeStmt))
         continue;
 
@@ -46,9 +41,5 @@ public class ExitCapture extends CustomJimpleTransformer {
 
       invokeExpr.setMethodRef(methodRef);
     }
-
-    body.validate();
-
-    Engine.endTransformer(this.getClass(), body);
   }
 }

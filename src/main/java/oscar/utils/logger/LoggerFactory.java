@@ -11,6 +11,8 @@ public final class LoggerFactory {
     consoleHandler.setLevel(Level.ALL);
   }
 
+  private static Level defaultLevel = Level.INFO;
+
   // private static FileHandler fileHandler;
 
   /*
@@ -29,7 +31,7 @@ public final class LoggerFactory {
   public static Logger getInstance(Class<?> clazz) {
     Logger logger = Logger.getLogger(clazz.getName());
     logger.setUseParentHandlers(false);
-    logger.setLevel(Level.INFO);
+    logger.setLevel(defaultLevel);
 
     logger.addHandler(consoleHandler);
     //logger.addHandler(fileHandler);
@@ -40,6 +42,7 @@ public final class LoggerFactory {
   }
 
   public static void setLevel(Level level) {
+    defaultLevel = level;
     loggers.forEach(l -> l.setLevel(level));
   }
 }

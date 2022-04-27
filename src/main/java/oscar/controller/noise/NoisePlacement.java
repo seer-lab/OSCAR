@@ -13,7 +13,10 @@ public enum NoisePlacement {
 
   BEFORE_THREAD_LAUNCH(NoiseCategory.THREAD_BASED),
   AFTER_THREAD_LAUNCH(NoiseCategory.THREAD_BASED),
-  BEFORE_THREAD_ROUTINE(NoiseCategory.THREAD_BASED);
+  BEFORE_THREAD_ROUTINE(NoiseCategory.THREAD_BASED),
+
+  BEFORE_REENTRANT_LOCK_LOCK(NoiseCategory.LOCK_BASED),
+  AFTER_REENTRANT_LOCK_UNLOCK(NoiseCategory.LOCK_BASED);
 
   private final NoiseCategory category;
 

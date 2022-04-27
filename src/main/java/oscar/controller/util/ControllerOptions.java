@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public final class ControllerOptions {
   private static final Logger logger = LoggerFactory.getInstance(ControllerOptions.class);
 
-  public static final List<ControllerOption> CONTROLLER_OPTIONS = Arrays.asList(
+  private static final List<ControllerOption> CONTROLLER_OPTIONS = Arrays.asList(
       new ControllerOption("InjectedArgs", "Inject arguments into the program", "String", "", "-a", "--args"),
       new ControllerOption("ConfigFile", "Set config file location to load", "String", "", "-c", "--config_file"),
       new ControllerOption("ConsoleOutput", "Enable output of noising locations signals to console", "Flag", "False", "-co", "--console-output"),

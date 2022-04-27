@@ -1,5 +1,6 @@
 package oscar.transformers.injectors;
 
+import oscar.engine.CustomJimpleBody;
 import oscar.engine.Engine;
 import oscar.engine.generators.JimpleGenerator;
 import oscar.transformers.CustomJimpleTransformer;
@@ -10,28 +11,21 @@ import soot.jimple.Stmt;
 import soot.jimple.internal.*;
 
 import java.util.List;
-import java.util.Map;
 
 public final class ControllerInjector extends CustomJimpleTransformer {
-  private final String mainClass;
-
-  public ControllerInjector(String mainClass) {
-    super("jtp", "ci");
-    this.mainClass = mainClass;
+  public ControllerInjector() {
+    super("jtp", "ci", ControllerInjector.class, ControllerInjector::routine);
   }
 
-  @Override
-  protected void internalTransform(Body oldMainBody, String phaseName, Map<String, String> options) {
-    Engine.startTransformer(this.getClass(), oldMainBody);
-
+  private static void routine(CustomJimpleBody oldBody) {
     // Check if class name is Main class name and method body is name
-    SootClass mainClass = oldMainBody.getMethod().getDeclaringClass();
+    SootClass mainClass = oldBody.v().getMethod().getDeclaringClass();
     String mainClassName = mainClass.getName();
 
-    if (!oldMainBody.getMethod().isMain())
+    if (!oldBody.v().getMethod().isMain())
       return;
 
-    if (!mainClassName.equals(this.mainClass))
+    if (!mainClassName.equals(Engine.getMainClass()))
       return;
 
     // Create new main method with original main's active body to then be wrapped
@@ -47,32 +41,30 @@ public final class ControllerInjector extends CustomJimpleTransformer {
 
     // Copy statements from old main to new wrapped main
     wrappedMainMethod.setActiveBody(new JimpleBody());
-    oldMainBody.getUnits().forEach(wrappedMainMethod.getActiveBody().getUnits()::add);
-    oldMainBody.getLocals().forEach(wrappedMainMethod.getActiveBody().getLocals()::add);
-    oldMainBody.getTraps().forEach(wrappedMainMethod.getActiveBody().getTraps()::add);
+    oldBody.v().getUnits().forEach(wrappedMainMethod.getActiveBody().getUnits()::add);
+    oldBody.v().getLocals().forEach(wrappedMainMethod.getActiveBody().getLocals()::add);
+    oldBody.v().getTraps().forEach(wrappedMainMethod.getActiveBody().getTraps()::add);
 
     // Create new body for the original (wrapper) main
-    JimpleBody newMainBody = new JimpleBody(oldMainBody.getMethod());
-    oldMainBody.getMethod().setActiveBody(newMainBody);
-    JimpleGenerator newMainGenerator = new JimpleGenerator(newMainBody);
-    JimpleLocal mainIdentityLocal = newMainGenerator.Local.arrayFromType(RefType.v("java.lang.String"), 1);
+    CustomJimpleBody newBody = new CustomJimpleBody(new JimpleBody());
+    oldBody.v().getMethod().setActiveBody(newBody.v());
+    JimpleLocal mainIdentityLocal = newBody.g().Local.arrayFromType(RefType.v("java.lang.String"), 1);
     ParameterRef newMainParamRef = new ParameterRef(ArrayType.v(RefType.v("java.lang.String"), 1), 0);
-    JIdentityStmt identityStmt = newMainGenerator.Statement.identity(mainIdentityLocal, newMainParamRef);
-    newMainBody.getUnits().add(identityStmt);
-    oldMainBody.getMethod().setActiveBody(newMainBody);
+    JIdentityStmt identityStmt = newBody.g().Statement.identity(mainIdentityLocal, newMainParamRef);
+    newBody.v().getUnits().add(identityStmt);
 
     // Add Oscar controller routine to parse main arguments and initialize
-    JAssignStmt oscarStartStmt = (JAssignStmt) newMainGenerator.Statement.staticInvoke(
+    JAssignStmt oscarStartStmt = (JAssignStmt) newBody.g().Statement.staticInvoke(
         "oscar.controller.Controller",
         "java.lang.String[] start(java.lang.String[])",
-        List.of(newMainBody.getParameterLocal(0))
+        List.of(newBody.v().getParameterLocal(0))
     );
 
-    UnitPatchingChain newMainUnits = newMainBody.getUnits();
+    UnitPatchingChain newMainUnits = newBody.v().getUnits();
     newMainUnits.insertAfter(oscarStartStmt, newMainUnits.getLast());
 
     // Call old main with parsed args
-    Stmt callOrigMainStmt = newMainGenerator.Statement.staticInvoke(
+    Stmt callOrigMainStmt = newBody.g().Statement.staticInvoke(
         mainClass.getName(),
         "void main_wrapped(java.lang.String[])",
         List.of(oscarStartStmt.getLeftOp())
@@ -80,7 +72,7 @@ public final class ControllerInjector extends CustomJimpleTransformer {
     newMainUnits.insertAfter(callOrigMainStmt, newMainUnits.getLast());
 
     // Insert end statement
-    Stmt endStatement = newMainGenerator.Statement.staticInvoke(
+    Stmt endStatement = newBody.g().Statement.staticInvoke(
         "oscar.controller.Controller",
         "void end()",
         List.of()
@@ -90,9 +82,7 @@ public final class ControllerInjector extends CustomJimpleTransformer {
     // Insert return statement at end
     newMainUnits.insertAfter(new JReturnVoidStmt(), newMainUnits.getLast());
 
-    oldMainBody.validate();
-    newMainBody.validate();
-
-    Engine.endTransformer(this.getClass(), oldMainBody);
+    oldBody.v().validate();
+    newBody.v().validate();
   }
 }
