@@ -10,6 +10,7 @@ import oscar.transformers.CustomJimpleTransformer;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCapture;
 import oscar.transformers.noisers.lock.ReentrantLockNoiser;
+import oscar.transformers.noisers.shared.SharedFieldNoiser;
 import oscar.transformers.noisers.sync.SynchronizedBlockNoiser;
 import oscar.transformers.noisers.sync.SynchronizedMethodCallNoiser;
 import oscar.transformers.noisers.thread.ThreadCreationNoiser;
@@ -65,6 +66,8 @@ public final class Engine {
         new ThreadCreationTagger(), // Must be before ThreadCreationNoiser
         new ThreadCreationNoiser(),
         new ReentrantLockNoiser(),
+
+        new SharedFieldNoiser(),
 
         new ControllerInjector(),
         new ExitCapture()
