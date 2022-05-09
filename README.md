@@ -74,8 +74,20 @@ mvn exec:java -Dexec.mainClass=oscar.Main -Dexec.args="data/cflash/account/Main.
 output"
 ```
 
+3. Run the instrumented program without any noise
 ```sh
-mvn clean
-mvn compile
-mvn exec:java -Dexec.mainClass=oscar.Main -Dexec.args="-h"
+cd output
+java Main -d
+```
+
+4. Run the instrumented program with random noise between 0 and 100ms
+```sh
+java Main -m 0 -M 100
+```
+
+5. Run the instrumented program, only noising synchronized blocks and methods, and lazily output 
+   the trace to a file.
+
+```sh
+java Main -m 0 -M 100 -nc sb -lfo
 ```
