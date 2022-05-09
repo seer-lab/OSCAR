@@ -1,6 +1,7 @@
 # OSCAR Noise Injector - Prototype
 
 ### Requirements (Tested on)
+
 - Apache Maven 3.6.3
 - OpenJDK 17.0.2 (Project compiles to Java 9)
 
@@ -46,7 +47,35 @@ OSCAR options include:
 
 OSCAR Noise Injector 2022
 ```
+
 ###### Note:
 
 - Sleep lengths should be integers
 - Injected arguments need to be inside quotes as such: "-a -b -c"
+
+### Examples:
+
+##### Account
+
+1. Compile the Account program source code
+
+```sh
+cd data/cflash/account
+javac *.java
+cd ../../..
+```
+
+2. Use OSCAR to instrument the Account program's bytecode with the noising engine's
+   logic. OSCAR will wrap the original program in its routine. The outputted program will be in 
+   the folder "output".
+
+```sh
+mvn exec:java -Dexec.mainClass=oscar.Main -Dexec.args="data/cflash/account/Main.class Main 
+output"
+```
+
+```sh
+mvn clean
+mvn compile
+mvn exec:java -Dexec.mainClass=oscar.Main -Dexec.args="-h"
+```

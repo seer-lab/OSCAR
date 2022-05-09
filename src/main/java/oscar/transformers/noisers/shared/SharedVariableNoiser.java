@@ -24,7 +24,7 @@ public class SharedVariableNoiser extends JimpleTransformer {
 
     // Check if current body belongs to class initialization or run method
     // init -> instance, clinit -> static
-    if (!List.of("<clinit>", "<init>", "run").contains(body.v().getMethod().getName()))
+    if (!List.of("<clinit>", "<init>"/* , "run" */).contains(body.v().getMethod().getName()))
       return;
 
     // Recursively check for shared variables

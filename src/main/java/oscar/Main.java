@@ -37,11 +37,13 @@ public class Main {
       System.exit(1);
     }
 
-    if (args.length == 4 && (args[3].equals("-v") || args[3].equals("-verbose"))) {
-      LoggerFactory.setLevel(Level.ALL);
-    } else {
-      System.out.println("Invalid value for argument 'Verbose'.");
-      System.exit(1);
+    if (args.length == 4) {
+      if (args[3].equals("-v") || args[3].equals("-verbose")) {
+        LoggerFactory.setLevel(Level.ALL);
+      } else {
+        System.out.println("Invalid value for argument 'Verbose'.");
+        System.exit(1);
+      }
     }
 
     String targetFile = args[0];
