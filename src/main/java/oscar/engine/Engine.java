@@ -6,11 +6,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
 
 import oscar.controller.Controller;
-import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.JimpleTransformer;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCapture;
 import oscar.transformers.noisers.lock.ReentrantLockNoiser;
-import oscar.transformers.noisers.shared.SharedFieldNoiser;
+import oscar.transformers.noisers.shared.SharedVariableNoiser;
 import oscar.transformers.noisers.sync.SynchronizedBlockNoiser;
 import oscar.transformers.noisers.sync.SynchronizedMethodCallNoiser;
 import oscar.transformers.noisers.thread.ThreadCreationNoiser;
@@ -67,7 +67,7 @@ public final class Engine {
         new ThreadCreationNoiser(),
         new ReentrantLockNoiser(),
 
-        new SharedFieldNoiser(),
+        new SharedVariableNoiser(),
 
         new ControllerInjector(),
         new ExitCapture()
@@ -225,19 +225,19 @@ public final class Engine {
     }
   }
 
-  public static void startTransformer(Class<? extends CustomJimpleTransformer> transformerClass, Body body) {
+  public static void startTransformer(Class<? extends JimpleTransformer> transformerClass, Body body) {
     logger.fine("Starting transformer '" +
                     transformerClass.getSimpleName() + "' for method '" +
                     body.getMethod().getSignature() + "'.");
   }
 
-  public static void endTransformer(Class<? extends CustomJimpleTransformer> transformerClass, Body body) {
+  public static void endTransformer(Class<? extends JimpleTransformer> transformerClass, Body body) {
     logger.fine("Finished transformer '" +
                     transformerClass.getSimpleName() + "' for method '" +
                     body.getMethod().getSignature() + "'.");
   }
 
-  public void registerTransformer(CustomJimpleTransformer transformer) {
+  public void registerTransformer(JimpleTransformer transformer) {
     transformers.putIfAbsent(transformer.getPhase(), new ArrayList<>());
     transformers.get(transformer.getPhase()).add(new Transform(transformer.getSubPhase(), transformer));
     logger.info("Registered transformer " + transformer.getClass().getSimpleName() +

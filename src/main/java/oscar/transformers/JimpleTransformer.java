@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public abstract class CustomJimpleTransformer extends BodyTransformer {
+public abstract class JimpleTransformer extends BodyTransformer {
   private final String phase;
   private final String subphase;
 
-  private final Class<? extends CustomJimpleTransformer> clazz;
+  private final Class<? extends JimpleTransformer> clazz;
   private final Consumer<CustomJimpleBody> routine;
 
-  public CustomJimpleTransformer(String phase, String subPhase, Class<? extends CustomJimpleTransformer> clazz, Consumer<CustomJimpleBody> routine) {
+  public JimpleTransformer(String phase, String subPhase, Class<? extends JimpleTransformer> clazz, Consumer<CustomJimpleBody> routine) {
     this.subphase = phase + "." + subPhase;
     this.phase = phase;
     this.clazz = clazz;
@@ -73,7 +73,7 @@ public abstract class CustomJimpleTransformer extends BodyTransformer {
     ).anyMatch(className::startsWith);
 
     boolean isMethodNameBlacklisted = Stream.of(
-        "<init>"
+        //    "<init>"
     ).anyMatch(methodName::equals);
 
     return isClassBlacklisted || isMethodNameBlacklisted;

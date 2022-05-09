@@ -3,7 +3,7 @@ package oscar.transformers.noisers.sync;
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
 import oscar.engine.CustomJimpleBody;
-import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.JimpleTransformer;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.*;
@@ -11,7 +11,7 @@ import soot.jimple.internal.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class SynchronizedBlockNoiser extends CustomJimpleTransformer {
+public final class SynchronizedBlockNoiser extends JimpleTransformer {
 
   public SynchronizedBlockNoiser() {
     super("jtp", "sbn", SynchronizedBlockNoiser.class, SynchronizedBlockNoiser::routine);

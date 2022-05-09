@@ -3,8 +3,7 @@ package oscar.transformers.noisers.lock;
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
 import oscar.engine.CustomJimpleBody;
-import oscar.engine.generators.JimpleGenerator;
-import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.JimpleTransformer;
 import soot.Unit;
 import soot.jimple.JimpleBody;
 import soot.jimple.internal.JInvokeStmt;
@@ -13,7 +12,7 @@ import soot.jimple.internal.JVirtualInvokeExpr;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class ReentrantLockNoiser extends CustomJimpleTransformer {
+public final class ReentrantLockNoiser extends JimpleTransformer {
 
   public ReentrantLockNoiser() {
     super("jtp", "rln", ReentrantLockNoiser.class, ReentrantLockNoiser::routine);

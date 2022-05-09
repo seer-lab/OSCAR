@@ -37,7 +37,7 @@ public class Main {
       System.exit(1);
     }
 
-    if (args.length == 4 && args[3].equals("-v") || args[3].equals("-verbose") ) {
+    if (args.length == 4 && (args[3].equals("-v") || args[3].equals("-verbose"))) {
       LoggerFactory.setLevel(Level.ALL);
     } else {
       System.out.println("Invalid value for argument 'Verbose'.");

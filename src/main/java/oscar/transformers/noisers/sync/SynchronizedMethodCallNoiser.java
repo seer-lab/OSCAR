@@ -3,8 +3,7 @@ package oscar.transformers.noisers.sync;
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
 import oscar.engine.CustomJimpleBody;
-import oscar.engine.generators.JimpleGenerator;
-import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.JimpleTransformer;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.*;
@@ -12,7 +11,7 @@ import soot.jimple.internal.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class SynchronizedMethodCallNoiser extends CustomJimpleTransformer {
+public final class SynchronizedMethodCallNoiser extends JimpleTransformer {
   public SynchronizedMethodCallNoiser() {
     super("jtp", "smcn", SynchronizedMethodCallNoiser.class, SynchronizedMethodCallNoiser::routine);
   }

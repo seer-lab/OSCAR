@@ -6,9 +6,8 @@ public class SharedFieldMain {
 
     SharedFieldClass a = new SharedFieldClass();
 
-    for (int i = 0; i < 4; i++) {
-      threads.add(new Thread(new SharedFieldThread(a, 2)));
-    }
+    for (int i = 0; i < 4; i++)
+      threads.add(new Thread(new SharedFieldThread(a, a)));
 
     for (Thread t : threads)
       t.start();

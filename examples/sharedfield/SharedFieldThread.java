@@ -1,7 +1,13 @@
 public class SharedFieldThread implements Runnable {
+  SharedFieldClass a;
   SharedFieldClass b;
 
-  public SharedFieldThread(SharedFieldClass clazz, int i) {
+  public SharedFieldThread(SharedFieldClass clazz, SharedFieldClass clazz2) {
+    b = clazz;
+    a = clazz2;
+  }
+
+  public SharedFieldThread(SharedFieldClass clazz) {
     b = clazz;
   }
 

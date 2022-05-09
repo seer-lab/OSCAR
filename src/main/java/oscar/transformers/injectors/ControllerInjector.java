@@ -2,8 +2,7 @@ package oscar.transformers.injectors;
 
 import oscar.engine.CustomJimpleBody;
 import oscar.engine.Engine;
-import oscar.engine.generators.JimpleGenerator;
-import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.JimpleTransformer;
 import soot.*;
 import soot.jimple.JimpleBody;
 import soot.jimple.ParameterRef;
@@ -12,7 +11,7 @@ import soot.jimple.internal.*;
 
 import java.util.List;
 
-public final class ControllerInjector extends CustomJimpleTransformer {
+public final class ControllerInjector extends JimpleTransformer {
   public ControllerInjector() {
     super("jtp", "ci", ControllerInjector.class, ControllerInjector::routine);
   }

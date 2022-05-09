@@ -2,12 +2,11 @@ package oscar.transformers.noisers.thread;
 
 import oscar.controller.noise.NoisePlacement;
 import oscar.engine.CustomJimpleBody;
-import oscar.engine.generators.JimpleGenerator;
-import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.JimpleTransformer;
 import oscar.transformers.noisers.NoiserTag;
 import soot.Unit;
 
-public final class ThreadCreationNoiser extends CustomJimpleTransformer {
+public final class ThreadCreationNoiser extends JimpleTransformer {
   public ThreadCreationNoiser() {
     super("jtp", "tcn", ThreadCreationTagger.class, ThreadCreationNoiser::routine);
   }

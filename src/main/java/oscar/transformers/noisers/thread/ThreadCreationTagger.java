@@ -4,7 +4,7 @@ import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
 import oscar.engine.CustomJimpleBody;
 import oscar.engine.Engine;
-import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.JimpleTransformer;
 import oscar.transformers.noisers.NoiserTag;
 import soot.*;
 import soot.jimple.JimpleBody;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class ThreadCreationTagger extends CustomJimpleTransformer {
+public final class ThreadCreationTagger extends JimpleTransformer {
   public ThreadCreationTagger() {
     super("jtp", "tct", ThreadCreationTagger.class, ThreadCreationTagger::routine);
   }

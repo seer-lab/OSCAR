@@ -1,17 +1,14 @@
 package oscar.transformers.injectors;
 
 import oscar.engine.CustomJimpleBody;
-import oscar.engine.Engine;
-import oscar.transformers.CustomJimpleTransformer;
+import oscar.transformers.JimpleTransformer;
 import soot.*;
 import soot.jimple.InvokeExpr;
-import soot.jimple.JimpleBody;
 import soot.jimple.internal.JInvokeStmt;
 
 import java.util.List;
-import java.util.Map;
 
-public class ExitCapture extends CustomJimpleTransformer {
+public class ExitCapture extends JimpleTransformer {
   public ExitCapture() {
     super("jtp", "ec", ExitCapture.class, ExitCapture::routine);
   }
