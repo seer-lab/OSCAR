@@ -91,3 +91,9 @@ java Main -m 0 -M 100
 ```sh
 java Main -m 0 -M 100 -nc sb -lfo
 ```
+
+6. Run the instrumented program, with specific arguments.
+
+```sh
+java Main -a "5"
+```
