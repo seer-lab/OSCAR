@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Engine {
   private static final Logger logger = LoggerFactory.getInstance(Engine.class);
@@ -299,5 +300,28 @@ public final class Engine {
 
   public static String getMainClass() {
     return mainClass;
+  }
+
+  public static boolean isClassBlacklisted(SootMethod method) {
+    String className = method.getDeclaringClass().getName();
+
+    boolean isClassBlacklisted = Stream.of(
+        "java.",
+        "sun.",
+        "jdk.",
+        "javax.",
+        "com.",
+        "org.",
+        "kotlin.",
+        "android.",
+        "io.",
+        "okhttp3.",
+        "dagger.",
+        "soot.",
+        "oscar.",
+        "$"
+    ).anyMatch(className::startsWith);
+
+    return isClassBlacklisted;
   }
 }

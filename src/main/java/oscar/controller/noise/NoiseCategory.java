@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 public enum NoiseCategory {
   SYNCHRONIZATION_BASED,
   THREAD_BASED,
-  LOCK_BASED;
+  LOCK_BASED,
+
+  SHARED_VARIABLE_BASED;
 
   NoiseCategory() {}
 

@@ -1,6 +1,6 @@
 package oscar.transformers.injectors;
 
-import oscar.engine.CustomJimpleBody;
+import oscar.engine.body.JimpleBodyBox;
 import oscar.engine.Engine;
 import oscar.transformers.JimpleTransformer;
 import soot.*;
@@ -16,12 +16,12 @@ public final class ControllerInjector extends JimpleTransformer {
     super("jtp", "ci", ControllerInjector.class, ControllerInjector::routine);
   }
 
-  private static void routine(CustomJimpleBody oldBody) {
+  private static void routine(JimpleBodyBox oldBody) {
     // Check if class name is Main class name and method body is name
-    SootClass mainClass = oldBody.v().getMethod().getDeclaringClass();
+    SootClass mainClass = oldBody.body().getMethod().getDeclaringClass();
     String mainClassName = mainClass.getName();
 
-    if (!oldBody.v().getMethod().isMain())
+    if (!oldBody.body().getMethod().isMain())
       return;
 
     if (!mainClassName.equals(Engine.getMainClass()))
@@ -40,30 +40,30 @@ public final class ControllerInjector extends JimpleTransformer {
 
     // Copy statements from old main to new wrapped main
     wrappedMainMethod.setActiveBody(new JimpleBody());
-    oldBody.v().getUnits().forEach(wrappedMainMethod.getActiveBody().getUnits()::add);
-    oldBody.v().getLocals().forEach(wrappedMainMethod.getActiveBody().getLocals()::add);
-    oldBody.v().getTraps().forEach(wrappedMainMethod.getActiveBody().getTraps()::add);
+    oldBody.body().getUnits().forEach(wrappedMainMethod.getActiveBody().getUnits()::add);
+    oldBody.body().getLocals().forEach(wrappedMainMethod.getActiveBody().getLocals()::add);
+    oldBody.body().getTraps().forEach(wrappedMainMethod.getActiveBody().getTraps()::add);
 
     // Create new body for the original (wrapper) main
-    CustomJimpleBody newBody = new CustomJimpleBody(new JimpleBody());
-    oldBody.v().getMethod().setActiveBody(newBody.v());
-    JimpleLocal mainIdentityLocal = newBody.g().Local.arrayFromType(RefType.v("java.lang.String"), 1);
+    JimpleBodyBox newBody = new JimpleBodyBox(new JimpleBody());
+    oldBody.body().getMethod().setActiveBody(newBody.body());
+    JimpleLocal mainIdentityLocal = newBody.generator().Local.arrayFromType(RefType.v("java.lang.String"), 1);
     ParameterRef newMainParamRef = new ParameterRef(ArrayType.v(RefType.v("java.lang.String"), 1), 0);
-    JIdentityStmt identityStmt = newBody.g().Statement.identity(mainIdentityLocal, newMainParamRef);
-    newBody.v().getUnits().add(identityStmt);
+    JIdentityStmt identityStmt = newBody.generator().Statement.identity(mainIdentityLocal, newMainParamRef);
+    newBody.body().getUnits().add(identityStmt);
 
     // Add Oscar controller routine to parse main arguments and initialize
-    JAssignStmt oscarStartStmt = (JAssignStmt) newBody.g().Statement.staticInvoke(
+    JAssignStmt oscarStartStmt = (JAssignStmt) newBody.generator().Statement.staticInvoke(
         "oscar.controller.Controller",
         "java.lang.String[] start(java.lang.String[])",
-        List.of(newBody.v().getParameterLocal(0))
+        List.of(newBody.body().getParameterLocal(0))
     );
 
-    UnitPatchingChain newMainUnits = newBody.v().getUnits();
+    UnitPatchingChain newMainUnits = newBody.body().getUnits();
     newMainUnits.insertAfter(oscarStartStmt, newMainUnits.getLast());
 
     // Call old main with parsed args
-    Stmt callOrigMainStmt = newBody.g().Statement.staticInvoke(
+    Stmt callOrigMainStmt = newBody.generator().Statement.staticInvoke(
         mainClass.getName(),
         "void main_wrapped(java.lang.String[])",
         List.of(oscarStartStmt.getLeftOp())
@@ -71,7 +71,7 @@ public final class ControllerInjector extends JimpleTransformer {
     newMainUnits.insertAfter(callOrigMainStmt, newMainUnits.getLast());
 
     // Insert end statement
-    Stmt endStatement = newBody.g().Statement.staticInvoke(
+    Stmt endStatement = newBody.generator().Statement.staticInvoke(
         "oscar.controller.Controller",
         "void end()",
         List.of()
@@ -81,7 +81,7 @@ public final class ControllerInjector extends JimpleTransformer {
     // Insert return statement at end
     newMainUnits.insertAfter(new JReturnVoidStmt(), newMainUnits.getLast());
 
-    oldBody.v().validate();
-    newBody.v().validate();
+    oldBody.body().validate();
+    newBody.body().validate();
   }
 }

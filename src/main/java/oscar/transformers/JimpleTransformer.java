@@ -1,6 +1,6 @@
 package oscar.transformers;
 
-import oscar.engine.CustomJimpleBody;
+import oscar.engine.body.JimpleBodyBox;
 import oscar.engine.Engine;
 import soot.Body;
 import soot.BodyTransformer;
@@ -15,9 +15,9 @@ public abstract class JimpleTransformer extends BodyTransformer {
   private final String subphase;
 
   private final Class<? extends JimpleTransformer> clazz;
-  private final Consumer<CustomJimpleBody> routine;
+  private final Consumer<JimpleBodyBox> routine;
 
-  public JimpleTransformer(String phase, String subPhase, Class<? extends JimpleTransformer> clazz, Consumer<CustomJimpleBody> routine) {
+  public JimpleTransformer(String phase, String subPhase, Class<? extends JimpleTransformer> clazz, Consumer<JimpleBodyBox> routine) {
     this.subphase = phase + "." + subPhase;
     this.phase = phase;
     this.clazz = clazz;
@@ -30,17 +30,17 @@ public abstract class JimpleTransformer extends BodyTransformer {
       throw new RuntimeException("Expected a Jimple body.");
 
     // First we filter out blacklisted methods
-    if (isBodyFiltered(body))
+    if (Engine.isClassBlacklisted(body.getMethod()))
       return;
 
-    CustomJimpleBody customBody = new CustomJimpleBody((JimpleBody) body);
+    JimpleBodyBox customBody = new JimpleBodyBox((JimpleBody) body);
 
-    Engine.startTransformer(clazz, customBody.v());
+    Engine.startTransformer(clazz, customBody.body());
 
     routine.accept(customBody);
-    customBody.v().validate();
+    customBody.body().validate();
 
-    Engine.endTransformer(clazz, customBody.v());
+    Engine.endTransformer(clazz, customBody.body());
   }
 
   public String getPhase() {
@@ -49,33 +49,5 @@ public abstract class JimpleTransformer extends BodyTransformer {
 
   public String getSubPhase() {
     return subphase;
-  }
-
-  protected static boolean isBodyFiltered(Body body) {
-    String className = body.getMethod().getDeclaringClass().getName();
-    String methodName = body.getMethod().getName();
-
-    boolean isClassBlacklisted = Stream.of(
-        "java.",
-        "sun.",
-        "jdk.",
-        "javax.",
-        "com.",
-        "org.",
-        "kotlin.",
-        "android.",
-        "io.",
-        "okhttp3.",
-        "dagger.",
-        "soot.",
-        "oscar.",
-        "$"
-    ).anyMatch(className::startsWith);
-
-    boolean isMethodNameBlacklisted = Stream.of(
-        //    "<init>"
-    ).anyMatch(methodName::equals);
-
-    return isClassBlacklisted || isMethodNameBlacklisted;
   }
 }

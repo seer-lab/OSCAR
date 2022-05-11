@@ -2,7 +2,7 @@ package oscar.transformers.noisers.sync;
 
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
-import oscar.engine.CustomJimpleBody;
+import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleTransformer;
 import soot.*;
 import soot.jimple.*;
@@ -17,18 +17,18 @@ public final class SynchronizedBlockNoiser extends JimpleTransformer {
     super("jtp", "sbn", SynchronizedBlockNoiser.class, SynchronizedBlockNoiser::routine);
   }
 
-  private static void routine(CustomJimpleBody body) {
+  private static void routine(JimpleBodyBox body) {
     // Find monitor calls for synchronized blocks
-    List<Unit> monitorCalls = getMonitorCalls(body.v());
+    List<Unit> monitorCalls = getMonitorCalls(body.body());
 
     // Create statement to insert sleep noise before and after sync blocks
     for (Unit monitorCall : monitorCalls) {
       if (monitorCall instanceof JEnterMonitorStmt) {
-        body.v().getUnits().insertBefore(body.g().Statement.sleep(NoisePlacement.BEFORE_SYNC_BLOCK), monitorCall);
-        body.v().getUnits().insertBefore(body.g().Statement.signal(NoiseCategory.SYNCHRONIZATION_BASED), monitorCall);
+        body.body().getUnits().insertBefore(body.generator().Statement.sleep(NoisePlacement.BEFORE_SYNC_BLOCK), monitorCall);
+        body.body().getUnits().insertBefore(body.generator().Statement.signal(NoiseCategory.SYNCHRONIZATION_BASED), monitorCall);
       } else if (monitorCall instanceof JExitMonitorStmt) {
-        List<Unit> units = body.g().Statement.sleep(NoisePlacement.AFTER_SYNC_BLOCK);
-        body.v().getUnits().insertAfter(units, monitorCall);
+        List<Unit> units = body.generator().Statement.sleep(NoisePlacement.AFTER_SYNC_BLOCK);
+        body.body().getUnits().insertAfter(units, monitorCall);
       } else
         throw new RuntimeException("Invalid monitor call statement");
     }

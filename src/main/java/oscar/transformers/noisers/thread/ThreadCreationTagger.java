@@ -2,7 +2,7 @@ package oscar.transformers.noisers.thread;
 
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
-import oscar.engine.CustomJimpleBody;
+import oscar.engine.body.JimpleBodyBox;
 import oscar.engine.Engine;
 import oscar.transformers.JimpleTransformer;
 import oscar.transformers.noisers.NoiserTag;
@@ -21,21 +21,21 @@ public final class ThreadCreationTagger extends JimpleTransformer {
     super("jtp", "tct", ThreadCreationTagger.class, ThreadCreationTagger::routine);
   }
 
-  private static void routine(CustomJimpleBody body) {
+  private static void routine(JimpleBodyBox body) {
     // Tag all runnable classes launched by thread creation
-    getRunnableClasses(body.v()).forEach(sc -> sc.addTag(NoiserTag.THREAD_LAUNCHED));
+    getRunnableClasses(body.body()).forEach(sc -> sc.addTag(NoiserTag.THREAD_LAUNCHED));
 
     // Tag all runnable methods and lambdas launched by thread creation
-    getRunnableMethods(body.v()).forEach(sc -> sc.addTag(NoiserTag.THREAD_LAUNCHED));
+    getRunnableMethods(body.body()).forEach(sc -> sc.addTag(NoiserTag.THREAD_LAUNCHED));
 
     // Get all thread start and run statements and then wrap them for noising
-    List<JInvokeStmt> invokeStmts = getStartAndRunStatements(body.v());
+    List<JInvokeStmt> invokeStmts = getStartAndRunStatements(body.body());
 
     // Replace original calls with calls to wrapped method
     for (JInvokeStmt stmt : invokeStmts) {
-      body.v().getUnits().insertBefore(body.g().Statement.sleep(NoisePlacement.BEFORE_THREAD_LAUNCH), stmt);
-      body.v().getUnits().insertBefore(body.g().Statement.signal(NoiseCategory.THREAD_BASED), stmt);
-      body.v().getUnits().insertAfter(body.g().Statement.sleep(NoisePlacement.AFTER_THREAD_LAUNCH), stmt);
+      body.body().getUnits().insertBefore(body.generator().Statement.sleep(NoisePlacement.BEFORE_THREAD_LAUNCH), stmt);
+      body.body().getUnits().insertBefore(body.generator().Statement.signal(NoiseCategory.THREAD_BASED), stmt);
+      body.body().getUnits().insertAfter(body.generator().Statement.sleep(NoisePlacement.AFTER_THREAD_LAUNCH), stmt);
       //body.v().getUnits().insertAfter(wrapThreadLaunch(body, stmt), stmt);
       //body.v().getUnits().remove(stmt);
     }
@@ -95,32 +95,32 @@ public final class ThreadCreationTagger extends JimpleTransformer {
     return List.of("start", "run").contains(methodName) && className.equals("java.lang.Thread");
   }
 
-  private static Stmt wrapThreadLaunch(CustomJimpleBody body, JInvokeStmt threadLaunchStmt) {
+  private static Stmt wrapThreadLaunch(JimpleBodyBox body, JInvokeStmt threadLaunchStmt) {
     List<ValueBox> threadLaunchStmtUseBoxes = threadLaunchStmt.getInvokeExprBox().getValue().getUseBoxes();
     JimpleLocal threadLocal = (JimpleLocal) threadLaunchStmtUseBoxes.get(0).getValue();
-    SootClass bodyClass = body.v().getMethod().getDeclaringClass();
+    SootClass bodyClass = body.body().getMethod().getDeclaringClass();
 
     // Create new wrapper method
     SootMethod wrapperMethod = new SootMethod("thread_launch_wrapper_" + Engine.generateRandomString(8),
                                               List.of(Scene.v().getType("java.lang.Thread")), VoidType.v()
     );
 
-    CustomJimpleBody wrapperBody = new CustomJimpleBody(new JimpleBody());
+    JimpleBodyBox wrapperBody = new JimpleBodyBox(new JimpleBody());
 
-    wrapperMethod.setActiveBody(wrapperBody.v());
+    wrapperMethod.setActiveBody(wrapperBody.body());
     wrapperMethod.setModifiers(Modifier.STATIC + Modifier.PRIVATE);
     wrapperMethod.setPhantom(false);
     bodyClass.addMethod(wrapperMethod);
 
-    JimpleLocal identityLocal = wrapperBody.g().Local.fromType(Scene.v().getType("java.lang.Thread"));
+    JimpleLocal identityLocal = wrapperBody.generator().Local.fromType(Scene.v().getType("java.lang.Thread"));
     ParameterRef paramRef = new ParameterRef(Scene.v().getRefType("java.lang.Thread"), 0);
-    JIdentityStmt identityStmt = wrapperBody.g().Statement.identity(identityLocal, paramRef);
+    JIdentityStmt identityStmt = wrapperBody.generator().Statement.identity(identityLocal, paramRef);
 
     UnitPatchingChain wrapperUnits = wrapperMethod.getActiveBody().getUnits();
     wrapperUnits.add(identityStmt);
 
     // Create new thread launch statement
-    Stmt newThreadLaunchStmt = wrapperBody.g().Statement.virtualInvoke(
+    Stmt newThreadLaunchStmt = wrapperBody.generator().Statement.virtualInvoke(
         identityLocal,
         threadLaunchStmt.getInvokeExpr()
                         .getMethod()
@@ -137,17 +137,17 @@ public final class ThreadCreationTagger extends JimpleTransformer {
 
     // Create an ordered list of all the new statements to be inserted
     List<Unit> newStmts = new ArrayList<>();
-    newStmts.addAll(wrapperBody.g().Statement.sleep(NoisePlacement.BEFORE_THREAD_LAUNCH));
-    newStmts.addAll(wrapperBody.g().Statement.signal(NoiseCategory.THREAD_BASED));
+    newStmts.addAll(wrapperBody.generator().Statement.sleep(NoisePlacement.BEFORE_THREAD_LAUNCH));
+    newStmts.addAll(wrapperBody.generator().Statement.signal(NoiseCategory.THREAD_BASED));
     newStmts.add(newThreadLaunchStmt);
-    newStmts.addAll(wrapperBody.g().Statement.sleep(NoisePlacement.AFTER_THREAD_LAUNCH));
+    newStmts.addAll(wrapperBody.generator().Statement.sleep(NoisePlacement.AFTER_THREAD_LAUNCH));
     newStmts.add(new JReturnVoidStmt());
 
     wrapperUnits.insertAfter(newStmts, identityStmt);
 
-    wrapperBody.v().validate();
+    wrapperBody.body().validate();
 
     // Replace original thread run call for wrapper call
-    return body.g().Statement.staticInvoke(bodyClass.getName(), wrapperMethod.getSubSignature(), List.of(threadLocal));
+    return body.generator().Statement.staticInvoke(bodyClass.getName(), wrapperMethod.getSubSignature(), List.of(threadLocal));
   }
 }

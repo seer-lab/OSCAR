@@ -1,6 +1,6 @@
 package oscar.transformers.injectors;
 
-import oscar.engine.CustomJimpleBody;
+import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleTransformer;
 import soot.*;
 import soot.jimple.InvokeExpr;
@@ -13,9 +13,9 @@ public class ExitCapture extends JimpleTransformer {
     super("jtp", "ec", ExitCapture.class, ExitCapture::routine);
   }
 
-  private static void routine(CustomJimpleBody body) {
+  private static void routine(JimpleBodyBox body) {
     // Cycle all methods to find calls to system.exit
-    for (Unit unit : body.v().getUnits()) {
+    for (Unit unit : body.body().getUnits()) {
       if (!(unit instanceof JInvokeStmt))
         continue;
 

@@ -2,7 +2,7 @@ package oscar.transformers.noisers.lock;
 
 import oscar.controller.noise.NoiseCategory;
 import oscar.controller.noise.NoisePlacement;
-import oscar.engine.CustomJimpleBody;
+import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleTransformer;
 import soot.Unit;
 import soot.jimple.JimpleBody;
@@ -18,18 +18,18 @@ public final class ReentrantLockNoiser extends JimpleTransformer {
     super("jtp", "rln", ReentrantLockNoiser.class, ReentrantLockNoiser::routine);
   }
 
-  private static void routine(CustomJimpleBody body) {
+  private static void routine(JimpleBodyBox body) {
     // Find calls to reentrant lock locks and unlocks
-    List<JInvokeStmt> reentrantLockCalls = getReentrantLockCalls(body.v());
+    List<JInvokeStmt> reentrantLockCalls = getReentrantLockCalls(body.body());
 
     // Create statement to insert sleep noise before and after sync blocks
     for (JInvokeStmt lockCall : reentrantLockCalls) {
       if (getInvokeExprMethodName(lockCall).equals("lock")) {
-        body.v().getUnits().insertBefore(body.g().Statement.sleep(NoisePlacement.BEFORE_REENTRANT_LOCK_LOCK), lockCall);
-        body.v().getUnits().insertBefore(body.g().Statement.signal(NoiseCategory.LOCK_BASED), lockCall);
+        body.body().getUnits().insertBefore(body.generator().Statement.sleep(NoisePlacement.BEFORE_REENTRANT_LOCK_LOCK), lockCall);
+        body.body().getUnits().insertBefore(body.generator().Statement.signal(NoiseCategory.LOCK_BASED), lockCall);
       } else if (getInvokeExprMethodName(lockCall).equals("unlock")) {
-        List<Unit> units = body.g().Statement.sleep(NoisePlacement.AFTER_REENTRANT_LOCK_UNLOCK);
-        body.v().getUnits().insertAfter(units, lockCall);
+        List<Unit> units = body.generator().Statement.sleep(NoisePlacement.AFTER_REENTRANT_LOCK_UNLOCK);
+        body.body().getUnits().insertAfter(units, lockCall);
       } else
         throw new RuntimeException("Invalid reentrant lock call statement");
     }
