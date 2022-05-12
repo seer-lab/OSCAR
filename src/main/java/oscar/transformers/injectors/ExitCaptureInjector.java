@@ -8,9 +8,9 @@ import soot.jimple.internal.JInvokeStmt;
 
 import java.util.List;
 
-public class ExitCapture extends JimpleTransformer {
-  public ExitCapture() {
-    super("jtp", "ec", ExitCapture.class, ExitCapture::routine);
+public class ExitCaptureInjector extends JimpleTransformer {
+  public ExitCaptureInjector() {
+    super( "eci", ExitCaptureInjector.class, ExitCaptureInjector::routine);
   }
 
   private static void routine(JimpleBodyBox body) {

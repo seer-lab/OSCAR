@@ -6,15 +6,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
 
 import oscar.controller.Controller;
+import oscar.transformers.JimpleSceneTransformer;
 import oscar.transformers.JimpleTransformer;
 import oscar.transformers.injectors.ControllerInjector;
-import oscar.transformers.injectors.ExitCapture;
+import oscar.transformers.injectors.ExitCaptureInjector;
 import oscar.transformers.noisers.lock.ReentrantLockNoiser;
 import oscar.transformers.noisers.shared.SharedVariableNoiser;
 import oscar.transformers.noisers.sync.SynchronizedBlockNoiser;
 import oscar.transformers.noisers.sync.SynchronizedMethodCallNoiser;
 import oscar.transformers.noisers.thread.ThreadCreationNoiser;
-import oscar.transformers.noisers.thread.ThreadCreationTagger;
 import oscar.utils.ClassWriter;
 import oscar.utils.logger.LoggerFactory;
 import oscar.utils.logger.LoggerFormatter;
@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class Engine {
   public static List<String> BlacklistedClasses = Arrays.asList(
@@ -79,16 +78,15 @@ public final class Engine {
 
     // Register all transformers
     List.of(
+        new ThreadCreationNoiser(),
+
         new SynchronizedBlockNoiser(),
         new SynchronizedMethodCallNoiser(),
-        new ThreadCreationTagger(), // Must be before ThreadCreationNoiser
-        new ThreadCreationNoiser(),
         new ReentrantLockNoiser(),
-
         new SharedVariableNoiser(),
 
         new ControllerInjector(),
-        new ExitCapture()
+        new ExitCaptureInjector()
     ).forEach(this::registerTransformer);
   }
 
@@ -246,23 +244,59 @@ public final class Engine {
   }
 
   public static void startTransformer(Class<? extends JimpleTransformer> transformerClass, Body body) {
-    logger.fine("Starting transformer '" +
+    logger.fine("Starting regular transformer (Thread " + Thread.currentThread().getId() + ") '" +
                     transformerClass.getSimpleName() + "' for method '" +
                     body.getMethod().getSignature() + "'.");
   }
 
   public static void endTransformer(Class<? extends JimpleTransformer> transformerClass, Body body) {
-    logger.fine("Finished transformer '" +
+    logger.fine("Finished regular transformer (Thread " + Thread.currentThread().getId() + ") '" +
                     transformerClass.getSimpleName() + "' for method '" +
                     body.getMethod().getSignature() + "'.");
   }
 
-  public void registerTransformer(JimpleTransformer transformer) {
-    transformers.putIfAbsent(transformer.getPhase(), new ArrayList<>());
-    transformers.get(transformer.getPhase()).add(new Transform(transformer.getSubPhase(), transformer));
+  public static void startSceneTransformer(Class<? extends JimpleSceneTransformer> transformerClass) {
+    logger.fine("Starting scene transformer (Thread " + Thread.currentThread().getId() + ") '" +
+                    transformerClass.getSimpleName() + "'.");
+  }
+
+  public static void endSceneTransformer(Class<? extends JimpleSceneTransformer> transformerClass) {
+    logger.fine("Finished scene transformer (Thread " + Thread.currentThread().getId() + ") '" +
+                    transformerClass.getSimpleName() + "'.");
+  }
+
+  public static void startCallgraphRoutine(Class<? extends JimpleSceneTransformer> transformerClass, SootMethod method) {
+    logger.fine("Starting callgraph routine (Thread " + Thread.currentThread().getId() + ") '" +
+                    transformerClass.getSimpleName() + "' for method '" +
+                    method.getSignature() + "'.");
+  }
+
+  public static void endCallgraphRoutine(Class<? extends JimpleSceneTransformer> transformerClass, SootMethod method) {
+    logger.fine("Ending callgraph routine (Thread " + Thread.currentThread().getId() + ") '" +
+                    transformerClass.getSimpleName() + "' for method '" +
+                    method.getSignature() + "'.");
+  }
+
+  public void registerTransformer(Transformer transformer) {
+    String phase = "";
+    String subPhase = "";
+
+    if (transformer instanceof JimpleTransformer)
+      phase = ((JimpleTransformer) transformer).getPhase();
+
+    if (transformer instanceof JimpleSceneTransformer)
+      phase = ((JimpleSceneTransformer) transformer).getPhase();
+
+    if (transformer instanceof JimpleTransformer)
+      subPhase = ((JimpleTransformer) transformer).getSubPhase();
+
+    if (transformer instanceof JimpleSceneTransformer)
+      subPhase = ((JimpleSceneTransformer) transformer).getSubPhase();
+
+    transformers.putIfAbsent(phase, new ArrayList<>());
+    transformers.get(phase).add(new Transform(subPhase, transformer));
     logger.info("Registered transformer " + transformer.getClass().getSimpleName() +
-                    " with subphase " + transformer.getSubPhase() +
-                    " in phase " + transformer.getPhase());
+                    " with subphase " + subPhase + " in phase " + phase);
   }
 
   private static FILE_TYPE getInputFileType(String file) {
@@ -324,6 +358,11 @@ public final class Engine {
   public static boolean isClassBlacklisted(SootMethod method) {
     String className = method.getDeclaringClass().getName();
 
-    return Engine.BlacklistedClasses.stream().anyMatch(className::startsWith);
+    boolean ignored = Engine.BlacklistedClasses.stream().anyMatch(className::startsWith);
+
+    if (ignored)
+      logger.fine("Ignoring blacklisted class: " + className);
+
+    return ignored;
   }
 }

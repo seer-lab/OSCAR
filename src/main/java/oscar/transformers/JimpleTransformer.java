@@ -4,23 +4,20 @@ import oscar.engine.body.JimpleBodyBox;
 import oscar.engine.Engine;
 import soot.Body;
 import soot.BodyTransformer;
-import soot.SootMethod;
 import soot.jimple.JimpleBody;
 
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 public abstract class JimpleTransformer extends BodyTransformer {
-  private final String phase;
+  private final String phase = "jtp";
   private final String subphase;
 
   private final Class<? extends JimpleTransformer> clazz;
   private final Consumer<JimpleBodyBox> routine;
 
-  public JimpleTransformer(String phase, String subPhase, Class<? extends JimpleTransformer> clazz, Consumer<JimpleBodyBox> routine) {
+  public JimpleTransformer(String subPhase, Class<? extends JimpleTransformer> clazz, Consumer<JimpleBodyBox> routine) {
     this.subphase = phase + "." + subPhase;
-    this.phase = phase;
     this.clazz = clazz;
     this.routine = routine;
   }

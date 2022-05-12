@@ -16,7 +16,7 @@ import java.util.List;
 
 public class SharedVariableNoiser extends JimpleTransformer {
   public SharedVariableNoiser() {
-    super("jtp", "svn", SharedVariableNoiser.class, SharedVariableNoiser::routine);
+    super( "svn", SharedVariableNoiser.class, SharedVariableNoiser::routine);
   }
 
   /**

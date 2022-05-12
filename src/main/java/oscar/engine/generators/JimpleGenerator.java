@@ -9,7 +9,7 @@ public final class JimpleGenerator {
   public final LocalGenerator Local;
 
   public JimpleGenerator(JimpleBody body) {
-    this.Local = new LocalGenerator(this, body);
+    this.Local = new LocalGenerator(body);
     this.Statement = new StatementGenerator(this.Local, body);
     this.Conversion = new ConversionGenerator(this.Local);
     this.Arithmetic = new ArithmeticGenerator(this.Local);

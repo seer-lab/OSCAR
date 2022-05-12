@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public final class ReentrantLockNoiser extends JimpleTransformer {
 
   public ReentrantLockNoiser() {
-    super("jtp", "rln", ReentrantLockNoiser.class, ReentrantLockNoiser::routine);
+    super("rln", ReentrantLockNoiser.class, ReentrantLockNoiser::routine);
   }
 
   private static void routine(JimpleBodyBox body) {

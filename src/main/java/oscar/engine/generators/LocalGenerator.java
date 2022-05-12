@@ -9,7 +9,7 @@ public class LocalGenerator {
   private final DefaultLocalGenerator generator;
   private final JimpleBody body;
 
-  public LocalGenerator(JimpleGenerator generator, JimpleBody body) {
+  public LocalGenerator(JimpleBody body) {
     this.generator = new DefaultLocalGenerator(body);
     this.body = body;
   }

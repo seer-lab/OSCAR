@@ -102,6 +102,7 @@ public class StatementGenerator {
   public List<Unit> sleep(NoisePlacement noisePlacement) {
     // Instantiate enum value
     JimpleLocal enumLocal = localGenerator.fromType(RefType.v(noisePlacement.getClass().getName()));
+
     StaticFieldRef enumField = Jimple.v().newStaticFieldRef(new AbstractSootFieldRef(
         Scene.v().getSootClass(noisePlacement.getClass().getName()),
         noisePlacement.name(),

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public final class SynchronizedBlockNoiser extends JimpleTransformer {
 
   public SynchronizedBlockNoiser() {
-    super("jtp", "sbn", SynchronizedBlockNoiser.class, SynchronizedBlockNoiser::routine);
+    super( "sbn", SynchronizedBlockNoiser.class, SynchronizedBlockNoiser::routine);
   }
 
   private static void routine(JimpleBodyBox body) {

@@ -13,7 +13,7 @@ import java.util.List;
 
 public final class ControllerInjector extends JimpleTransformer {
   public ControllerInjector() {
-    super("jtp", "ci", ControllerInjector.class, ControllerInjector::routine);
+    super( "ci", ControllerInjector.class, ControllerInjector::routine);
   }
 
   private static void routine(JimpleBodyBox oldBody) {

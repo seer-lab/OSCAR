@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public final class SynchronizedMethodCallNoiser extends JimpleTransformer {
   public SynchronizedMethodCallNoiser() {
-    super("jtp", "smcn", SynchronizedMethodCallNoiser.class, SynchronizedMethodCallNoiser::routine);
+    super( "smcn", SynchronizedMethodCallNoiser.class, SynchronizedMethodCallNoiser::routine);
   }
 
   public static void routine(JimpleBodyBox body) {
