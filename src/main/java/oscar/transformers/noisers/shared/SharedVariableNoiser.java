@@ -92,7 +92,7 @@ public class SharedVariableNoiser extends JimpleTransformer {
   private static void processAssignment(JimpleBodyBox bodyBox, JAssignStmt stmt) {
     // Check if we need to dismantle this statement
     // First we check if left value is a shared variable local
-    if (!stmt.hasTag(NoiserTag.DISMANTLED_ASSIGNMENT.getName()))
+    if (!stmt.hasTag(NoiserTag.DISMANTLED_ASSIGNMENT.getName())) {
       if (bodyBox.hasMetadata(Metadata.SHARED_VARIABLES, ((JimpleLocal) stmt.getLeftOp()).getName())) {
         // If so, dismantle assign statement and process them
         List<JAssignStmt> newStatements = dismantleAssignment(bodyBox, stmt);
@@ -100,9 +100,9 @@ public class SharedVariableNoiser extends JimpleTransformer {
         processAssignment(bodyBox, newStatements.get(0));
 
         // Noise second statement (a = c)
-        noiseStatement();
-        processAssignment(bodyBox, newStatements.get(1));
+        noiseStatement(bodyBox, newStatements.get(1));
       }
+    }
 
     // Check if right op is an access to an instance field
     if (stmt.containsFieldRef()) {
