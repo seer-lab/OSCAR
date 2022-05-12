@@ -1,54 +1,83 @@
 package oscar;
 
+import oscar.controller.noise.NoisePlacement;
 import oscar.controller.util.ControllerOption;
 import oscar.engine.Engine;
 import oscar.utils.logger.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class Main {
-  public static final String VERSION = "0.0.2";
+  public static final String VERSION = "0.1.0";
 
-  private static final List<ControllerOption> OPTIONS = Arrays.asList(
-      new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-v", "--verbose")
+  private static final List<ControllerOption> ENGINE_OPTIONS = Arrays.asList(
+      new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),
+      new ControllerOption("Blacklist", "Set blacklisted classes by prefix (java.) (these will not be noised)", "List", Engine.BlacklistedClasses.toString(), "-b", "--blacklist"),
+      new ControllerOption("Help", "Print Help.", "Flag", "False", "-h", "--help"),
+      new ControllerOption("Version", "Print Version.", "Flag", "False", "-v", "--version")
   );
 
-  public static void main(String[] args) {
-    if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
-      System.out.println("Usage:");
-      System.out.println("\toscar <targetfile> <mainclass> <outputdirectory>");
-      System.out.println("OSCAR options include:");
-      for (ControllerOption option : OPTIONS)
-        System.out.printf(
-            "\t%-25s\t%-15s\t%-10s\t%s\n",
-            option.getAliasesString(),
-            option.getType(),
-            option.getDefaultVal(),
-            option.getDescription()
-        );
-
-      System.exit(0);
-    }
-
-    if (args.length < 3 || args.length > 4) {
+  public static void main(String[] argv) {
+    if (argv.length < 3) {
       System.out.println("Invalid number of arguments, expected at least 3. Use --help or -h for help.");
       System.exit(1);
     }
 
-    if (args.length == 4) {
-      if (args[3].equals("-v") || args[3].equals("-verbose")) {
-        LoggerFactory.setLevel(Level.ALL);
-      } else {
-        System.out.println("Invalid value for argument 'Verbose'.");
-        System.exit(1);
+    // Process arguments
+    for (int i = 3; i < argv.length; i++) {
+      String arg = argv[i];
+
+      List<ControllerOption> matchingArgs = ENGINE_OPTIONS.stream()
+                                                          .filter(c -> c.matchesAlias(arg))
+                                                          .collect(Collectors.toList());
+
+      if (matchingArgs.size() > 1)
+        throw new RuntimeException("Argument '" + arg + "' matched  more than one option.");
+
+      if (matchingArgs.size() == 0)
+        throw new RuntimeException("Argument '" + arg + "' matches no known options, use --help or -h.");
+
+      switch (matchingArgs.get(0).getName()) {
+        case "Verbose":
+          LoggerFactory.setLevel(Level.ALL);
+          break;
+        case "Blacklist":
+          Engine.BlacklistedClasses = new ArrayList<>();
+
+          while (i + 1 < argv.length && !argv[i + 1].contains("-"))
+            Engine.BlacklistedClasses.add(argv[++i]);
+          break;
+        case "Version":
+          System.out.println("OSCAR " + Main.VERSION);
+          System.exit(0);
+          break;
+        case "Help":
+          System.out.println("Usage:");
+          System.out.println("\toscar <targetfile> <mainclass> <outputdirectory>");
+          System.out.println("OSCAR options include:");
+          for (ControllerOption option : ENGINE_OPTIONS)
+            System.out.printf(
+                "\t%-25s\t%-15s\t%-10s\t%s\n",
+                option.getAliasesString(),
+                option.getType(),
+                option.getDefaultVal(),
+                option.getDescription()
+            );
+
+          System.exit(0);
+          break;
       }
     }
 
-    String targetFile = args[0];
-    String mainClass = args[1];
-    String outputDirectory = args[2];
+    System.out.println(Engine.BlacklistedClasses);
+
+    String targetFile = argv[0];
+    String mainClass = argv[1];
+    String outputDirectory = argv[2];
 
     // Init soot
     Engine engine = new Engine(targetFile, mainClass, outputDirectory);

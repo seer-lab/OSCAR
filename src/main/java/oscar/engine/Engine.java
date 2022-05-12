@@ -31,6 +31,23 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class Engine {
+  public static List<String> BlacklistedClasses = Arrays.asList(
+      "java.",
+      "sun.",
+      "jdk.",
+      "javax.",
+      "com.",
+      "org.",
+      "kotlin.",
+      "android.",
+      "io.",
+      "okhttp3.",
+      "dagger.",
+      "soot.",
+      "oscar.",
+      "$"
+  );
+
   private static final Logger logger = LoggerFactory.getInstance(Engine.class);
 
   private static final String OSCAR_TEMP_DIR = ".oscar_temp";
@@ -305,23 +322,6 @@ public final class Engine {
   public static boolean isClassBlacklisted(SootMethod method) {
     String className = method.getDeclaringClass().getName();
 
-    boolean isClassBlacklisted = Stream.of(
-        "java.",
-        "sun.",
-        "jdk.",
-        "javax.",
-        "com.",
-        "org.",
-        "kotlin.",
-        "android.",
-        "io.",
-        "okhttp3.",
-        "dagger.",
-        "soot.",
-        "oscar.",
-        "$"
-    ).anyMatch(className::startsWith);
-
-    return isClassBlacklisted;
+    return Engine.BlacklistedClasses.stream().anyMatch(className::startsWith);
   }
 }

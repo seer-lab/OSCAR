@@ -4,6 +4,7 @@ import oscar.engine.body.JimpleBodyBox;
 import oscar.engine.Engine;
 import soot.Body;
 import soot.BodyTransformer;
+import soot.SootMethod;
 import soot.jimple.JimpleBody;
 
 import java.util.Map;

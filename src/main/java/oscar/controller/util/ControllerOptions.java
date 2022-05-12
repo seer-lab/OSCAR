@@ -148,7 +148,6 @@ public final class ControllerOptions {
           System.out.println("OSCAR " + Main.VERSION);
           System.exit(0);
           break;
-
         case "Help":
           printHelp();
           System.exit(0);
