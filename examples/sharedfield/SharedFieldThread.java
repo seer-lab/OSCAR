@@ -8,6 +8,7 @@ public class SharedFieldThread implements Runnable {
     b = clazz;
     a = clazz2;
     this.i = i;
+    throw new RuntimeException();
   }
 
   public SharedFieldThread(SharedFieldClass clazz) {

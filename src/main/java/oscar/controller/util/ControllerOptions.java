@@ -18,7 +18,7 @@ public final class ControllerOptions {
 
   private static final List<ControllerOption> CONTROLLER_OPTIONS = Arrays.asList(
       new ControllerOption("InjectedArgs", "Inject arguments into the program", "String", "", "-a", "--args"),
-      new ControllerOption("ConfigFile", "Set config file location to load", "String", "", "-c", "--config_file"),
+      // new ControllerOption("ConfigFile", "Set config file location to load", "String", "", "-c", "--config_file"),
       new ControllerOption("ConsoleOutput", "Enable output of noising locations signals to console", "Flag", "False", "-co", "--console-output"),
       new ControllerOption("FileOutput", "Enable output of noising locations signals to a file", "Flag", "False", "-fo", "--file-output"),
       new ControllerOption("LazyFileOutput", "Enable lazy output of noising locations signals to a file", "Flag", "False", "-lfo", "--lazy-file-output"),

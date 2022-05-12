@@ -73,8 +73,6 @@ public class Main {
       }
     }
 
-    System.out.println(Engine.BlacklistedClasses);
-
     String targetFile = argv[0];
     String mainClass = argv[1];
     String outputDirectory = argv[2];

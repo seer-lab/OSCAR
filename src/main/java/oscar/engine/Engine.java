@@ -241,6 +241,8 @@ public final class Engine {
         throw new RuntimeException("Failed to delete temp folder. Check directory permissions.", e);
       }
     }
+
+    logger.info("OSCAR instrumentation complete.");
   }
 
   public static void startTransformer(Class<? extends JimpleTransformer> transformerClass, Body body) {

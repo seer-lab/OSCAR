@@ -83,5 +83,33 @@ public final class ControllerInjector extends JimpleTransformer {
 
     oldBody.body().validate();
     newBody.body().validate();
+
+    // Create trap around the main call in new body --------------------------
+    // Add a goto to after the main call statement
+    JGotoStmt exceptionGotoStmt = new JGotoStmt(newBody.body().getUnits().getSuccOf(callOrigMainStmt));
+    newBody.body().getUnits().insertAfter(exceptionGotoStmt, callOrigMainStmt);
+
+    // Create identity statement fo exception and insert it after the goto
+    JimpleLocal exceptionLocal = newBody.generator().Local.fromType(RefType.v("java.lang.Exception"));
+    JIdentityStmt exceptionIdentity = new JIdentityStmt(exceptionLocal, new JCaughtExceptionRef());
+    newBody.body().getUnits().insertAfter(exceptionIdentity, exceptionGotoStmt);
+
+    // Create and insert a call to controller.exception to handle the exception
+    Stmt catchStatement = newBody.generator().Statement.staticInvoke(
+        "oscar.controller.Controller",
+        "void exception(java.lang.Exception)",
+        List.of(exceptionLocal)
+    );
+    newBody.body().getUnits().insertAfter(catchStatement, exceptionIdentity);
+
+    // Finally create trap
+    newBody.body().getTraps().add(
+        new JTrap(
+            Scene.v().getSootClass("java.lang.Exception"),
+            callOrigMainStmt,
+            exceptionGotoStmt,
+            exceptionIdentity
+        )
+    );
   }
 }

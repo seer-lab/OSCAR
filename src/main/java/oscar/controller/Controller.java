@@ -102,4 +102,16 @@ public final class Controller {
       System.exit(code);
     }
   }
+
+  // Capture exit codes
+  public static void exception(Exception exception) {
+    logger.info("Caught exception in instrumented program:");
+
+    for (StackTraceElement trace : exception.getStackTrace())
+      logger.info(trace.toString());
+
+    logger.info("Exiting gracefully.");
+    end();
+    System.exit(0);
+  }
 }

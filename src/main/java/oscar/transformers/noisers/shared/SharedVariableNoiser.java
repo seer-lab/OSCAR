@@ -26,11 +26,8 @@ public class SharedVariableNoiser extends JimpleTransformer {
    * @param bodyBox - The body of a jimple method
    */
   private static void routine(JimpleBodyBox bodyBox) {
-    if (true)
-      return;
-
     // Check if method belongs to a runnable class
-    if (!bodyBox.body().getMethod().getDeclaringClass().implementsInterface("java.lang.Runnable"))
+    if (!bodyBox.body().getMethod().getDeclaringClass().implementsInterface("java.lang.Runnable") || true)
       return;
 
     // Check if current body belongs to thread run method
