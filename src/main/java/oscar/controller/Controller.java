@@ -108,10 +108,10 @@ public final class Controller {
     logger.info("Caught exception in instrumented program:");
 
     for (StackTraceElement trace : exception.getStackTrace())
-      logger.info(trace.toString());
+      logger.info("\t" + trace.toString());
 
     logger.info("Exiting gracefully.");
     end();
-    System.exit(0);
+    System.exit(1);
   }
 }

@@ -83,7 +83,7 @@ public final class Engine {
         new SynchronizedBlockNoiser(),
         new SynchronizedMethodCallNoiser(),
         new ReentrantLockNoiser(),
-        new SharedVariableNoiser(),
+        // new SharedVariableNoiser(), TODO
 
         new ControllerInjector(),
         new ExitCaptureInjector()
