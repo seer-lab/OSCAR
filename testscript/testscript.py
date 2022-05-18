@@ -66,7 +66,7 @@ for i in range(0, argv.count):
 
 print(f'Finished running. Analyzing files.')
 
-## Try to analyze created files
+# Try to analyze created files
 hash_function = hashlib.sha512()
 os.chdir('oscar_output')
 
@@ -75,13 +75,27 @@ files = os.listdir('.')
 interleavings = []
 
 for file in files:
-    content = open(file, 'r') #.read()
+    content = open(file, 'r')  # .read()
 
-    content_clean = ""
+    thread_ids = {}
+    content_list = []
+
+    print("------------------------------------------")
+
     for line in content:
-        content_clean += line.split(" ")[1]
+        # Make the thread id value start from
+        thread_id = int(line.split(" ")[0].strip())
+        if thread_id not in thread_ids:
+            thread_ids[thread_id] = len(thread_ids) + 1
+        thread_id = thread_ids[thread_id]
 
-    hashed_content = hashlib.sha512(content_clean.encode('utf-8')).hexdigest()
+        coverage_location = line.split(" ")[1].strip()
+
+        content_fixed = f"{thread_id} {coverage_location}"
+        content_list.append(content_fixed)
+        print(content_fixed)
+
+    hashed_content = hashlib.sha512(str(content_list).encode('utf-8')).hexdigest()
     interleavings.append(hashed_content)
 
 print(f'Found {len(set(interleavings))} unique types of interleavings in a total of {len(interleavings)}.')
