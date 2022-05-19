@@ -13,7 +13,7 @@ public class RegularFileOutput extends FileOutput {
   }
 
   @Override
-  public void write(String output) {
+  public synchronized void write(String output) {
     logger.fine("Writing to file '" + filepath + "'.");
 
     try {

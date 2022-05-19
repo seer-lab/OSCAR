@@ -5,6 +5,8 @@ import hashlib
 import os
 import shutil
 import subprocess
+import Levenshtein as ls
+import numpy as np
 from pathlib import Path
 
 argparser = argparse.ArgumentParser(
@@ -19,6 +21,7 @@ argparser.add_argument('program_args', type=str, help='Arguments to be passed to
 
 argparser.add_argument('-c', '--count', default=30, type=int, help='Number of times to run program.')
 argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
+argparser.add_argument('-dt', '--disable_thread_ids', action='store_true', help='Disable thread ID parsing.')
 
 argv = argparser.parse_args()
 
@@ -74,28 +77,50 @@ files = os.listdir('.')
 
 interleavings = []
 
+thread_ids = {}
+interleaving_ids = {}
+
 for file in files:
     content = open(file, 'r')  # .read()
 
-    thread_ids = {}
-    content_list = []
-
-    print("------------------------------------------")
+    content_appended = ''
 
     for line in content:
-        # Make the thread id value start from
-        thread_id = int(line.split(" ")[0].strip())
+        # Make the thread id value start from 0
+        thread_id = int(line.split(' ')[0].strip())
         if thread_id not in thread_ids:
             thread_ids[thread_id] = len(thread_ids) + 1
         thread_id = thread_ids[thread_id]
 
-        coverage_location = line.split(" ")[1].strip()
+        # Make the interleaving id value start from 0
+        interleaving_id = line.split(' ')[1].strip()
+        if interleaving_id not in interleaving_ids:
+            interleaving_ids[interleaving_id] = len(interleaving_ids) + 1
+        interleaving_id = interleaving_ids[interleaving_id]
 
-        content_fixed = f"{thread_id} {coverage_location}"
-        content_list.append(content_fixed)
-        print(content_fixed)
+        # append content with or without thread id
+        if argv.disable_thread_ids:
+            content_fixed = str(interleaving_id)
+        else:
+            content_fixed = f'{thread_id}_{interleaving_id}'
 
-    hashed_content = hashlib.sha512(str(content_list).encode('utf-8')).hexdigest()
-    interleavings.append(hashed_content)
+        if content_appended == '':
+            content_appended += content_fixed
+        else:
+            content_appended += ' ' + content_fixed
+
+    # hashed_content = hashlib.sha512(content_appended.encode('utf-8')).hexdigest()
+    # print(content_appended)
+    interleavings.append(content_appended)
+
+# Calculate average ratio
+ratios = []
+
+for x in range(0, len(interleavings)):
+    for y in range(0, len(interleavings)):
+        if x != y:
+            ratios.append(ls.ratio(interleavings[x], interleavings[y]))
+
 
 print(f'Found {len(set(interleavings))} unique types of interleavings in a total of {len(interleavings)}.')
+print(f'Difference ratio: {np.average(ratios)}')

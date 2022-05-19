@@ -16,8 +16,11 @@ public class LazyFileOutput extends FileOutput {
   }
 
   @Override
-  public void write(String output) {
+  public synchronized void write(String output) {
     logger.fine("Writing to buffer.");
+
+    if (output == null)
+      throw new RuntimeException("Null string fed to file output.");
 
     buffer.add(output + "\n");
   }
@@ -25,6 +28,9 @@ public class LazyFileOutput extends FileOutput {
   @Override
   public void terminate() {
     for (String s : buffer) {
+      if (s == null)
+        throw new RuntimeException("Null string fed to file output buffer.");
+
       try {
         writer.write(s);
       } catch (IOException e) {
@@ -34,6 +40,7 @@ public class LazyFileOutput extends FileOutput {
 
     if (writer != null)
       try {
+        writer.flush();
         writer.close();
       } catch (IOException e) {
         throw new RuntimeException("Failed to close writer.");
