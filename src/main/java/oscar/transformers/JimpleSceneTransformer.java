@@ -36,20 +36,25 @@ public abstract class JimpleSceneTransformer extends SceneTransformer {
   }
 
   private void recursiveTransform(SootMethod method) {
+    // Avoid blacklisted methods/classes
+    if (Engine.isClassBlacklisted(method))
+      return;
+
     // Avoid visiting same method multiple times
     if (visited.contains(getMethodFullName(method)))
       return;
 
     visited.add(getMethodFullName(method));
 
-    // Avoid blacklisted methods/classes
-    if (Engine.isClassBlacklisted(method))
-      return;
-
     Engine.startCallgraphRoutine(clazz, method);
 
     // Run routine
     routine.accept(new JimpleBodyBox((JimpleBody) method.getActiveBody()));
+
+    // Check if method is dynamic bootstrap method
+    // Since there are no calls to this body, we have to call it
+    if (method.getName().equals("bootstrap$"))
+      recursiveTransform(method.getDeclaringClass().getMethodByName("run"));
 
     // Get all edges of this method in call graph
     Iterator<MethodOrMethodContext> targets = new Targets(Scene.v().getCallGraph().edgesOutOf(method));

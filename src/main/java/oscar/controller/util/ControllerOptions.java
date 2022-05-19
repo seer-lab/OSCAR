@@ -189,7 +189,7 @@ public final class ControllerOptions {
   }
 
   private static void printNoiseLocations() {
-    System.out.println("Possible noising categories:");
+    System.out.println("Possible noise placements:");
 
     System.out.printf(
         "\t%-25s\t%-25s\n",
