@@ -1,7 +1,6 @@
 import argparse
 
 # Create parser for reading program arguments
-import hashlib
 import os
 import shutil
 import subprocess
@@ -109,8 +108,6 @@ for file in files:
         else:
             content_appended += ' ' + content_fixed
 
-    # hashed_content = hashlib.sha512(content_appended.encode('utf-8')).hexdigest()
-    # print(content_appended)
     interleavings.append(content_appended)
 
 # Calculate average ratio

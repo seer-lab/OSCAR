@@ -56,7 +56,7 @@ public abstract class JimpleSceneTransformer extends SceneTransformer {
     if (method.getName().equals("bootstrap$"))
       recursiveTransform(method.getDeclaringClass().getMethodByName("run"));
 
-    // Get all edges of this method in call graph
+    // Get all edges of this method in call graph and run routine recursively
     Iterator<MethodOrMethodContext> targets = new Targets(Scene.v().getCallGraph().edgesOutOf(method));
 
     while (targets.hasNext())

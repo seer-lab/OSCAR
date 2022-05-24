@@ -9,6 +9,8 @@ import soot.jimple.JimpleBody;
 import soot.jimple.internal.*;
 import soot.tagkit.StringConstantValueTag;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,12 +57,11 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
     if (bodyBox.body().hasTag(THREAD_LAUNCH_NOISED.getName()))
       return;
 
-    // Insert noise statement after first (identity statement)
-    bodyBox.body().getUnits()
-           .insertBefore(
-               bodyBox.generator().Statement.sleep(NoisePlacement.BEFORE_THREAD_ROUTINE),
-               bodyBox.body().getFirstNonIdentityStmt()
-           );
+    // Insert noise and signal statements after first (identity statement)
+    List<Unit> noiseStmts = new ArrayList<>(bodyBox.generator().Statement.sleep(NoisePlacement.BEFORE_THREAD_ROUTINE));
+    noiseStmts.addAll(bodyBox.generator().Statement.signal(NoiseCategory.THREAD_BASED));
+
+    bodyBox.body().getUnits().insertBefore(noiseStmts, bodyBox.body().getFirstNonIdentityStmt());
 
     // Add instrumented tag and validate body
     bodyBox.body().addTag(THREAD_LAUNCH_NOISED);

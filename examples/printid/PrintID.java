@@ -1,28 +1,21 @@
+import java.util.ArrayList;
+
 public class PrintID {
-  private static volatile int count;
+  public static void main(String[] args) throws InterruptedException {
+    ArrayList<Thread> threads = new ArrayList<>();
 
-  public static void main(String[] args) {
-    int threadCount = Integer.parseInt(args[0]);
+    int nThreads = 5;
 
-    count = threadCount;
+    if (args.length > 0)
+      nThreads = Integer.parseInt(args[0]);
 
-    System.out.println("Launching " + threadCount + " threads.");
+    for (int i = 0; i < nThreads; i++)
+      threads.add(new Thread(() -> System.out.println(Thread.currentThread().getId())));
 
-    for (int i = 0; i < threadCount; i++)
-      new Thread(PrintID::printID).start();
+    for (Thread t : threads)
+      t.start();
 
-    System.out.flush();
-    System.out.close();
-
-    while (count != 0) {
-      Thread.onSpinWait();
-    }
-
-    System.exit(0);
-  }
-
-  private synchronized static void printID() {
-    System.out.println(Thread.currentThread().getId());
-    count--;
+    for (Thread t : threads)
+      t.join();
   }
 }
