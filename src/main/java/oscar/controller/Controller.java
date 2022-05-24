@@ -83,8 +83,16 @@ public final class Controller {
                         + sleepLength + " MS."
         );
       }
-      Thread.yield(); // TODO should i add this here?
-      Thread.sleep(sleepLength);
+
+      for (int i = 0; i < options.YieldIntensity; i++) {
+        logger.finest("Triggering yield at location: '" + uuid + "'.");
+        Thread.yield();
+      }
+
+      if (!options.DisableSleep) {
+        logger.finest("Triggering sleep at location: '" + uuid + "'.");
+        Thread.sleep(sleepLength);
+      }
     } catch (InterruptedException e) {
       throw new RuntimeException("OSCAR sleep statement was interrupted.", e);
     }

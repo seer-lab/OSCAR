@@ -25,6 +25,8 @@ public final class ControllerOptions {
       new ControllerOption("MaxSleepLength", "Set maximum sleep length", "Long", "0", "-M", "--max_sleep_length"),
       new ControllerOption("MinSleepLength", "Set minimum sleep length", "Long", "400", "-m", "--min_sleep_length"),
       new ControllerOption("DisableNoise", "Disable all noise", "Flag", "False", "-d", "--disable-noise"),
+      new ControllerOption("DisableSleep", "Disable sleep noise.", "Flag", "False", "-ds", "--disable-sleep"),
+      new ControllerOption("YieldIntensity", "Set intensity of yield noise.", "Long", "1", "-y", "--yield"),
       new ControllerOption("NoisePlacements", "Set the list of active noise placements.", "List<String>", "All", "-np", "--noise-placements"),
       new ControllerOption("NoiseCategories", "Set the list of active noise categories.", "List<String>", "All", "-nc", "--noise-categories"),
       new ControllerOption("PrintNoisePlacements", "Print all possible noise placements.", "Flag", "-", "-pnp", "--print-noise-placements"),
@@ -39,11 +41,13 @@ public final class ControllerOptions {
   public ControllerOutput ControllerOutput = null;
   public Long MaxSleepLength = 400L;
   public Long MinSleepLength = 0L;
+  public Long YieldIntensity = 1L;
   public boolean DisableNoise = false;
   public final HashSet<NoisePlacement> NoisePlacements = NoisePlacement.getAll();
   public final HashSet<NoiseCategory> NoiseCategories = NoiseCategory.getAll();
 
   public boolean Verbose = false;
+  public boolean DisableSleep = false;
   public boolean Quiet = false;
 
   public static ControllerOptions parse(String[] argv) {
@@ -91,23 +95,39 @@ public final class ControllerOptions {
           options.ControllerOutput = new ConsoleOutput();
           break;
         case "MaxSleepLength":
-          if (options.DisableNoise)
+          if (options.DisableNoise || options.DisableSleep)
             throw new RuntimeException("Noise disabled.");
 
           options.MaxSleepLength = parseLong(argv[i + 1]);
           i++;
           if (options.MaxSleepLength < 0)
-            throw new RuntimeException("Invalid value for 'max_sleep_length', must be bigger than 0.");
+            throw new RuntimeException("Invalid value for 'max_sleep_length', must be higher or equal to 0.");
           break;
         case "MinSleepLength":
-          if (options.DisableNoise)
+          if (options.DisableNoise || options.DisableSleep)
             throw new RuntimeException("Noise disabled.");
 
           options.MinSleepLength = parseLong(argv[i + 1]);
           i++;
 
           if (options.MinSleepLength < 0)
-            throw new RuntimeException("Invalid value for 'min_sleep_length', must be bigger than 0.");
+            throw new RuntimeException("Invalid value for 'min_sleep_length', must be higher or equal to 0.");
+          break;
+        case "DisableSleep":
+          if (options.DisableNoise)
+            throw new RuntimeException("Noise disabled.");
+
+          options.DisableSleep = true;
+          break;
+        case "YieldIntensity":
+          if (options.DisableNoise)
+            throw new RuntimeException("Noise disabled.");
+
+          options.YieldIntensity = parseLong(argv[i + 1]);
+          i++;
+
+          if (options.YieldIntensity < 0)
+            throw new RuntimeException("Invalid value for 'yield', must be higher or equal to 0.");
           break;
         case "NoisePlacements":
           options.NoisePlacements.clear();
