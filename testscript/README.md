@@ -11,6 +11,7 @@
   - numpy 
   - pathlib 
 - Pip 21.2.3
+- 
 ### Running Instructions
 
 ```sh
@@ -60,11 +61,11 @@ Run with argument -h for help.
 1. Run the generated Account program jar 10 times with 3 threads and no noise
 
 ```sh
-../output oscar_out.jar "-a 3 -d" -c 10 -j
+python3 testscript.py ../output oscar_out.jar "-a 3 -d" -c 10 -j
 ```
 
 2. Run the generated Account program jar 20 times with no arguments and disable thread id parsing
 
 ```sh
-../output oscar_out.jar -c 20 -j -dt
+python3 testscript.py ../output oscar_out.jar -c 20 -j -dt
 ```
