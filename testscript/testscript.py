@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import Levenshtein as ls
+import numpy
 import numpy as np
 from pathlib import Path
 
@@ -21,6 +22,7 @@ argparser.add_argument('program_args', type=str, help='Arguments to be passed to
 argparser.add_argument('-c', '--count', default=30, type=int, help='Number of times to run program.')
 argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
 argparser.add_argument('-dt', '--disable_thread_ids', action='store_true', help='Disable thread ID parsing.')
+argparser.add_argument('-u', '--unordered_thread_ids', action='store_true', help='Maintain original thread ID order.')
 
 argv = argparser.parse_args()
 
@@ -69,27 +71,39 @@ for i in range(0, argv.count):
 print(f'Finished running. Analyzing files.')
 
 # Try to analyze created files
-hash_function = hashlib.sha512()
 os.chdir('oscar_output')
 
 files = os.listdir('.')
 
 interleavings = []
-
-thread_ids = {}
 interleaving_ids = {}
 
 for file in files:
     content = open(file, 'r')  # .read()
-
     content_appended = ''
 
+    thread_ids = []
+    # Get all thread ids for ordering
     for line in content:
-        # Make the thread id value start from 0
         thread_id = int(line.split(' ')[0].strip())
         if thread_id not in thread_ids:
-            thread_ids[thread_id] = len(thread_ids) + 1
-        thread_id = thread_ids[thread_id]
+            thread_ids.append(thread_id)
+
+    # Check if thread ids should maintain order when mapped
+    if argv.unordered_thread_ids:
+        thread_ids = numpy.sort(thread_ids)
+
+    # Map thread ids
+    mapped_thread_ids = {}
+    for i in range(0, len(thread_ids)):
+        mapped_thread_ids[thread_ids[i]] = i
+
+    # Parse normally
+    content = open(file, 'r')
+
+    for line in content:
+        thread_id = int(line.split(' ')[0].strip())
+        thread_id = mapped_thread_ids[thread_id]
 
         # Make the interleaving id value start from 0
         interleaving_id = line.split(' ')[1].strip()
