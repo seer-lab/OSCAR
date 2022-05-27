@@ -7,6 +7,7 @@ import subprocess
 import Levenshtein as ls
 import numpy
 import numpy as np
+import time
 from pathlib import Path
 
 argparser = argparse.ArgumentParser(
@@ -49,8 +50,12 @@ os.chdir(argv.program_dir)
 if os.path.isdir('oscar_output'):
     shutil.rmtree('oscar_output')
 
+# Save runtimes
+runtimes = []
+
 for i in range(0, argv.count):
     print(f'Running {i + 1}/{argv.count}')
+    start_time = time.time_ns() / 1_000_000
 
     if not argv.jar:
         result = subprocess.run(
@@ -67,6 +72,8 @@ for i in range(0, argv.count):
         print(result.stderr.decode('utf-8'))
         print(result.stdout.decode('utf-8'))
         exit(1)
+
+    runtimes.append(time.time_ns() / 1_000_000 - start_time)
 
 print(f'Finished running. Analyzing files.')
 
@@ -132,6 +139,9 @@ for x in range(0, len(interleavings)):
         if x != y:
             ratios.append(ls.ratio(interleavings[x], interleavings[y]))
 
-
-print(f'Found {len(set(interleavings))} unique types of interleavings in a total of {len(interleavings)}.')
-print(f'Difference ratio: {np.average(ratios)}')
+print()
+print("Results:")
+print(f'\tUnique interleavings {len(set(interleavings))}/{len(interleavings)}.')
+print(f'\tDifference ratio: {round(np.average(ratios), 3)}')
+print(f'\tStandard deviation: {round(float(np.std(ratios)), 3)}')
+print(f'\tAverage runtime: {round(np.average(runtimes), 3)} ms')

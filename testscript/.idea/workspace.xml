@@ -63,8 +63,8 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/testscript.py</url>
-          <line>124</line>
-          <option name="timeStamp" value="5" />
+          <line>75</line>
+          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
