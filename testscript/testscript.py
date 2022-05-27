@@ -134,10 +134,9 @@ for file in files:
 # Calculate average ratio
 ratios = []
 
-for x in range(0, len(interleavings)):
-    for y in range(0, len(interleavings)):
-        if x != y:
-            ratios.append(ls.ratio(interleavings[x], interleavings[y]))
+for x in range(0, len(interleavings) - 1):
+    for y in range(x + 1, len(interleavings)):
+        ratios.append(ls.ratio(interleavings[x], interleavings[y]))
 
 print()
 print("Results:")
