@@ -60,7 +60,7 @@ public final class Controller {
    * @param placement instrumented location type
    * @param uuid      instrumented location generated uuid
    */
-  public static void sleep(NoisePlacement placement, String uuid) {
+  public static void noise(NoisePlacement placement, String uuid) {
     if (options.DisableNoise)
       return;
 
@@ -69,29 +69,31 @@ public final class Controller {
       return;
     }
 
-    // Get a random sleep length
-    long sleepLength = options.MinSleepLength;
-    sleepLength += Math.abs(rand.nextLong() % (1 + options.MaxSleepLength - options.MinSleepLength));
+    // Get a random noise intensity
+    long noiseIntensity = options.MinNoiseIntensity;
+    noiseIntensity += Math.abs(rand.nextLong() % (1 + options.MaxNoiseIntensity - options.MinNoiseIntensity));
 
     // Sleep for a determined amount of time
     try {
-      if (!options.Quiet) {
-        logger.fine("[" + "SLEEP" + "]" +
-                        "[" + placement.getCategory().name() + "]" +
-                        "[" + placement.name() + "]" +
-                        "[" + uuid + "]: "
-                        + sleepLength + " MS."
+      if (!options.YieldMode) {
+        logger.finest("[" + "SLEEP" + "]" +
+                          "[" + placement.getCategory().name() + "]" +
+                          "[" + placement.name() + "]" +
+                          "[" + uuid + "]: "
+                          + noiseIntensity + " MS."
         );
-      }
 
-      for (int i = 0; i < options.YieldIntensity; i++) {
-        logger.finest("Triggering yield at location: '" + uuid + "'.");
-        Thread.yield();
-      }
+        Thread.sleep(noiseIntensity);
+      } else {
+        logger.finest("[" + "Yield" + "]" +
+                          "[" + placement.getCategory().name() + "]" +
+                          "[" + placement.name() + "]" +
+                          "[" + uuid + "]: "
+                          + noiseIntensity + " times."
+        );
 
-      if (!options.DisableSleep) {
-        logger.finest("Triggering sleep at location: '" + uuid + "'.");
-        Thread.sleep(sleepLength);
+        for (int i = 0; i < noiseIntensity; i++)
+          Thread.yield();
       }
     } catch (InterruptedException e) {
       throw new RuntimeException("OSCAR sleep statement was interrupted.", e);

@@ -127,13 +127,13 @@ public class SharedVariableNoiser extends JimpleTransformer {
   private static void noiseStatement(JimpleBodyBox bodyBox, Unit unit) {
     bodyBox.body()
            .getUnits()
-           .insertBefore(bodyBox.generator().Statement.sleep(NoisePlacement.BEFORE_SHARED_VARIABLE_ACCESS), unit);
+           .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_SHARED_VARIABLE_ACCESS), unit);
     bodyBox.body()
            .getUnits()
            .insertBefore(bodyBox.generator().Statement.signal(NoiseCategory.SHARED_VARIABLE_BASED), unit);
     bodyBox.body()
            .getUnits()
-           .insertAfter(bodyBox.generator().Statement.sleep(NoisePlacement.AFTER_SHARED_VARIABLE_ACCESS), unit);
+           .insertAfter(bodyBox.generator().Statement.noise(NoisePlacement.AFTER_SHARED_VARIABLE_ACCESS), unit);
 
     System.out.println();
   }

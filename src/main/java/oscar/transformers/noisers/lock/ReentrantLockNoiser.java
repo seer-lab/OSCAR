@@ -25,10 +25,10 @@ public final class ReentrantLockNoiser extends JimpleTransformer {
     // Create statement to insert sleep noise before and after sync blocks
     for (JInvokeStmt lockCall : reentrantLockCalls) {
       if (getInvokeExprMethodName(lockCall).equals("lock")) {
-        body.body().getUnits().insertBefore(body.generator().Statement.sleep(NoisePlacement.BEFORE_REENTRANT_LOCK_LOCK), lockCall);
+        body.body().getUnits().insertBefore(body.generator().Statement.noise(NoisePlacement.BEFORE_REENTRANT_LOCK_LOCK), lockCall);
         body.body().getUnits().insertBefore(body.generator().Statement.signal(NoiseCategory.LOCK_BASED), lockCall);
       } else if (getInvokeExprMethodName(lockCall).equals("unlock")) {
-        List<Unit> units = body.generator().Statement.sleep(NoisePlacement.AFTER_REENTRANT_LOCK_UNLOCK);
+        List<Unit> units = body.generator().Statement.noise(NoisePlacement.AFTER_REENTRANT_LOCK_UNLOCK);
         body.body().getUnits().insertAfter(units, lockCall);
       } else
         throw new RuntimeException("Invalid reentrant lock call statement");

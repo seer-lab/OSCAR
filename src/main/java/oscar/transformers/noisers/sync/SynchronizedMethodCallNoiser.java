@@ -22,10 +22,10 @@ public final class SynchronizedMethodCallNoiser extends JimpleTransformer {
 
     // Create statement to insert sleep noise before and after sync blocks
     for (Unit invocation : syncMethodInvocations) {
-      body.body().getUnits().insertBefore(body.generator().Statement.sleep(NoisePlacement.BEFORE_SYNC_BLOCK), invocation);
+      body.body().getUnits().insertBefore(body.generator().Statement.noise(NoisePlacement.BEFORE_SYNC_BLOCK), invocation);
       body.body().getUnits().insertBefore(body.generator().Statement.signal(NoiseCategory.SYNCHRONIZATION_BASED), invocation);
 
-      body.body().getUnits().insertAfter(body.generator().Statement.sleep(NoisePlacement.AFTER_SYNC_BLOCK), invocation);
+      body.body().getUnits().insertAfter(body.generator().Statement.noise(NoisePlacement.AFTER_SYNC_BLOCK), invocation);
     }
   }
 

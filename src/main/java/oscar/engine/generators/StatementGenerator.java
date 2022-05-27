@@ -99,7 +99,7 @@ public class StatementGenerator {
     return statements;
   }
 
-  public List<Unit> sleep(NoisePlacement noisePlacement) {
+  public List<Unit> noise(NoisePlacement noisePlacement) {
     // Instantiate enum value
     JimpleLocal enumLocal = localGenerator.fromType(RefType.v(noisePlacement.getClass().getName()));
 
@@ -114,7 +114,7 @@ public class StatementGenerator {
 
     Stmt noiseStmt = staticInvoke(
         "oscar.controller.Controller",
-        "void sleep(oscar.controller.noise.NoisePlacement,java.lang.String)",
+        "void noise(oscar.controller.noise.NoisePlacement,java.lang.String)",
         List.of(enumLocal, StringConstant.v(UUID.randomUUID().toString()))
     );
 

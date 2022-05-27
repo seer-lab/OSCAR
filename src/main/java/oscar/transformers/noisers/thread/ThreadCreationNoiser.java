@@ -10,7 +10,6 @@ import soot.jimple.internal.*;
 import soot.tagkit.StringConstantValueTag;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,11 +40,11 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
     for (JInvokeStmt stmt : invokeStmts) {
       bodyBox.body()
              .getUnits()
-             .insertBefore(bodyBox.generator().Statement.sleep(NoisePlacement.BEFORE_THREAD_LAUNCH), stmt);
+             .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_THREAD_LAUNCH), stmt);
       bodyBox.body().getUnits().insertBefore(bodyBox.generator().Statement.signal(NoiseCategory.THREAD_BASED), stmt);
       bodyBox.body()
              .getUnits()
-             .insertAfter(bodyBox.generator().Statement.sleep(NoisePlacement.AFTER_THREAD_LAUNCH), stmt);
+             .insertAfter(bodyBox.generator().Statement.noise(NoisePlacement.AFTER_THREAD_LAUNCH), stmt);
     }
   }
 
@@ -58,7 +57,7 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
       return;
 
     // Insert noise and signal statements after first (identity statement)
-    List<Unit> noiseStmts = new ArrayList<>(bodyBox.generator().Statement.sleep(NoisePlacement.BEFORE_THREAD_ROUTINE));
+    List<Unit> noiseStmts = new ArrayList<>(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_THREAD_ROUTINE));
     noiseStmts.addAll(bodyBox.generator().Statement.signal(NoiseCategory.THREAD_BASED));
 
     bodyBox.body().getUnits().insertBefore(noiseStmts, bodyBox.body().getFirstNonIdentityStmt());
