@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Main {
 
@@ -13,17 +14,15 @@ public class Main {
             try {
                 userInput = Integer.parseInt(args[0]);
             } catch(Exception e) { }
-            if (userInput < 27 && userInput > 0) numAccounts = userInput;
+            if (userInput < 1000 && userInput > 0) numAccounts = userInput;
         }
 
         bank = new Account[numAccounts];
         threads = new AccountThread[numAccounts];
-        char letter = 'A'; // name all accounts as A to Z
         for (int i = 0; i < numAccounts; i++) {
-            String accName = String.valueOf(letter);
+            String accName = UUID.randomUUID().toString();
             bank[i] = new Account(accName, i+1, 100);
             threads[i] = new AccountThread(bank[i], bank);
-            letter ++;
         }
 
         // get all threads started

@@ -8,7 +8,6 @@ import Levenshtein as ls
 import numpy
 import numpy as np
 import time
-from pathlib import Path
 
 argparser = argparse.ArgumentParser(
     prog='testscript',
@@ -132,15 +131,15 @@ for file in files:
     interleavings.append(content_appended)
 
 # Calculate average ratio
-ratios = []
+leven_dists = []
 
 for x in range(0, len(interleavings) - 1):
     for y in range(x + 1, len(interleavings)):
-        ratios.append(ls.ratio(interleavings[x], interleavings[y]))
+        leven_dists.append(ls.distance(interleavings[x], interleavings[y]))
 
 print()
 print("Results:")
 print(f'\tUnique interleavings {len(set(interleavings))}/{len(interleavings)}.')
-print(f'\tDifference ratio: {round(np.average(ratios), 3)}')
-print(f'\tStandard deviation: {round(float(np.std(ratios)), 3)}')
-print(f'\tAverage runtime: {round(np.average(runtimes), 3)} ms')
+print(f'\tAverage Levenshtein distance: {round(np.average(leven_dists), 3)}')
+print(f'\tLevenshtein distance standard deviation: {round(float(np.std(leven_dists)), 3)}')
+print(f'\tAverage runtime: {round(np.average(runtimes), 0)} ms')

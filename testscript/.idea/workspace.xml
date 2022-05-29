@@ -38,7 +38,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testscript.py" />
-      <option name="PARAMETERS" value="../output oscar_out.jar &quot;-a 3 -lfo -y&quot; -c 10 -j" />
+      <option name="PARAMETERS" value="../output oscar_out.jar &quot;-a 3 -lfo -m 1 -M 5&quot; -c 5 -j" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -60,13 +60,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/testscript.py</url>
-          <line>75</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
