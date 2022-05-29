@@ -14,7 +14,7 @@ public class Main {
             try {
                 userInput = Integer.parseInt(args[0]);
             } catch(Exception e) { }
-            if (userInput < 1000 && userInput > 0) numAccounts = userInput;
+            if (userInput < Integer.MAX_VALUE && userInput > 0) numAccounts = userInput;
         }
 
         bank = new Account[numAccounts];
