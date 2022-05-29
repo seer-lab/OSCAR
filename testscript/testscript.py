@@ -23,6 +23,7 @@ argparser.add_argument('-c', '--count', default=30, type=int, help='Number of ti
 argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
 argparser.add_argument('-dt', '--disable_thread_ids', action='store_true', help='Disable thread ID parsing.')
 argparser.add_argument('-u', '--unordered_thread_ids', action='store_true', help='Maintain original thread ID order.')
+argparser.add_argument('-dc', '--disable_coverage', action='store_true', help='Disable coverage analysis.')
 
 argv = argparser.parse_args()
 
@@ -130,16 +131,18 @@ for file in files:
 
     interleavings.append(content_appended)
 
-# Calculate average ratio
-leven_dists = []
-
-for x in range(0, len(interleavings) - 1):
-    for y in range(x + 1, len(interleavings)):
-        leven_dists.append(ls.distance(interleavings[x], interleavings[y]))
-
 print()
 print("Results:")
-print(f'\tUnique interleavings {len(set(interleavings))}/{len(interleavings)}.')
-print(f'\tAverage Levenshtein distance: {round(np.average(leven_dists), 3)}')
-print(f'\tLevenshtein distance standard deviation: {round(float(np.std(leven_dists)), 3)}')
-print(f'\tAverage runtime: {round(np.average(runtimes), 0)} ms')
+print(f'\tUnique interleavings (out of {len(interleavings)}): {len(set(interleavings))}')
+print(f'\tAverage runtime (ms): {round(np.average(runtimes), 0)}')
+
+if not argv.disable_coverage:
+    # Calculate average ratio
+    leven_dists = []
+
+    for x in range(0, len(interleavings) - 1):
+        for y in range(x + 1, len(interleavings)):
+            leven_dists.append(ls.distance(interleavings[x], interleavings[y]))
+
+    print(f'\tAverage Levenshtein distance: {round(np.average(leven_dists), 3)}')
+    print(f'\tLevenshtein distance standard deviation: {round(float(np.std(leven_dists)), 3)}')
