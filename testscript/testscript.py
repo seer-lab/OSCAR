@@ -56,9 +56,12 @@ os.chdir(argv.program_dir)
 if os.path.isdir('oscar_output'):
     shutil.rmtree('oscar_output')
 
+###############################################################################################################
+
 # Save runtimes
 runtimes = []
 
+# Run program x times
 for i in range(0, argv.count):
     print(f'Running {i + 1}/{argv.count}')
     start_time = time.time_ns() / 1_000_000
@@ -83,23 +86,23 @@ for i in range(0, argv.count):
 
 print(f'Finished running. Analyzing files.')
 
+###############################################################################################################
+
 # Try to analyze created files
 os.chdir('oscar_output')
-
 files = os.listdir('.')
 
 interleavings = []
 location_ids = {}
-
 interleavings_no_pairs = []
 mapped_interleaving_pairs = {}
 
 for file in files:
     content = open(file, 'r')  # .read()
+    thread_ids = []
+
     interleaving = ''
     interleaving_no_pairs = ''
-
-    thread_ids = []
 
     # Get all thread ids for ordering
     for line in content:
@@ -133,7 +136,9 @@ for file in files:
         # Append content with or without thread id
         interleaving_pair = location_id
         if not argv.disable_thread_ids:
-            interleaving += f'{thread_id}{interleaving_pair}'
+            interleaving_pair += f'{thread_id}{interleaving_pair}'
+
+        interleaving += interleaving_pair
 
         # Transform interleaving pair representation in single mapped unicode
         if interleaving_pair not in mapped_interleaving_pairs:
@@ -143,10 +148,12 @@ for file in files:
     interleavings.append(interleaving)
     interleavings_no_pairs.append(interleaving_no_pairs)
 
+###############################################################################################################
 
 print()
 print("Results:")
 print(f'\tUnique interleavings (out of {len(interleavings)}): {len(set(interleavings))}')
+print(f'\tUnique interleavings (No pairs) (out of {len(interleavings_no_pairs)}): {len(set(interleavings_no_pairs))}')
 print(f'\tAverage runtime (ms): {round(np.average(runtimes), 0)}')
 
 # For regular pairs
