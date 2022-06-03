@@ -2,13 +2,13 @@ import subprocess
 from tqdm import tqdm
 import numpy as np
 
-SORTED_DEFAULT_VALUES = sorted([10, 25, 50, 100, 250, 500, 1000])
+SORTED_DEFAULT_VALUES = sorted([50, 100, 250, 500, 1000, 2500, 5000])
 
-PROGRAM = "../output PrintID"
+PROGRAM = "../output oscar_out.jar"
 TESTSCRIPT_ARGS = "-j" if PROGRAM.endswith(".jar") else ""
 DISABLE_COVERAGE = True
-NUMBER_RUNS = [10]
-NUMBER_THREADS = SORTED_DEFAULT_VALUES
+NUMBER_RUNS = [10]  # SORTED_DEFAULT_VALUES
+NUMBER_THREADS = SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = "-lfo -m 1"
 
 VARIABLE_ARGS = [
@@ -44,16 +44,16 @@ v_arg_avg_coverages = {}
 v_arg_std_coverages = {}
 
 # Run multiple times
-for v_arg in tqdm(VARIABLE_ARGS):
+for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
     avg_run_times = {}
     uniq_interleavings = {}
     avg_coverages = {}
     std_coverages = {}
 
-    for n_threads in NUMBER_THREADS:
+    for n_threads in tqdm(NUMBER_THREADS, desc="Number of Threads", leave=False):
         run_times = []
 
-        for n_runs in NUMBER_RUNS:
+        for n_runs in tqdm(NUMBER_RUNS, desc="Number of Runs", leave=False):
             p_args = f"{FIXED_ARGS} {v_arg}"
             t_args = f"{TESTSCRIPT_ARGS} -c {n_runs}"
 

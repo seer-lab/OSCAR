@@ -9,6 +9,12 @@ import numpy
 import numpy as np
 import time
 
+
+# Convert a string to unicode
+def to_unicode(code: int):
+    return chr(int(str(code).zfill(8), 16))
+
+
 argparser = argparse.ArgumentParser(
     prog='testscript',
     description='Automate OSCAR\'s noise injection routine.',
@@ -83,13 +89,18 @@ os.chdir('oscar_output')
 files = os.listdir('.')
 
 interleavings = []
-interleaving_ids = {}
+location_ids = {}
+
+interleavings_no_pairs = []
+mapped_interleaving_pairs = {}
 
 for file in files:
     content = open(file, 'r')  # .read()
-    content_appended = ''
+    interleaving = ''
+    interleaving_no_pairs = ''
 
     thread_ids = []
+
     # Get all thread ids for ordering
     for line in content:
         thread_id = int(line.split(' ')[0].strip())
@@ -103,7 +114,7 @@ for file in files:
     # Map thread ids
     mapped_thread_ids = {}
     for i in range(0, len(thread_ids)):
-        mapped_thread_ids[thread_ids[i]] = i
+        mapped_thread_ids[thread_ids[i]] = to_unicode(i)
 
     # Parse normally
     content = open(file, 'r')
@@ -113,36 +124,50 @@ for file in files:
         thread_id = mapped_thread_ids[thread_id]
 
         # Make the interleaving id value start from 0
-        interleaving_id = line.split(' ')[1].strip()
-        if interleaving_id not in interleaving_ids:
-            interleaving_ids[interleaving_id] = len(interleaving_ids) + 1
-        interleaving_id = interleaving_ids[interleaving_id]
+        location_id = line.split(' ')[1].strip()
+        # TODO This may cause an issue, if different runs have a different number of threads (not relevant now)
+        if location_id not in location_ids:
+            location_ids[location_id] = to_unicode(len(location_ids) + len(thread_ids))
+        location_id = location_ids[location_id]
 
-        # append content with or without thread id
-        if argv.disable_thread_ids:
-            content_fixed = str(interleaving_id)
-        else:
-            content_fixed = f'{thread_id}_{interleaving_id}'
+        # Append content with or without thread id
+        interleaving_pair = location_id
+        if not argv.disable_thread_ids:
+            interleaving += f'{thread_id}{interleaving_pair}'
 
-        if content_appended == '':
-            content_appended += content_fixed
-        else:
-            content_appended += ' ' + content_fixed
+        # Transform interleaving pair representation in single mapped unicode
+        if interleaving_pair not in mapped_interleaving_pairs:
+            mapped_interleaving_pairs[interleaving_pair] = to_unicode(len(mapped_interleaving_pairs))
+        interleaving_no_pairs += mapped_interleaving_pairs[interleaving_pair]
 
-    interleavings.append(content_appended)
+    interleavings.append(interleaving)
+    interleavings_no_pairs.append(interleaving_no_pairs)
+
 
 print()
 print("Results:")
 print(f'\tUnique interleavings (out of {len(interleavings)}): {len(set(interleavings))}')
 print(f'\tAverage runtime (ms): {round(np.average(runtimes), 0)}')
 
+# For regular pairs
 if not argv.disable_coverage:
-    # Calculate average ratio
     leven_dists = []
 
+    # Calculate average ratio
     for x in range(0, len(interleavings) - 1):
         for y in range(x + 1, len(interleavings)):
             leven_dists.append(ls.distance(interleavings[x], interleavings[y]))
 
     print(f'\tAverage Levenshtein distance: {round(np.average(leven_dists), 3)}')
     print(f'\tLevenshtein distance standard deviation: {round(float(np.std(leven_dists)), 3)}')
+
+# For mapped pairs
+    leven_dists = []
+
+    # Calculate average ratio
+    for x in range(0, len(interleavings_no_pairs) - 1):
+        for y in range(x + 1, len(interleavings_no_pairs)):
+            leven_dists.append(ls.distance(interleavings_no_pairs[x], interleavings_no_pairs[y]))
+
+    print(f'\tAverage Levenshtein distance (No Pairs): {round(np.average(leven_dists), 3)}')
+    print(f'\tLevenshtein distance standard deviation (No Pairs): {round(float(np.std(leven_dists)), 3)}')
