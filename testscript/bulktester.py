@@ -6,9 +6,9 @@ SORTED_DEFAULT_VALUES = sorted([50, 100, 250, 500, 1000, 2500, 5000])
 
 PROGRAM = "../output oscar_out.jar"
 TESTSCRIPT_ARGS = "-j" if PROGRAM.endswith(".jar") else ""
-DISABLE_COVERAGE = True
+DISABLE_COVERAGE = False
 NUMBER_RUNS = [10]  # SORTED_DEFAULT_VALUES
-NUMBER_THREADS = SORTED_DEFAULT_VALUES  # [3]
+NUMBER_THREADS = [2] #SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = "-lfo -m 1"
 
 VARIABLE_ARGS = [
@@ -42,6 +42,8 @@ v_arg_avg_run_times = {}
 v_arg_uniq_interleavings = {}
 v_arg_avg_coverages = {}
 v_arg_std_coverages = {}
+v_arg_avg_coverages_no_pairs = {}
+v_arg_std_coverages_no_pairs = {}
 
 # Run multiple times
 for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
@@ -49,6 +51,8 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
     uniq_interleavings = {}
     avg_coverages = {}
     std_coverages = {}
+    avg_coverages_no_pairs = {}
+    std_coverages_no_pairs = {}
 
     for n_threads in tqdm(NUMBER_THREADS, desc="Number of Threads", leave=False):
         run_times = []
@@ -73,15 +77,21 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
                 if "Unique interleavings" in line:
                     uniq_interleavings[n_runs] = int(line.split(": ")[1])
 
-                if "Average runtime" in line:
+                if "Average runtime (ms):" in line:
                     run_times.append(float(line.split(": ")[1]))
 
                 if not DISABLE_COVERAGE:
-                    if "Average Levenshtein distance" in line:
+                    if "Average Levenshtein distance:" in line:
                         avg_coverages[n_runs] = float(line.split(": ")[1])
 
-                    if "Levenshtein distance standard deviation" in line:
+                    if "Levenshtein distance standard deviation:" in line:
                         std_coverages[n_runs] = float(line.split(": ")[1])
+
+                    if "Average Levenshtein distance (No Pairs):" in line:
+                        avg_coverages_no_pairs[n_runs] = float(line.split(": ")[1])
+
+                    if "Levenshtein distance standard deviation (No Pairs):" in line:
+                        std_coverages_no_pairs[n_runs] = float(line.split(": ")[1])
 
         avg_run_times[n_threads] = np.average(run_times)
 
@@ -89,6 +99,8 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
     v_arg_uniq_interleavings[v_arg] = flatten_results_map(uniq_interleavings, v_arg)
     v_arg_avg_coverages[v_arg] = flatten_results_map(avg_coverages, v_arg)
     v_arg_std_coverages[v_arg] = flatten_results_map(std_coverages, v_arg)
+    v_arg_std_coverages_no_pairs[v_arg] = flatten_results_map(std_coverages_no_pairs, v_arg)
+    v_arg_avg_coverages_no_pairs[v_arg] = flatten_results_map(avg_coverages_no_pairs, v_arg)
 
 print()
 print()
@@ -109,3 +121,11 @@ if not DISABLE_COVERAGE:
     print("Levenshtein distance standard deviation: ")
     for v_arg in VARIABLE_ARGS:
         print(v_arg_std_coverages[v_arg])
+
+    print("Average Levenshtein distance (no pairs): ")
+    for v_arg in VARIABLE_ARGS:
+        print(v_arg_avg_coverages_no_pairs[v_arg])
+
+    print("Levenshtein distance standard deviation (no pairs): ")
+    for v_arg in VARIABLE_ARGS:
+        print(v_arg_std_coverages_no_pairs[v_arg])

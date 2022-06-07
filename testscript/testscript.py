@@ -150,10 +150,13 @@ for file in files:
 
 ###############################################################################################################
 
+if len(interleavings) != len(interleavings_no_pairs):
+    print("Interleaving number with and without pairs did not match.")
+    exit(1)
+
 print()
 print("Results:")
 print(f'\tUnique interleavings (out of {len(interleavings)}): {len(set(interleavings))}')
-print(f'\tUnique interleavings (No pairs) (out of {len(interleavings_no_pairs)}): {len(set(interleavings_no_pairs))}')
 print(f'\tAverage runtime (ms): {round(np.average(runtimes), 0)}')
 
 # For regular pairs
@@ -168,7 +171,7 @@ if not argv.disable_coverage:
     print(f'\tAverage Levenshtein distance: {round(np.average(leven_dists), 3)}')
     print(f'\tLevenshtein distance standard deviation: {round(float(np.std(leven_dists)), 3)}')
 
-# For mapped pairs
+    # For mapped pairs
     leven_dists = []
 
     # Calculate average ratio
