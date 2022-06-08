@@ -71,6 +71,11 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
     bodyBox.body().validate();
   }
 
+  /**
+   * Get runnable classes that are inserted as parameter into initialized threads
+   * @param body
+   * @return
+   */
   private static List<SootClass> getRunnableClasses(JimpleBody body) {
     return body.getUnits()
                .stream()
@@ -88,8 +93,8 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
                .map(JimpleLocal::getType)
                .filter(RefType.class::isInstance)
                .map(RefType.class::cast)
-               .map(RefType::getSootClass) // This blacklists lambdas
-               .filter(c -> c.implementsInterface("java.lang.Runnable"))
+               .map(RefType::getSootClass)
+               .filter(ThreadCreationNoiser::isRunnableClass)
                .collect(Collectors.toList());
   }
 
@@ -111,6 +116,12 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
                .collect(Collectors.toList());
   }
 
+  /**
+   * Get runnable methods and lambdas launched by thread creation
+   * usually these are launched as a lambda parameter to a thread start
+   * @param body
+   * @return
+   */
   private static List<SootClass> getRunnableMethods(JimpleBody body) {
     return body.getUnits()
                .stream()
@@ -161,6 +172,22 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
 
     if (sootClass.hasSuperclass())
       return isThreadOrRunnableClass(sootClass.getSuperclass());
+
+    return false;
+  }
+
+  /***
+   * Recursively check if the class implements a Runnable interface
+   * @param sootClass
+   * @return
+   */
+  private static boolean isRunnableClass(SootClass sootClass) {
+    for (SootClass implementsClass : sootClass.getInterfaces())
+      if (extendsRunnable(implementsClass))
+        return true;
+
+    if (sootClass.hasSuperclass())
+      return isRunnableClass(sootClass.getSuperclass());
 
     return false;
   }
