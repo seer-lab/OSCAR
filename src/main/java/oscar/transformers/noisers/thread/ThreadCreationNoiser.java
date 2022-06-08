@@ -6,16 +6,12 @@ import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleSceneTransformer;
 import soot.*;
 import soot.jimple.JimpleBody;
-import soot.jimple.LongConstant;
-import soot.jimple.Stmt;
-import soot.jimple.StringConstant;
 import soot.jimple.internal.*;
 import soot.tagkit.StringConstantValueTag;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class ThreadCreationNoiser extends JimpleSceneTransformer {
@@ -93,7 +89,7 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
                .filter(RefType.class::isInstance)
                .map(RefType.class::cast)
                .map(RefType::getSootClass) // This blacklists lambdas
-               .filter(c ->  c.implementsInterface("java.lang.Runnable"))
+               .filter(c -> c.implementsInterface("java.lang.Runnable"))
                .collect(Collectors.toList());
   }
 
@@ -143,9 +139,44 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
   private static boolean isThreadStartOrRunStatement(JInvokeStmt stmt) {
     SootMethodRef ref = stmt.getInvokeExpr().getMethodRef();
     String methodName = ref.getName();
-    String className = ref.getDeclaringClass().getName();
+    SootClass sootClass = ref.getDeclaringClass();
 
-    return List.of("start", "run").contains(methodName) && className.equals("java.lang.Thread");
+    // Check if class contains start or run methods
+    return List.of("start", "run").contains(methodName) && isThreadOrRunnableClass(sootClass);
+  }
+
+  /***
+   * Recursively check if the class is a thread class, extends a thread class or implements a Runnable interface
+   * @param sootClass
+   * @return
+   */
+  private static boolean isThreadOrRunnableClass(SootClass sootClass) {
+    // Check if
+    if (sootClass.getName().equals("java.lang.Thread"))
+      return true;
+
+    for (SootClass implementsClass : sootClass.getInterfaces())
+      if (extendsRunnable(implementsClass))
+        return true;
+
+    if (sootClass.hasSuperclass())
+      return isThreadOrRunnableClass(sootClass.getSuperclass());
+
+    return false;
+  }
+
+  /***
+   * Recursively check if class extends from a Runnable class
+   * @param sootClass
+   * @return
+   */
+  private static boolean extendsRunnable(SootClass sootClass) {
+    if (sootClass.getName().equals("java.lang.Runnable"))
+      return true;
+    else if (sootClass.hasSuperclass())
+      return extendsRunnable(sootClass.getSuperclass());
+
+    return false;
   }
 }
 
