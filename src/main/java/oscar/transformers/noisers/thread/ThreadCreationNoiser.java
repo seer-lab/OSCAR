@@ -6,12 +6,16 @@ import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleSceneTransformer;
 import soot.*;
 import soot.jimple.JimpleBody;
+import soot.jimple.LongConstant;
+import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
 import soot.jimple.internal.*;
 import soot.tagkit.StringConstantValueTag;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class ThreadCreationNoiser extends JimpleSceneTransformer {
@@ -29,6 +33,9 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
 
     // Tag all runnable methods and lambdas launched by thread creation
     runnableClasses.addAll(getRunnableMethods(bodyBox.body()));
+
+    // Tag all classes that extend the thread interface and are launched
+    runnableClasses.addAll(getThreadExtendingClasses(bodyBox.body()));
 
     // Noise all runnable classes' run methods
     runnableClasses.forEach(ThreadCreationNoiser::noiseThreadRoutine);
@@ -76,7 +83,7 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
                .map(JInvokeStmt::getInvokeExpr)
                .filter(JSpecialInvokeExpr.class::isInstance)
                .map(JSpecialInvokeExpr.class::cast)
-               .filter(e -> e.getMethod().getDeclaringClass().getName().equals("<java.lang.Thread"))
+               .filter(e -> e.getMethod().getDeclaringClass().getName().equals("java.lang.Thread"))
                .filter(e -> e.getMethod().getName().equals("<init>"))
                .filter(e -> e.getArgCount() != 0)
                .map(e -> e.getArg(0))
@@ -85,6 +92,25 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
                .map(JimpleLocal::getType)
                .filter(RefType.class::isInstance)
                .map(RefType.class::cast)
+               .map(RefType::getSootClass)
+               .filter(c -> !c.getName().equals("java.lang.Runnable")) // This blacklists lambdas
+               .collect(Collectors.toList());
+  }
+
+  private static List<SootClass> getThreadExtendingClasses(JimpleBody body) {
+    return body.getUnits()
+               .stream()
+               .filter(JInvokeStmt.class::isInstance)
+               .map(JInvokeStmt.class::cast)
+               .map(JInvokeStmt::getInvokeExpr)
+               .filter(JSpecialInvokeExpr.class::isInstance)
+               .map(JSpecialInvokeExpr.class::cast)
+               .map(JSpecialInvokeExpr::getMethod)
+               .filter(m -> m.getName().equals("<init>"))
+               .map(SootMethod::getDeclaringClass)
+               .filter(SootClass::hasSuperclass)
+               .filter(c -> c.getSuperclass().getName().equals("java.lang.Thread"))
+               .map(SootClass::getType)
                .map(RefType::getSootClass)
                .collect(Collectors.toList());
   }
@@ -122,3 +148,6 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
     return List.of("start", "run").contains(methodName) && className.equals("java.lang.Thread");
   }
 }
+
+
+
