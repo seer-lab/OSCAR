@@ -92,8 +92,8 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
                .map(JimpleLocal::getType)
                .filter(RefType.class::isInstance)
                .map(RefType.class::cast)
-               .map(RefType::getSootClass)
-               .filter(c -> !c.getName().equals("java.lang.Runnable")) // This blacklists lambdas
+               .map(RefType::getSootClass) // This blacklists lambdas
+               .filter(c ->  c.implementsInterface("java.lang.Runnable"))
                .collect(Collectors.toList());
   }
 
