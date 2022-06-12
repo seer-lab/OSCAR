@@ -15,6 +15,13 @@ def to_unicode(code: int):
     return chr(int(str(code).zfill(8), 16))
 
 
+def flatten_results_map(results_map):
+    total = ""
+    for key in results_map.keys():
+        total += f"({key},{round(results_map[key], 2)})"
+    return total
+
+
 argparser = argparse.ArgumentParser(
     prog='testscript',
     description='Automate OSCAR\'s noise injection routine.',
@@ -25,7 +32,7 @@ argparser.add_argument('program_dir', help='location of program to run.')
 argparser.add_argument('executable', help='Name of program\'s main class to run or jar file name.')
 argparser.add_argument('program_args', type=str, help='Arguments to be passed to program.')
 
-argparser.add_argument('-c', '--count', default=30, type=int, help='Number of times to run program.')
+argparser.add_argument('-c', '--count', default="30", type=str, help='Number of times to run program (comma separated).')
 argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
 argparser.add_argument('-dt', '--disable_thread_ids', action='store_true', help='Disable thread ID parsing.')
 argparser.add_argument('-u', '--unordered_thread_ids', action='store_true', help='Maintain original thread ID order.')
@@ -38,18 +45,6 @@ if not os.path.isdir(argv.program_dir):
     print(f'Folder {argv.program_dir} not found')
     exit(1)
 
-# Check if temp directory exists and create it
-if os.path.isdir('.testscript_temp'):
-    shutil.rmtree('.testscript_temp')
-
-if argv.count < 0:
-    print('Invalid program run count.')
-    exit(1)
-
-os.mkdir('.testscript_temp')
-
-print(f'Running program {argv.count} times')
-
 os.chdir(argv.program_dir)
 
 # Remove old generated files
@@ -61,9 +56,17 @@ if os.path.isdir('oscar_output'):
 # Save runtimes
 runtimes = []
 
+run_counts = []
+for rc in str(argv.count).split(","):
+    run_counts.append(int(rc))
+
+runs = run_counts[len(run_counts) - 1]
+
+print(f'Running program {argv.count} times')
+
 # Run program x times
-for i in range(0, argv.count):
-    print(f'Running {i + 1}/{argv.count}')
+for i in range(0, runs):
+    print(f'Running {i + 1}/{runs}')
     start_time = time.time_ns() / 1_000_000
 
     if not argv.jar:
@@ -150,34 +153,30 @@ for file in files:
 
 ###############################################################################################################
 
-if len(interleavings) != len(interleavings_no_pairs):
-    print("Interleaving number with and without pairs did not match.")
-    exit(1)
-
 print()
 print("Results:")
-print(f'\tUnique interleavings (out of {len(interleavings)}): {len(set(interleavings))}')
 print(f'\tAverage runtime (ms): {round(np.average(runtimes), 0)}')
 
-# For regular pairs
 if not argv.disable_coverage:
-    leven_dists = []
+    avg_dist_runs = {}
+    std_dev_runs = {}
+    uniq_interleavings_runs = {}
 
-    # Calculate average ratio
-    for x in range(0, len(interleavings) - 1):
-        for y in range(x + 1, len(interleavings)):
-            leven_dists.append(ls.distance(interleavings[x], interleavings[y]))
+    for rc in run_counts:
+        interleavings_split = interleavings[0:rc]
+        uniq_interleavings_runs[rc] = len(set(interleavings_split))
 
-    print(f'\tAverage Levenshtein distance: {round(np.average(leven_dists), 3)}')
-    print(f'\tLevenshtein distance standard deviation: {round(float(np.std(leven_dists)), 3)}')
+        # For regular pairs
+        leven_dists = []
 
-    # For mapped pairs
-    leven_dists = []
+        # Calculate average ratio
+        for x in range(0, len(interleavings_no_pairs) - 1):
+            for y in range(x + 1, len(interleavings_no_pairs)):
+                leven_dists.append(ls.distance(interleavings_no_pairs[x], interleavings_no_pairs[y]))
 
-    # Calculate average ratio
-    for x in range(0, len(interleavings_no_pairs) - 1):
-        for y in range(x + 1, len(interleavings_no_pairs)):
-            leven_dists.append(ls.distance(interleavings_no_pairs[x], interleavings_no_pairs[y]))
+        avg_dist_runs[rc] = round(np.average(leven_dists), 2)
+        std_dev_runs[rc] = round(float(np.std(leven_dists)), 2)
 
-    print(f'\tAverage Levenshtein distance (No Pairs): {round(np.average(leven_dists), 3)}')
-    print(f'\tLevenshtein distance standard deviation (No Pairs): {round(float(np.std(leven_dists)), 3)}')
+    print(f'\tUnique interleavings: {flatten_results_map(uniq_interleavings_runs)}')
+    print(f'\tAverage Levenshtein distance: {flatten_results_map(avg_dist_runs)}')
+    print(f'\tLevenshtein distance standard deviation: {flatten_results_map(std_dev_runs)}')
