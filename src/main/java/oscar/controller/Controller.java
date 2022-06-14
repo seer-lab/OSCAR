@@ -34,27 +34,6 @@ public final class Controller {
   }
 
   /**
-   * Signal the controller that a noise location has been reached
-   *
-   * @param category instrumented location placement category
-   * @param uuid     instrumented location generated uuid
-   */
-  public static void signal(NoiseCategory category, String uuid) {
-    long threadID = Thread.currentThread().getId();
-
-    if (!options.NoiseCategories.contains(category)) {
-      logger.fine("Skipping noise category '" + category.name() + "'.");
-      return;
-    }
-
-    if (options.ControllerOutput != null)
-      options.ControllerOutput.write(threadID + " " + uuid);
-
-    if (!options.Quiet)
-      logger.fine("[" + "SIGNAL" + "]" + "[" + category.name() + "]" + "[" + uuid + "]");
-  }
-
-  /**
    * Make the injected program sleep
    *
    * @param placement instrumented location type
@@ -64,10 +43,23 @@ public final class Controller {
     if (options.DisableNoise)
       return;
 
-    if (!options.NoisePlacements.contains(placement) && !options.NoiseCategories.contains(placement.getCategory())) {
-      logger.fine("Skipping noise placement type '" + placement.name() + "'.");
+    if (!options.NoiseCategories.contains(placement.getCategory())) {
+      logger.fine("[SLEEP] Skipping noise category '" + placement.getCategory().name() + "'.");
       return;
     }
+
+    if (!options.NoisePlacements.contains(placement)) {
+      logger.fine("[SLEEP] Skipping noise placement type '" + placement.name() + "'.");
+      return;
+    }
+
+    long threadID = Thread.currentThread().getId();
+
+    if (options.ControllerOutput != null)
+      options.ControllerOutput.write(threadID + " " + uuid);
+
+    if (!options.Quiet)
+      logger.fine("[SIGNAL][" + placement.getCategory() + "]" + "[" + uuid + "]");
 
     // Get a random noise intensity
     long noiseIntensity = options.MinNoiseIntensity;
@@ -76,7 +68,7 @@ public final class Controller {
     // Sleep for a determined amount of time
     try {
       if (!options.YieldMode) {
-        logger.finest("[" + "SLEEP" + "]" +
+        logger.finest("[SLEEP]" +
                           "[" + placement.getCategory().name() + "]" +
                           "[" + placement.name() + "]" +
                           "[" + uuid + "]: "

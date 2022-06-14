@@ -18,7 +18,7 @@ public class StatementGenerator {
     this.localGenerator = localGenerator;
     this.body = body;
   }
-  
+
   public JimpleLocal instantiateClass(String className, List<Value> initArgs) {
     // Add a new local
     SootClass sootClass = Scene.v().getSootClass(className);
@@ -121,6 +121,7 @@ public class StatementGenerator {
     return List.of(enumAssign, noiseStmt);
   }
 
+  /*
   public List<Unit> signal(NoiseCategory category) {
     // Instantiate enum value
     JimpleLocal enumLocal = localGenerator.fromType(RefType.v(category.getClass().getName()));
@@ -141,7 +142,7 @@ public class StatementGenerator {
 
     return List.of(enumAssign, noiseStmt);
   }
-
+  */
 
   public void appendUnit(Unit unit) {
     Unit indexUnit = body.getUnits().stream()

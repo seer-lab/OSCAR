@@ -18,18 +18,19 @@ public final class ReentrantLockNoiser extends JimpleTransformer {
     super("rln", ReentrantLockNoiser.class, ReentrantLockNoiser::routine);
   }
 
-  private static void routine(JimpleBodyBox body) {
+  private static void routine(JimpleBodyBox bodyBox) {
     // Find calls to reentrant lock locks and unlocks
-    List<JInvokeStmt> reentrantLockCalls = getReentrantLockCalls(body.body());
+    List<JInvokeStmt> reentrantLockCalls = getReentrantLockCalls(bodyBox.body());
 
     // Create statement to insert sleep noise before and after sync blocks
     for (JInvokeStmt lockCall : reentrantLockCalls) {
-      if (getInvokeExprMethodName(lockCall).equals("lock")) {
-        body.body().getUnits().insertBefore(body.generator().Statement.signal(NoiseCategory.LOCK_BASED), lockCall);
-        body.body().getUnits().insertBefore(body.generator().Statement.noise(NoisePlacement.BEFORE_REENTRANT_LOCK_LOCK), lockCall);
-      } else if (getInvokeExprMethodName(lockCall).equals("unlock")) {
-        List<Unit> units = body.generator().Statement.noise(NoisePlacement.AFTER_REENTRANT_LOCK_UNLOCK);
-        body.body().getUnits().insertAfter(units, lockCall);
+      if (getInvokeExprMethodName(lockCall).equals("lock"))
+        bodyBox.body()
+            .getUnits()
+            .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_REENTRANT_LOCK_LOCK), lockCall);
+      else if (getInvokeExprMethodName(lockCall).equals("unlock")) {
+        List<Unit> units = bodyBox.generator().Statement.noise(NoisePlacement.AFTER_REENTRANT_LOCK_UNLOCK);
+        bodyBox.body().getUnits().insertAfter(units, lockCall);
       } else
         throw new RuntimeException("Invalid reentrant lock call statement");
     }
