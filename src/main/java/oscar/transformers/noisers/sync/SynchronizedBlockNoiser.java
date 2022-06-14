@@ -24,8 +24,8 @@ public final class SynchronizedBlockNoiser extends JimpleTransformer {
     // Create statement to insert sleep noise before and after sync blocks
     for (Unit monitorCall : monitorCalls) {
       if (monitorCall instanceof JEnterMonitorStmt) {
-        body.body().getUnits().insertBefore(body.generator().Statement.noise(NoisePlacement.BEFORE_SYNC_BLOCK), monitorCall);
         body.body().getUnits().insertBefore(body.generator().Statement.signal(NoiseCategory.SYNCHRONIZATION_BASED), monitorCall);
+        body.body().getUnits().insertBefore(body.generator().Statement.noise(NoisePlacement.BEFORE_SYNC_BLOCK), monitorCall);
       } else if (monitorCall instanceof JExitMonitorStmt) {
         List<Unit> units = body.generator().Statement.noise(NoisePlacement.AFTER_SYNC_BLOCK);
         body.body().getUnits().insertAfter(units, monitorCall);

@@ -41,10 +41,10 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
 
     //Replace original calls with calls to wrapped method
     for (JInvokeStmt stmt : invokeStmts) {
+      bodyBox.body().getUnits().insertBefore(bodyBox.generator().Statement.signal(NoiseCategory.THREAD_BASED), stmt);
       bodyBox.body()
              .getUnits()
              .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_THREAD_LAUNCH), stmt);
-      bodyBox.body().getUnits().insertBefore(bodyBox.generator().Statement.signal(NoiseCategory.THREAD_BASED), stmt);
       bodyBox.body()
              .getUnits()
              .insertAfter(bodyBox.generator().Statement.noise(NoisePlacement.AFTER_THREAD_LAUNCH), stmt);
@@ -60,8 +60,8 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
       return;
 
     // Insert noise and signal statements after first (identity statement)
-    List<Unit> noiseStmts = new ArrayList<>(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_THREAD_ROUTINE));
-    noiseStmts.addAll(bodyBox.generator().Statement.signal(NoiseCategory.THREAD_BASED));
+    List<Unit> noiseStmts = new ArrayList<>(bodyBox.generator().Statement.signal(NoiseCategory.THREAD_BASED));
+    noiseStmts.addAll(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_THREAD_ROUTINE));
 
     bodyBox.body().getUnits().insertBefore(noiseStmts, bodyBox.body().getFirstNonIdentityStmt());
 

@@ -11,18 +11,17 @@ public class PrintID {
       nThreads = Integer.parseInt(args[0]);
 
     for (int i = 0; i < nThreads; i++)
-      threads.add(new Thread(() -> {
-        ReentrantLock lock = new ReentrantLock();
-
-        lock.lock();
-        System.out.println(Thread.currentThread().getId());
-        lock.unlock();
-      }));
+      threads.add(new Thread(PrintID::routine));
 
     for (Thread t : threads)
       t.start();
 
     for (Thread t : threads)
       t.join();
+  }
+
+  private static void routine() {
+    new ReentrantLock().lock();
+    System.out.println(Thread.currentThread().getId());
   }
 }
