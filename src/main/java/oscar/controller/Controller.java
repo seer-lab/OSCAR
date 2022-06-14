@@ -40,9 +40,7 @@ public final class Controller {
    * @param uuid      instrumented location generated uuid
    */
   public static void noise(NoisePlacement placement, String uuid) {
-    if (options.DisableNoise)
-      return;
-
+    // Check if location enabled
     if (!options.NoiseCategories.contains(placement.getCategory())) {
       logger.fine("[SLEEP] Skipping noise category '" + placement.getCategory().name() + "'.");
       return;
@@ -53,6 +51,7 @@ public final class Controller {
       return;
     }
 
+    // Write location trace
     long threadID = Thread.currentThread().getId();
 
     if (options.ControllerOutput != null)
@@ -60,6 +59,10 @@ public final class Controller {
 
     if (!options.Quiet)
       logger.fine("[SIGNAL][" + placement.getCategory() + "]" + "[" + uuid + "]");
+
+    // Do not noise if noise is disabled
+    if (options.DisableNoise)
+      return;
 
     // Get a random noise intensity
     long noiseIntensity = options.MinNoiseIntensity;
