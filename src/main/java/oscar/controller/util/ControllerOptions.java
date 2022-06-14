@@ -133,9 +133,10 @@ public final class ControllerOptions {
         case "NoiseCategories":
           options.NoiseCategories.clear();
 
-          // Read all noise placement categories
+          // Read all noise placement categories and add all their respective noise types
           while (i + 1 < argv.length && !argv[i + 1].contains("-"))
             options.NoiseCategories.add(NoiseCategory.fromString(argv[++i]));
+
           break;
         case "PrintNoisePlacements":
           printNoiseLocations();
@@ -174,6 +175,12 @@ public final class ControllerOptions {
 
     if (options.MinNoiseIntensity + options.MaxNoiseIntensity == 0)
       options.DisableNoise = true;
+
+    // Activate all noise categories from activated noise placements and vice versa
+    Arrays.stream(NoisePlacement.values())
+          .filter(np -> options.NoiseCategories.contains(np.getCategory()))
+          .forEach(options.NoisePlacements::add);
+    options.NoisePlacements.stream().map(NoisePlacement::getCategory).forEach(options.NoiseCategories::add);
 
     return options;
   }
