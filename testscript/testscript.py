@@ -95,17 +95,15 @@ print(f'Finished running. Analyzing files.')
 os.chdir('oscar_output')
 files = os.listdir('.')
 
-interleavings = []
 location_ids = {}
-interleavings_no_pairs = []
-mapped_interleaving_pairs = {}
+interleavings = []
+interleaving_pairs = {}
 
 for file in files:
     content = open(file, 'r')  # .read()
     thread_ids = []
 
     interleaving = ''
-    interleaving_no_pairs = ''
 
     # Get all thread ids for ordering
     for line in content:
@@ -141,15 +139,12 @@ for file in files:
         if not argv.disable_thread_ids:
             interleaving_pair += f'{thread_id}{interleaving_pair}'
 
-        interleaving += interleaving_pair
-
         # Transform interleaving pair representation in single mapped unicode
-        if interleaving_pair not in mapped_interleaving_pairs:
-            mapped_interleaving_pairs[interleaving_pair] = to_unicode(len(mapped_interleaving_pairs))
-        interleaving_no_pairs += mapped_interleaving_pairs[interleaving_pair]
+        if interleaving_pair not in interleaving_pairs:
+            interleaving_pairs[interleaving_pair] = to_unicode(len(interleaving_pairs))
+        interleaving += interleaving_pairs[interleaving_pair]
 
     interleavings.append(interleaving)
-    interleavings_no_pairs.append(interleaving_no_pairs)
 
 ###############################################################################################################
 
@@ -170,9 +165,9 @@ if not argv.disable_coverage:
         leven_dists = []
 
         # Calculate average ratio
-        for x in range(0, len(interleavings_no_pairs) - 1):
-            for y in range(x + 1, len(interleavings_no_pairs)):
-                leven_dists.append(ls.distance(interleavings_no_pairs[x], interleavings_no_pairs[y]))
+        for x in range(0, len(interleavings) - 1):
+            for y in range(x + 1, len(interleavings)):
+                leven_dists.append(ls.distance(interleavings[x], interleavings[y]))
 
         avg_dist_runs[rc] = round(np.average(leven_dists), 2)
         std_dev_runs[rc] = round(float(np.std(leven_dists)), 2)
