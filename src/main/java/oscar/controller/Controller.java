@@ -64,7 +64,7 @@ public final class Controller {
     if (options.DisableNoise)
       return;
 
-    if (!options.NoisePlacements.contains(placement) || !options.NoiseCategories.contains(placement.getCategory())) {
+    if (!options.NoisePlacements.contains(placement) && !options.NoiseCategories.contains(placement.getCategory())) {
       logger.fine("Skipping noise placement type '" + placement.name() + "'.");
       return;
     }
