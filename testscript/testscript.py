@@ -163,9 +163,9 @@ if not argv.disable_coverage:
         leven_dists = []
 
         # Calculate average ratio
-        for x in range(0, len(interleavings) - 1):
-            for y in range(x + 1, len(interleavings)):
-                leven_dists.append(ls.distance(interleavings[x], interleavings[y]))
+        for x in range(0, len(interleavings_split) - 1):
+            for y in range(x + 1, len(interleavings_split)):
+                leven_dists.append(ls.distance(interleavings_split[x], interleavings_split[y]))
 
         avg_dist_runs[rc] = round(np.average(leven_dists), 2)
         std_dev_runs[rc] = round(float(np.std(leven_dists)), 2)
