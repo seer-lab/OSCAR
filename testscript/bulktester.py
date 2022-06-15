@@ -4,22 +4,21 @@ import numpy as np
 
 SORTED_DEFAULT_VALUES = sorted([50, 100, 250, 500, 1000])
 
-PROGRAM = "../output PrintID"
+PROGRAM = "../output Main"
 TESTSCRIPT_ARGS = "-j" if PROGRAM.endswith(".jar") else ""
-DISABLE_COVERAGE = True
-NUMBER_RUNS = [5]  # [5, 10, 15]
-NUMBER_THREADS = [2, 4, 6]  # SORTED_DEFAULT_VALUES  # [3]
-FIXED_ARGS = "-lfo -m 1"
+DISABLE_COVERAGE = False
+NUMBER_RUNS = [5, 25, 50]  # [5, 10, 15]
+NUMBER_THREADS = [2]  # SORTED_DEFAULT_VALUES  # [3]
+FIXED_ARGS = " -lfo -np tbbtr -nc lb sb -m 1"
 
 VARIABLE_ARGS = [
     "-M 5",
     "-M 10",
     "-M 25",
-    "-M 50",
+    "-M 5 -y",
     "-M 10 -y",
-    "-M 100 -y",
-    "-M 500 -y",
-    "-M 1000 -y",
+    "-M 25 -y",
+    "-M 50 -y",
     "-d",
 ]
 
@@ -39,6 +38,7 @@ v_arg_avg_run_times = {}
 uniq_interleavings = {}
 avg_coverages = {}
 std_coverages = {}
+avg_cluster_sizes = {}
 
 n_runs = ",".join([str(element) for element in NUMBER_RUNS])
 
@@ -78,6 +78,9 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
                 if "Levenshtein distance standard deviation:" in line:
                     std_coverages[v_arg] = line.split(": ")[1].strip()
 
+                if "Average Cluster Size:" in line:
+                    avg_cluster_sizes[v_arg] = line.split(": ")[1].strip()
+
         avg_run_times[n_threads] = np.average(run_times)
 
     v_arg_avg_run_times[v_arg] = ""
@@ -103,3 +106,7 @@ else:
     print("Levenshtein distance standard deviation: ")
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(std_coverages, v_arg)
+
+    print("Average Cluster Size: ")
+    for v_arg in VARIABLE_ARGS:
+        pgfplots_format(avg_cluster_sizes, v_arg)

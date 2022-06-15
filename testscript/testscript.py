@@ -154,10 +154,21 @@ if not argv.disable_coverage:
     avg_dist_runs = {}
     std_dev_runs = {}
     uniq_interleavings_runs = {}
+    avg_cluster_size = {}
 
     for rc in run_counts:
         interleavings_split = interleavings[0:rc]
         uniq_interleavings_runs[rc] = len(set(interleavings_split))
+
+        clusters = {}
+        # Calculate avg cluster size
+        for interleaving in interleavings_split:
+            if interleaving not in clusters:
+                clusters[interleaving] = 1
+            else:
+                clusters[interleaving] += 1
+
+        avg_cluster_size[rc] = np.average( list(clusters.values()))
 
         # For regular pairs
         leven_dists = []
@@ -173,3 +184,4 @@ if not argv.disable_coverage:
     print(f'\tUnique interleavings: {flatten_results_map(uniq_interleavings_runs)}')
     print(f'\tAverage Levenshtein distance: {flatten_results_map(avg_dist_runs)}')
     print(f'\tLevenshtein distance standard deviation: {flatten_results_map(std_dev_runs)}')
+    print(f'\tAverage Cluster Size: {flatten_results_map(avg_cluster_size)}')
