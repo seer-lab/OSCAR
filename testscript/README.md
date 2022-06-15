@@ -9,8 +9,10 @@
   - subprocess
   - Levenshtein 
   - numpy 
-  - pathlib 
-- Pip 21.2.3
+  - pathlib
+  - tqdm 
+- python-pip 21.2.3
+- python-venv
 - 
 ### Running Instructions
 
