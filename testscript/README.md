@@ -13,7 +13,7 @@
   - tqdm 
 - python-pip 21.2.3
 - python-venv
-- 
+
 ### Running Instructions
 
 ```sh
