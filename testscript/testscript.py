@@ -124,12 +124,10 @@ for file in files:
     content = open(file, 'r')
 
     for line in content:
-        thread_id = int(line.split(' ')[0].strip())
-        thread_id = mapped_thread_ids[thread_id]
+        thread_id = mapped_thread_ids[int(line.split(' ')[0].strip())]
 
         # Make the interleaving id value start from 0
         location_id = line.split(' ')[1].strip()
-        # TODO This may cause an issue, if different runs have a different number of threads (not relevant now)
         if location_id not in location_ids:
             location_ids[location_id] = to_unicode(len(location_ids) + len(thread_ids))
         location_id = location_ids[location_id]
@@ -137,7 +135,7 @@ for file in files:
         # Append content with or without thread id
         interleaving_pair = location_id
         if not argv.disable_thread_ids:
-            interleaving_pair += f'{thread_id}{interleaving_pair}'
+            interleaving_pair = f'{thread_id}{interleaving_pair}'
 
         # Transform interleaving pair representation in single mapped unicode
         if interleaving_pair not in interleaving_pairs:
