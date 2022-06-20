@@ -133,13 +133,6 @@ public final class Engine {
       case JAR:
         Options.v().set_output_dir(OSCAR_TEMP_GENERATED_DIR);
 
-        // Delete target jar if exists
-        try {
-          Files.deleteIfExists(Paths.get(outputDirectory + File.separator + "out.jar"));
-        } catch (IOException e) {
-          throw new RuntimeException("Failed to delete previously generated file. Check file permissions.", e);
-        }
-
         // Extract jar contents to directory
         //noinspection resource
         ZipFile jar = new ZipFile(targetFile);
@@ -195,6 +188,11 @@ public final class Engine {
 
     // If output is jar, create jar
     if (targetFileType == FILE_TYPE.JAR) {
+      Options.v().set_output_dir(OSCAR_TEMP_GENERATED_DIR);
+
+      String[] splitTargetJarPath = targetFile.split("/");
+      String outputJarName = splitTargetJarPath[splitTargetJarPath.length-1];
+
       // Try to create output folder
       try {
         Files.createDirectory(Paths.get(outputDirectory));
@@ -203,7 +201,7 @@ public final class Engine {
       }
 
       //noinspection resource
-      ZipFile jar = new ZipFile(outputDirectory + File.separator + "oscar_out.jar");
+      ZipFile jar = new ZipFile(outputDirectory + File.separator + outputJarName);
 
       try {
         for (File tempFile : getDirectoryContent(OSCAR_TEMP_EXTRACT_DIR))
