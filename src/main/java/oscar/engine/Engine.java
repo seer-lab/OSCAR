@@ -20,6 +20,7 @@ import oscar.utils.logger.LoggerFactory;
 import oscar.utils.logger.LoggerFormatter;
 import soot.*;
 import soot.options.Options;
+import soot.util.Chain;
 
 import java.io.File;
 import java.io.IOException;
@@ -156,16 +157,12 @@ public final class Engine {
     ClassWriter.writeClassPackageToFile(Controller.class, OSCAR_TEMP_EXTRACT_DIR);
     injectedClasses.forEach(c -> ClassWriter.writeToFile(c, OSCAR_TEMP_EXTRACT_DIR));
 
-    /* TODO does not seem necessary
-    try {
-      SootClass sc = Scene.v().loadClassAndSupport(mainClass);
-      sc.setApplicationClass();
-    } catch (NullPointerException e) {
-      throw new RuntimeException("Failed to load main class. Check path.", e);
-    }
-    */
-
+    // Check main exists after loading necessary classes
     Scene.v().loadNecessaryClasses();
+    Chain<SootClass> sc = Scene.v().getClasses();
+
+    if (sc.stream().noneMatch(c -> c.getName().equals(mainClass)))
+      throw new RuntimeException("Failed to find provided main class.");
 
     logger.info("Soot engine initialization complete.");
 
@@ -191,7 +188,7 @@ public final class Engine {
       Options.v().set_output_dir(OSCAR_TEMP_GENERATED_DIR);
 
       String[] splitTargetJarPath = targetFile.split("/");
-      String outputJarName = splitTargetJarPath[splitTargetJarPath.length-1];
+      String outputJarName = splitTargetJarPath[splitTargetJarPath.length - 1];
 
       // Try to create output folder
       try {
