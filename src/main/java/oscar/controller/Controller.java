@@ -51,14 +51,15 @@ public final class Controller {
       return;
     }
 
-    // Write location trace
     long threadID = Thread.currentThread().getId();
 
-    if (options.ControllerOutput != null)
-      options.ControllerOutput.write(threadID + " " + uuid);
+    // Write pre-noise location trace
+    if (!options.DisablePreNoiseTracing && options.ControllerOutput != null) {
+        options.ControllerOutput.write(threadID + " " + uuid);
 
-    if (!options.Quiet)
-      logger.fine("[SIGNAL][" + placement.getCategory() + "]" + "[" + uuid + "]");
+      if (!options.Quiet)
+        logger.fine("[SIGNAL][PRE-NOISE][" + placement.getCategory() + "]" + "[" + uuid + "]");
+    }
 
     // Do not noise if noise is disabled
     if (options.DisableNoise)
@@ -92,6 +93,14 @@ public final class Controller {
       }
     } catch (InterruptedException e) {
       throw new RuntimeException("OSCAR sleep statement was interrupted.", e);
+    }
+
+    // Write post-noise location trace
+    if (!options.DisablePostNoiseTracing && options.ControllerOutput != null) {
+      options.ControllerOutput.write(threadID + " " + uuid);
+
+      if (!options.Quiet)
+        logger.fine("[SIGNAL][POST-NOISE][" + placement.getCategory() + "]" + "[" + uuid + "]");
     }
   }
 

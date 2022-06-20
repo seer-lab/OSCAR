@@ -25,6 +25,9 @@ public final class ControllerOptions {
       new ControllerOption("MaxNoiseIntensity", "Set maximum noise intensity", "Long", "10", "-M", "--max_noise_intensity"),
       new ControllerOption("MinNoiseIntensity", "Set minimum noise intensity", "Long", "0", "-m", "--min_noise_intensity"),
       new ControllerOption("DisableNoise", "Disable all noise", "Flag", "False", "-d", "--disable-noise"),
+      new ControllerOption("DisableNoiseTracing", "Disable all noise tracing", "Flag", "False", "-dt", "--disable-tracing"),
+      new ControllerOption("DisablePreNoiseTracing", "Disable pre-noise tracing", "Flag", "False", "-d1", "--disable-pre-noise-trace"),
+      new ControllerOption("DisablePostNoiseTracing", "Disable post-noise tracing", "Flag", "False", "-d2", "--disable-post-noise-trace"),
       new ControllerOption("YieldMode", "Set noise type to yield.", "Flag", "False", "-y", "--yield"),
       new ControllerOption("NoisePlacements", "Set the list of active noise placements.", "List<String>", "All", "-np", "--noise-placements"),
       new ControllerOption("NoiseCategories", "Set the list of active noise categories.", "List<String>", "All", "-nc", "--noise-categories"),
@@ -41,6 +44,8 @@ public final class ControllerOptions {
   public Long MaxNoiseIntensity = 10L;
   public Long MinNoiseIntensity = 0L;
   public boolean DisableNoise = false;
+  public boolean DisablePostNoiseTracing = false;
+  public boolean DisablePreNoiseTracing = false;
   public final HashSet<NoisePlacement> NoisePlacements = NoisePlacement.getAll();
   public final HashSet<NoiseCategory> NoiseCategories = NoiseCategory.getAll();
 
@@ -144,6 +149,12 @@ public final class ControllerOptions {
           break;
         case "DisableNoise":
           options.DisableNoise = true;
+          break;
+        case "DisablePreNoiseTracing":
+          options.DisablePreNoiseTracing = true;
+          break;
+        case "DisablePostNoiseTracing":
+          options.DisablePostNoiseTracing = true;
           break;
         case "Verbose":
           if (options.Quiet)
