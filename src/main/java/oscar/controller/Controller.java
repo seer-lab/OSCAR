@@ -1,7 +1,6 @@
 package oscar.controller;
 
 import oscar.controller.noise.NoisePlacement;
-import oscar.controller.noise.NoiseCategory;
 import oscar.controller.util.ControllerOptions;
 import oscar.utils.logger.LoggerFactory;
 

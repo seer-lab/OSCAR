@@ -80,11 +80,11 @@ public final class Engine {
     // Register all transformers
     List.of(
         new ThreadCreationNoiser(),
+        new SharedVariableNoiser(),
 
         new SynchronizedBlockNoiser(),
         new SynchronizedMethodCallNoiser(),
         new ReentrantLockNoiser(),
-        // new SharedVariableNoiser(), TODO
 
         new ControllerInjector(),
         new ExitCaptureInjector()
