@@ -1,16 +1,22 @@
+import java.util.Random;
+
 public class SharedVars {
   public static int A = 1;
-  public static volatile int B = 2;
-  public static Object OBJ;
-  public static String STR;
+  public static int B = 2;
+
 
   public static void main(String[] args) throws InterruptedException {
-    int a = 1;
-    Object obj = null;
-    String str = null;
+    Clazz clazz = new Clazz();
 
-    Class1.method(a, obj, str);
-
-    Class1.method2("sfsa");
+    SharedVars.A = SharedVars.B;
+    SharedVars.B = Math.round(clazz.C);
+    clazz.C = 5 + clazz.C + 1 + 2 + 3 + new Random().nextInt();
+    SharedVars.A = inc(clazz.X);
+    clazz.D = clazz.D + 3;
   }
+
+  private static int inc(int a) {
+    return ++a;
+  }
+
 }

@@ -19,10 +19,11 @@ import java.util.stream.Collectors;
 public class SharedVariableNoiser extends JimpleSceneTransformer {
 
   public SharedVariableNoiser() {
-    super("svn", SharedVariableNoiser.class, SharedVariableNoiser::routine);
+    super("svn", SharedVariableNoiser.class);
+    this.routine = this::routine;
   }
 
-  private static void routine(JimpleBodyBox bodyBox) {
+  private void routine(JimpleBodyBox bodyBox) {
     // Check if this method is the main method. No shared accesses should occur here
     if (bodyBox.body().getMethod().getDeclaringClass().getName().equals(Engine.getMainClass())) {
       if (List.of("main", "main_wrapped", "<clinit>").contains(bodyBox.body().getMethod().getName()))
@@ -74,7 +75,7 @@ public class SharedVariableNoiser extends JimpleSceneTransformer {
         noiseStmt(unit, bodyBox);
   }
 
-  private static void processAssignment(JAssignStmt stmt, HashSet<JimpleLocal> sharedLocals) {
+  private void processAssignment(JAssignStmt stmt, HashSet<JimpleLocal> sharedLocals) {
     // Check if lvalue is a static field ref, tag if so
     if (stmt.getLeftOp() instanceof StaticFieldRef) {
       if (!stmt.hasTag(NoiserTag.SHARED_VAR_ACCESS.getName()))
@@ -128,7 +129,7 @@ public class SharedVariableNoiser extends JimpleSceneTransformer {
    * @param unit    the unit which has an access to a shared variable
    * @param bodyBox the body box of this method
    */
-  private static void noiseStmt(Unit unit, JimpleBodyBox bodyBox) {
+  private void noiseStmt(Unit unit, JimpleBodyBox bodyBox) {
     bodyBox.body()
            .getUnits()
            .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_SHARED_VARIABLE_ACCESS), unit);

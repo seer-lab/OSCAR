@@ -16,14 +16,12 @@ public abstract class JimpleSceneTransformer extends SceneTransformer {
   private final String subphase;
 
   private final Class<? extends JimpleSceneTransformer> clazz;
-  private final Consumer<JimpleBodyBox> routine;
-
   private final HashSet<String> visited = new HashSet<>();
+  protected Consumer<JimpleBodyBox> routine;
 
-  public JimpleSceneTransformer(String subPhase, Class<? extends JimpleSceneTransformer> clazz, Consumer<JimpleBodyBox> routine) {
+  public JimpleSceneTransformer(String subPhase, Class<? extends JimpleSceneTransformer> clazz) {
     this.subphase = phase + "." + subPhase;
     this.clazz = clazz;
-    this.routine = routine;
   }
 
   @Override

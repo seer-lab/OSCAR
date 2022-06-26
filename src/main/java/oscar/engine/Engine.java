@@ -8,10 +8,10 @@ import org.apache.commons.io.filefilter.*;
 import oscar.controller.Controller;
 import oscar.transformers.JimpleSceneTransformer;
 import oscar.transformers.JimpleTransformer;
+import oscar.transformers.analysers.SharedVariableAnalyser;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCaptureInjector;
 import oscar.transformers.noisers.lock.ReentrantLockNoiser;
-import oscar.transformers.noisers.shared.SharedVariableNoiser;
 import oscar.transformers.noisers.sync.SynchronizedBlockNoiser;
 import oscar.transformers.noisers.sync.SynchronizedMethodCallNoiser;
 import oscar.transformers.noisers.thread.ThreadCreationNoiser;
@@ -70,6 +70,7 @@ public final class Engine {
   private final String outputDirectory;
 
   private final HashMap<String, ArrayList<Transform>> transformers = new HashMap<>();
+  private final HashMap<String, HashSet<String>> sharedVars = new HashMap<>();
 
   public Engine(String targetFile, String mainClass, String outputDirectory) {
     Engine.mainClass = mainClass;
@@ -79,13 +80,19 @@ public final class Engine {
 
     // Register all transformers
     List.of(
-        new ThreadCreationNoiser(),
-        new SharedVariableNoiser(),
+        // Analysers ------------------
+        new SharedVariableAnalyser(sharedVars),
 
+        // Scene Transformers  ------------------
+        new ThreadCreationNoiser(),
+        //new SharedVariableNoiser(),
+
+        // Transformers ------------------
         new SynchronizedBlockNoiser(),
         new SynchronizedMethodCallNoiser(),
         new ReentrantLockNoiser(),
 
+        // Injectors ------------------
         new ControllerInjector(),
         new ExitCaptureInjector()
     ).forEach(this::registerTransformer);
@@ -359,5 +366,12 @@ public final class Engine {
       logger.fine("Ignoring blacklisted class: " + className);
 
     return ignored;
+  }
+
+  public HashMap<String, HashSet<String>> getSharedVariableGraph() {
+    if (sharedVars.size() == 0)
+      throw new RuntimeException("Tried to access empty shared variable collection.");
+
+    return sharedVars;
   }
 }
