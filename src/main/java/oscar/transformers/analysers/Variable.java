@@ -1,8 +1,11 @@
 package oscar.transformers.analysers;
 
+import jas.Var;
 import oscar.engine.body.JimpleBodyBox;
+import soot.SootMethod;
 import soot.Value;
 import soot.jimple.BinopExpr;
+import soot.jimple.InvokeExpr;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.internal.*;
 
@@ -39,13 +42,29 @@ public class Variable {
     return this.getName().hashCode();
   }
 
-  public static AssignmentVariables getVariablesFromAssignment(JAssignStmt stmt, JimpleBodyBox bodyBox) {
+  public static StatementVariables getVariablesFromAssignment(JAssignStmt stmt, JimpleBodyBox bodyBox) {
     String methodName = bodyBox.body().getMethod().getName();
 
     Variable lValue = getVariable(stmt.getLeftOp(), methodName);
-    Set<Variable> rValues =  getVariablesFromRValue(stmt.getRightOp(), methodName);
+    Set<Variable> rValues = getVariablesFromRValue(stmt.getRightOp(), methodName);
 
-    return new AssignmentVariables(lValue, rValues);
+    return new StatementVariables(lValue, rValues);
+  }
+
+  public static StatementVariables getVariablesFromReturn(JReturnStmt stmt, JimpleBodyBox bodyBox) {
+    // Get local to be returned
+    JimpleLocal rValueLocal = (JimpleLocal) stmt.getOp();
+    Variable rValueVar = getVariable(stmt.getOp(), bodyBox.body().getMethod().getName());
+
+    // Create ref for return stmt
+    Variable lValueVar = getReturnsVariableFromMethod(bodyBox.body().getMethod());
+
+    return new StatementVariables(lValueVar, Set.of(rValueVar));
+  }
+
+  private static Variable getReturnsVariableFromMethod(SootMethod method) {
+    return new Variable(method.getSignature() + ":returns", VariableType.METHOD_RETURN);
+
   }
 
   private static Set<Variable> getVariablesFromRValue(Value value, String methodName) {
@@ -64,12 +83,16 @@ public class Variable {
           variables.add(var);
       }
 
-      if (value instanceof JStaticInvokeExpr) {
-        for (Value arg : ((JStaticInvokeExpr) value).getArgs()) {
+      if (value instanceof InvokeExpr) {
+        // Get all arguments as variables
+        for (Value arg : ((InvokeExpr) value).getArgs()) {
           Variable var = getVariable(arg, methodName);
           if (var != null)
             variables.add(var);
         }
+        //  Get variable relative to method returns
+        Variable returnsVar = getReturnsVariableFromMethod(((InvokeExpr) value).getMethod());
+        variables.add(returnsVar);
       }
     }
 

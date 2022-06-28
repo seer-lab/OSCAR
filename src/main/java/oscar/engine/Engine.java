@@ -5,10 +5,15 @@ import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
 
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import oscar.controller.Controller;
+import oscar.transformers.IJimpleTransformer;
 import oscar.transformers.JimpleSceneTransformer;
 import oscar.transformers.JimpleTransformer;
+import oscar.transformers.analysers.Variable;
 import oscar.transformers.analysers.shared.SharedVariableAnalyser;
+import oscar.transformers.analysers.shared.SharedVariableParser;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCaptureInjector;
 import oscar.transformers.noisers.lock.ReentrantLockNoiser;
@@ -78,12 +83,15 @@ public final class Engine {
     this.targetDirectory = Paths.get(targetFile).getParent().toString();
     this.outputDirectory = outputDirectory;
 
+    // Data structures for shared variable analysis and parsing
     HashMap<String, HashSet<String>> variableDependencies = new HashMap<>();
+    DefaultDirectedGraph<Variable, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
     // Register all transformers
     List.of(
         // Analysers ------------------
-        new SharedVariableAnalyser(variableDependencies), // Must be before svn
+        new SharedVariableAnalyser(graph), // Must be before svn and svp
+        new SharedVariableParser(graph, variableDependencies), // Must be before svn, after sva
 
         // Scene Transformers  ------------------
         new ThreadCreationNoiser(),
@@ -259,12 +267,12 @@ public final class Engine {
                     body.getMethod().getSignature() + "'.");
   }
 
-  public static void startSceneTransformer(Class<? extends JimpleSceneTransformer> transformerClass) {
+  public static void startSceneTransformer(Class<? extends SceneTransformer> transformerClass) {
     logger.fine("Starting scene transformer (Thread " + Thread.currentThread().getId() + ") '" +
                     transformerClass.getSimpleName() + "'.");
   }
 
-  public static void endSceneTransformer(Class<? extends JimpleSceneTransformer> transformerClass) {
+  public static void endSceneTransformer(Class<? extends SceneTransformer> transformerClass) {
     logger.fine("Finished scene transformer (Thread " + Thread.currentThread().getId() + ") '" +
                     transformerClass.getSimpleName() + "'.");
   }
@@ -285,17 +293,10 @@ public final class Engine {
     String phase = "";
     String subPhase = "";
 
-    if (transformer instanceof JimpleTransformer)
-      phase = ((JimpleTransformer) transformer).getPhase();
-
-    if (transformer instanceof JimpleSceneTransformer)
-      phase = ((JimpleSceneTransformer) transformer).getPhase();
-
-    if (transformer instanceof JimpleTransformer)
-      subPhase = ((JimpleTransformer) transformer).getSubPhase();
-
-    if (transformer instanceof JimpleSceneTransformer)
-      subPhase = ((JimpleSceneTransformer) transformer).getSubPhase();
+    if (transformer instanceof IJimpleTransformer) {
+      phase = ((IJimpleTransformer) transformer).getPhase();
+      subPhase = ((IJimpleTransformer) transformer).getSubPhase();
+    }
 
     transformers.putIfAbsent(phase, new ArrayList<>());
     transformers.get(phase).add(new Transform(subPhase, transformer));

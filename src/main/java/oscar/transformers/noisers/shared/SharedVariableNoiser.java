@@ -3,7 +3,7 @@ package oscar.transformers.noisers.shared;
 import oscar.controller.noise.NoisePlacement;
 import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleSceneTransformer;
-import oscar.transformers.analysers.AssignmentVariables;
+import oscar.transformers.analysers.StatementVariables;
 import oscar.transformers.analysers.Variable;
 import oscar.transformers.analysers.VariableType;
 import soot.jimple.internal.*;
@@ -37,10 +37,10 @@ public class SharedVariableNoiser extends JimpleSceneTransformer {
     // Sequentially process every assign statement
     for (JAssignStmt assignment : assignments) {
       // Get lvalue and rvalues
-      AssignmentVariables assignmentVariables = Variable.getVariablesFromAssignment(assignment, bodyBox);
+      StatementVariables statementVariables = Variable.getVariablesFromAssignment(assignment, bodyBox);
 
-      Variable lValueVar = assignmentVariables.getLValue();
-      Set<Variable> rValueVars = assignmentVariables.getRValues();
+      Variable lValueVar = statementVariables.getLValue();
+      Set<Variable> rValueVars = statementVariables.getRValues();
 
       // Ignore if lValue is a local
       if (lValueVar.getType() == VariableType.LOCAL)

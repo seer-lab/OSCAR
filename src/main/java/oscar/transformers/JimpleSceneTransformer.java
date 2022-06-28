@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public abstract class JimpleSceneTransformer extends SceneTransformer {
+public abstract class JimpleSceneTransformer extends SceneTransformer implements IJimpleTransformer {
   private final String phase = "wjtp";
   private final String subphase;
 

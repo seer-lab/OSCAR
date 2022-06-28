@@ -6,7 +6,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.DepthFirstIterator;
 import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleSceneTransformer;
-import oscar.transformers.analysers.AssignmentVariables;
+import oscar.transformers.analysers.StatementVariables;
 import oscar.transformers.analysers.Variable;
 import oscar.transformers.analysers.VariableType;
 import soot.jimple.internal.*;
@@ -15,16 +15,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SharedVariableAnalyser extends JimpleSceneTransformer {
-  private final HashMap<String, HashSet<String>> variableDependencies;
 
-  public SharedVariableAnalyser(HashMap<String, HashSet<String>> variableDependencies) {
+  private final DefaultDirectedGraph<Variable, DefaultEdge> graph;
+
+  public SharedVariableAnalyser(DefaultDirectedGraph<Variable, DefaultEdge> graph) {
     super("sva", SharedVariableAnalyser.class);
     this.routine = this::routine;
-    this.variableDependencies = variableDependencies;
+    this.graph = graph;
   }
 
   private void routine(JimpleBodyBox bodyBox) {
-    DefaultDirectedGraph<Variable, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
     // Get all assignments
     List<JAssignStmt> assignments = bodyBox.body()
@@ -37,10 +37,10 @@ public class SharedVariableAnalyser extends JimpleSceneTransformer {
     // Sequentially process every assign statement
     for (JAssignStmt assignment : assignments) {
       // Get lvalue and rvalue ref
-      AssignmentVariables assignmentVariables = Variable.getVariablesFromAssignment(assignment, bodyBox);
+      StatementVariables statementVariables = Variable.getVariablesFromAssignment(assignment, bodyBox);
 
-      Variable lValueVar = assignmentVariables.getLValue();
-      Set<Variable> rValueVars = assignmentVariables.getRValues();
+      Variable lValueVar = statementVariables.getLValue();
+      Set<Variable> rValueVars = statementVariables.getRValues();
 
       // Add all directed edges to the graph
       if (lValueVar == null || rValueVars.isEmpty())
@@ -54,14 +54,24 @@ public class SharedVariableAnalyser extends JimpleSceneTransformer {
       }
     }
 
-    // Check connectivity
-    for (Variable var : graph.iterables().vertices()) {
-      variableDependencies.putIfAbsent(var.getName(), new HashSet<>());
+    // Get all return statments
+    List<JReturnStmt> returnStmts = bodyBox.body()
+                                           .getUnits()
+                                           .stream()
+                                           .filter(JReturnStmt.class::isInstance)
+                                           .map(JReturnStmt.class::cast)
+                                           .collect(Collectors.toList());
 
-      HashSet<Variable> dependencies = getAllDependencies(var, graph, new HashSet<>());
-      for (Variable dependency : dependencies)
-        if (dependency.getType() == VariableType.FIELD)
-          variableDependencies.get(var.getName()).add(dependency.getName());
+    // Sequentially process every return statement
+    for (JReturnStmt returnStmt : returnStmts) {
+      StatementVariables returnVars = Variable.getVariablesFromReturn(returnStmt, bodyBox);
+
+      graph.addVertex(returnVars.getLValue());
+      for (Variable rValueVar : returnVars.getRValues()) {
+        graph.addVertex(rValueVar);
+
+        graph.addEdge(returnVars.getLValue(), rValueVar);
+      }
     }
   }
 
@@ -77,20 +87,5 @@ public class SharedVariableAnalyser extends JimpleSceneTransformer {
       System.out.println();
       System.out.println();
     }
-  }
-
-  private HashSet<Variable> getAllDependencies(Variable source, Graph<Variable, DefaultEdge> graph, HashSet<Variable> vertices) {
-    Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(source);
-
-    for (DefaultEdge edge : outgoingEdges) {
-      Variable target = graph.getEdgeTarget(edge);
-
-      if (!vertices.contains(target)) {
-        vertices.add(target);
-        vertices.addAll(getAllDependencies(target, graph, vertices));
-      }
-    }
-
-    return vertices;
   }
 }
