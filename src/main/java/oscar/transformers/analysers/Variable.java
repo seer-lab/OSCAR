@@ -118,6 +118,11 @@ public class Variable {
     if (value instanceof JInstanceFieldRef)
       return new Variable(((JInstanceFieldRef) value).getFieldRef().getSignature(), VariableType.FIELD);
 
+    if (value instanceof JArrayRef) {
+      JimpleLocal local = (JimpleLocal) ((JArrayRef) value).getBase();
+      return new Variable(methodName + ":" + local.getName(), VariableType.LOCAL);
+    }
+
     if (value instanceof JimpleLocal)
       return new Variable(methodName + ":" + ((JimpleLocal) value).getName(), VariableType.LOCAL);
 
