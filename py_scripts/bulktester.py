@@ -4,12 +4,12 @@ import numpy as np
 
 SORTED_DEFAULT_VALUES = sorted([50, 100, 250, 500, 1000])
 
-PROGRAM = "../output Main"
-TESTSCRIPT_ARGS = "-j" if PROGRAM.endswith(".jar") else ""
+PROGRAM = "../../output Main"
+TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 1"
 DISABLE_COVERAGE = False
 NUMBER_RUNS = [5, 25, 50]  # [5, 10, 15]
 NUMBER_THREADS = [2]  # SORTED_DEFAULT_VALUES  # [3]
-FIXED_ARGS = " -lfo -np tbbtr -nc lb sb -m 1"
+FIXED_ARGS = "-lfo -np tbbtr -nc lb sb -m 1"
 
 VARIABLE_ARGS = [
     "-M 5",
@@ -52,7 +52,7 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
         p_args = f"{FIXED_ARGS} {v_arg}"
         t_args = f"{TESTSCRIPT_ARGS} -c {n_runs}"
 
-        cmd = f'python3 testscript.py {PROGRAM} \"-a {n_threads} {p_args}\" {t_args}'
+        cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {n_threads} {p_args}\" {t_args}'
         result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         if result.returncode != 0:

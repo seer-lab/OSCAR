@@ -4,7 +4,7 @@ import argparse
 import os
 import shutil
 import subprocess
-import Levenshtein as ls
+import analysis
 import numpy
 import numpy as np
 import time
@@ -32,7 +32,10 @@ argparser.add_argument('program_dir', help='location of program to run.')
 argparser.add_argument('executable', help='Name of program\'s main class to run or jar file name.')
 argparser.add_argument('program_args', type=str, help='Arguments to be passed to program.')
 
-argparser.add_argument('-c', '--count', default="30", type=str, help='Number of times to run program (comma separated).')
+argparser.add_argument('-c', '--count', default="30", type=str,
+                       help='Number of times to run program (comma separated).')
+argparser.add_argument('-da', '--distance_algorithm', default="0", type=int,
+                       help='Distance algorithm: 0->Levenshtein; 1->Damerau-Levenshtein.')
 argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
 argparser.add_argument('-dt', '--disable_thread_ids', action='store_true', help='Disable thread ID parsing.')
 argparser.add_argument('-u', '--unordered_thread_ids', action='store_true', help='Maintain original thread ID order.')
@@ -168,18 +171,27 @@ if not argv.disable_coverage:
             else:
                 clusters[interleaving] += 1
 
-        avg_cluster_size[rc] = np.average( list(clusters.values()))
+        avg_cluster_size[rc] = np.average(list(clusters.values()))
 
         # For regular pairs
-        leven_dists = []
+        interleaving_dists = []
+        interleaving_dist = 0
 
         # Calculate average ratio
         for x in range(0, len(interleavings_split) - 1):
             for y in range(x + 1, len(interleavings_split)):
-                leven_dists.append(ls.distance(interleavings_split[x], interleavings_split[y]))
+                # Levenshtein
+                if argv.distance_algorithm == 0:
+                    interleaving_dist = analysis.l_distance(interleavings_split[x], interleavings_split[y])
 
-        avg_dist_runs[rc] = round(np.average(leven_dists), 2)
-        std_dev_runs[rc] = round(float(np.std(leven_dists)), 2)
+                # Damerau-Levenshtein
+                if argv.distance_algorithm == 1:
+                    interleaving_dist = analysis.dl_distance(interleavings_split[x], interleavings_split[y])
+
+                interleaving_dists.append(interleaving_dist)
+
+        avg_dist_runs[rc] = round(np.average(interleaving_dists), 2)
+        std_dev_runs[rc] = round(float(np.std(interleaving_dists)), 2)
 
     print(f'\tUnique interleavings: {flatten_results_map(uniq_interleavings_runs)}')
     print(f'\tAverage Levenshtein distance: {flatten_results_map(avg_dist_runs)}')
