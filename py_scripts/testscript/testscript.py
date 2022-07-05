@@ -38,6 +38,8 @@ argparser.add_argument('-da', '--distance_algorithm', default="0", type=int,
                        help='Distance algorithm: 0->Levenshtein; 1->Damerau-Levenshtein.')
 argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
 argparser.add_argument('-dt', '--disable_thread_ids', action='store_true', help='Disable thread ID parsing.')
+argparser.add_argument('-dl', '--duplicate_trace_locations', action='store_true',
+                       help='Disable unique ids for repeated thread locations.')
 argparser.add_argument('-u', '--unordered_thread_ids', action='store_true', help='Maintain original thread ID order.')
 argparser.add_argument('-dc', '--disable_coverage', action='store_true', help='Disable coverage analysis.')
 
@@ -100,11 +102,12 @@ files = os.listdir('.')
 
 location_ids = {}
 interleavings = []
-interleaving_pairs = {}
+trace_pairs = {}
 
 for file in files:
     content = open(file, 'r')  # .read()
     thread_ids = []
+    trace_pairs_count = {}
 
     interleaving = ''
 
@@ -136,14 +139,23 @@ for file in files:
         location_id = location_ids[location_id]
 
         # Append content with or without thread id
-        interleaving_pair = location_id
+        trace_pair = location_id
         if not argv.disable_thread_ids:
-            interleaving_pair = f'{thread_id}{interleaving_pair}'
+            trace_pair = f'{thread_id}{trace_pair}'
+
+        # Check if this interleaving pair is duplicate and needs new assigned id
+        if not argv.duplicate_trace_locations:
+            if trace_pair not in trace_pairs_count:
+                trace_pairs_count[trace_pair] = 0
+            trace_pairs_count[trace_pair] += 1
+
+            trace_pair = f'{trace_pairs_count[trace_pair]}{trace_pair}'
 
         # Transform interleaving pair representation in single mapped unicode
-        if interleaving_pair not in interleaving_pairs:
-            interleaving_pairs[interleaving_pair] = to_unicode(len(interleaving_pairs))
-        interleaving += interleaving_pairs[interleaving_pair]
+        if trace_pair not in trace_pairs:
+            trace_pairs[trace_pair] = to_unicode(len(trace_pairs))
+
+        interleaving += trace_pairs[trace_pair]
 
     interleavings.append(interleaving)
 
