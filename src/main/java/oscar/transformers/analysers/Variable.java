@@ -5,6 +5,7 @@ import oscar.engine.body.JimpleBodyBox;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.BinopExpr;
+import soot.jimple.ConditionExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.internal.*;
@@ -23,6 +24,18 @@ public class Variable {
 
   public VariableType getType() {
     return type;
+  }
+
+  public boolean isField() {
+    return type == VariableType.FIELD;
+  }
+
+  public boolean isLocal() {
+    return type == VariableType.LOCAL;
+  }
+
+  public boolean isReturn() {
+    return type == VariableType.METHOD_RETURN;
   }
 
   public String getName() {
@@ -53,7 +66,6 @@ public class Variable {
 
   public static StatementVariables getVariablesFromReturn(JReturnStmt stmt, JimpleBodyBox bodyBox) {
     // Get local to be returned
-    JimpleLocal rValueLocal = (JimpleLocal) stmt.getOp();
     Variable rValueVar = getVariable(stmt.getOp(), bodyBox.body().getMethod().getName());
 
     // Create ref for return stmt
@@ -63,8 +75,14 @@ public class Variable {
   }
 
   private static Variable getReturnsVariableFromMethod(SootMethod method) {
-    return new Variable(method.getSignature() + ":returns", VariableType.METHOD_RETURN);
+    // Special case for predicates
+    if (method.getName().equals("bootstrap$") && method.getDeclaringClass()
+                                                       .implementsInterface("java.util.function.Predicate")) {
+      SootMethod predicateMethod = getPredicateMethod(method);
 
+      return new Variable(predicateMethod.getSignature() + ":returns", VariableType.METHOD_RETURN);
+    }
+    return new Variable(method.getSignature() + ":returns", VariableType.METHOD_RETURN);
   }
 
   private static Set<Variable> getVariablesFromRValue(Value value, String methodName) {
@@ -90,6 +108,7 @@ public class Variable {
           if (var != null)
             variables.add(var);
         }
+
         //  Get variable relative to method returns
         Variable returnsVar = getReturnsVariableFromMethod(((InvokeExpr) value).getMethod());
         variables.add(returnsVar);
@@ -129,4 +148,17 @@ public class Variable {
     return null;
   }
 
+  public static SootMethod getPredicateMethod(SootMethod baseMethod) {
+    return baseMethod.getDeclaringClass().getMethodByName("test")
+                     .getActiveBody()
+                     .getUnits()
+                     .stream()
+                     .filter(JAssignStmt.class::isInstance)
+                     .map(JAssignStmt.class::cast)
+                     .map(JAssignStmt::getRightOp)
+                     .filter(JStaticInvokeExpr.class::isInstance)
+                     .map(JStaticInvokeExpr.class::cast)
+                     .map(AbstractInvokeExpr::getMethod)
+                     .findFirst().get();
+  }
 }

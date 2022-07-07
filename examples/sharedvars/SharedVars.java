@@ -18,7 +18,7 @@ public class SharedVars {
     SharedVars.B = 5 + SharedVars.B + 1 + 2 + 3 + new Random().nextInt();
     SharedVars.A = inc(clazz.X);
     clazz.D = clazz.D + 3;
-    clazz.D = Math.round(clazz.X);
+    clazz.D = Math.round(Math.round(clazz.X));
     SharedVars.Y = meth();
     SharedVars.W = clazz.meth2();
   }

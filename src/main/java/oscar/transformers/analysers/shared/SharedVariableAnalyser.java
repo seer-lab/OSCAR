@@ -8,7 +8,6 @@ import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleSceneTransformer;
 import oscar.transformers.analysers.StatementVariables;
 import oscar.transformers.analysers.Variable;
-import oscar.transformers.analysers.VariableType;
 import soot.jimple.internal.*;
 
 import java.util.*;
@@ -54,7 +53,7 @@ public class SharedVariableAnalyser extends JimpleSceneTransformer {
       }
     }
 
-    // Get all return statments
+    // Get all return statements
     List<JReturnStmt> returnStmts = bodyBox.body()
                                            .getUnits()
                                            .stream()
@@ -72,20 +71,6 @@ public class SharedVariableAnalyser extends JimpleSceneTransformer {
 
         graph.addEdge(returnVars.getLValue(), rValueVar);
       }
-    }
-  }
-
-  private static void printGraph(Graph<Variable, DefaultEdge> graph) {
-    // Print out the graph to be sure it's really complete
-    Iterator<Variable> iter = new DepthFirstIterator<>(graph);
-
-    while (iter.hasNext()) {
-      Variable vertex = iter.next();
-      System.out.print(vertex.getName() + " is connected to: ");
-      for (DefaultEdge edge : graph.outgoingEdgesOf(vertex))
-        System.out.print(graph.getEdgeTarget(edge).getName() + " ");
-      System.out.println();
-      System.out.println();
     }
   }
 }

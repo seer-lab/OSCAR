@@ -36,6 +36,7 @@ public class SharedVariableParser extends SceneTransformer implements IJimpleTra
 
       HashSet<Variable> dependencies = getAllDependencies(var, graph, new HashSet<>());
       for (Variable dependency : dependencies)
+        // Only field dependencies should matter
         if (dependency.getType() == VariableType.FIELD)
           variableDependencies.get(var.getName()).add(dependency.getName());
     }

@@ -5,7 +5,6 @@ import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleSceneTransformer;
 import oscar.transformers.analysers.StatementVariables;
 import oscar.transformers.analysers.Variable;
-import oscar.transformers.analysers.VariableType;
 import soot.jimple.internal.*;
 
 import java.util.HashMap;
@@ -42,10 +41,6 @@ public class SharedVariableNoiser extends JimpleSceneTransformer {
       Variable lValueVar = statementVariables.getLValue();
       Set<Variable> rValueVars = statementVariables.getRValues();
 
-      // Ignore if lValue is a local
-      if (lValueVar.getType() == VariableType.LOCAL)
-        continue;
-
       // Check if there is a dependency clash between lValue and rValues
       boolean dependencyClash = false;
 
@@ -65,35 +60,34 @@ public class SharedVariableNoiser extends JimpleSceneTransformer {
         }
       }
 
-      // Noise this statement, if a dependency clash was found
-      if (dependencyClash) {
-        bodyBox.body()
-               .getUnits()
-               .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_SHARED_VARIABLE_ACCESS), assignment);
+      // Noise this assignment, if a dependency clash was found
+      if (!dependencyClash)
+        continue;
 
-        bodyBox.body()
-               .getUnits()
-               .insertAfter(bodyBox.generator().Statement.noise(NoisePlacement.AFTER_SHARED_VARIABLE_ACCESS), assignment);
+      // Make sure it is not a return statement
+      if (lValueVar.isReturn() || rValueVars.stream().anyMatch(Variable::isReturn))
+        continue;
 
+      // Check noise placement type
+      NoisePlacement beforeNoisePlacement;
+      NoisePlacement afterNoisePlacement;
+
+      if (lValueVar.isField() || rValueVars.stream().anyMatch(Variable::isField)) {
+        beforeNoisePlacement = NoisePlacement.BEFORE_SHARED_FIELD_ACCESS;
+        afterNoisePlacement = NoisePlacement.AFTER_SHARED_FIELD_ACCESS;
+      } else {
+        beforeNoisePlacement = NoisePlacement.BEFORE_SHARED_LOCAL_ACCESS;
+        afterNoisePlacement = NoisePlacement.AFTER_SHARED_LOCAL_ACCESS;
       }
+
+      bodyBox.body()
+             .getUnits()
+             .insertBefore(bodyBox.generator().Statement.noise(beforeNoisePlacement), assignment);
+
+      bodyBox.body()
+             .getUnits()
+             .insertAfter(bodyBox.generator().Statement.noise(afterNoisePlacement), assignment);
     }
-
-    // Add all parameter vars
-
-    // Add all volatile vars
-
-    // TODO if method returns shared var?
-    // TODO array of reftypes
-
-    // TODO Check methods that take shared vars as parameter
-
-    // TODO noise all static vars
-    // TODO shared method calls
-    // Get all references to shared variables
-
-    // Get access to volatile variables
-
-    // Get accesses to variables
 
   }
 }

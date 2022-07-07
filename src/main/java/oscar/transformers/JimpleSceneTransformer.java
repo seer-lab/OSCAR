@@ -2,8 +2,12 @@ package oscar.transformers;
 
 import oscar.engine.Engine;
 import oscar.engine.body.JimpleBodyBox;
+import oscar.transformers.analysers.Variable;
 import soot.*;
 import soot.jimple.JimpleBody;
+import soot.jimple.internal.AbstractInvokeExpr;
+import soot.jimple.internal.JAssignStmt;
+import soot.jimple.internal.JStaticInvokeExpr;
 import soot.jimple.toolkits.callgraph.Targets;
 
 import java.util.HashSet;
@@ -52,7 +56,7 @@ public abstract class JimpleSceneTransformer extends SceneTransformer implements
     // Check if method is dynamic bootstrap method
     // Since there are no calls to this body, we have to call it
     if (method.getName().equals("bootstrap$"))
-      recursiveTransform(method.getDeclaringClass().getMethodByName("run"));
+      recursiveTransform(getBootstrapMethod(method));
 
     // Get all edges of this method in call graph and run routine recursively
     Iterator<MethodOrMethodContext> targets = new Targets(Scene.v().getCallGraph().edgesOutOf(method));
@@ -73,5 +77,19 @@ public abstract class JimpleSceneTransformer extends SceneTransformer implements
 
   private static String getMethodFullName(SootMethod method) {
     return method.getDeclaringClass() + " " + method.getSignature();
+  }
+
+  private static SootMethod getBootstrapMethod(SootMethod method) {
+    SootClass sootClass = method.getDeclaringClass();
+
+    // Base case
+    if (sootClass.declaresMethodByName("run"))
+      return sootClass.getMethodByName("run");
+
+    // For predicates
+    if (sootClass.implementsInterface("java.util.function.Predicate"))
+      return Variable.getPredicateMethod(method);
+
+    throw new RuntimeException("Bootstrap method not found.");
   }
 }
