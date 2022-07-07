@@ -145,9 +145,17 @@ public class Variable {
     if (value instanceof JimpleLocal)
       return new Variable(methodName + ":" + ((JimpleLocal) value).getName(), VariableType.LOCAL);
 
+    if (value instanceof JCastExpr)
+      return getVariable(((JCastExpr) value).getOp(), methodName);
+
     return null;
   }
 
+  /**
+   * Extract test method from predicate function
+   * @param baseMethod
+   * @return the method that contains the predicate function
+   */
   public static SootMethod getPredicateMethod(SootMethod baseMethod) {
     return baseMethod.getDeclaringClass().getMethodByName("test")
                      .getActiveBody()

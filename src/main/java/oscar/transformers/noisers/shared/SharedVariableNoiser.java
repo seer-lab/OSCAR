@@ -51,10 +51,8 @@ public class SharedVariableNoiser extends JimpleSceneTransformer {
         if (lValueDependencies == null || rValueDependencies == null)
           continue;
 
-        lValueDependencies.retainAll(rValueDependencies);
-
         // Dependency clash found, break and exit loop
-        if (!lValueDependencies.isEmpty()) {
+        if (lValueDependencies.stream().anyMatch(rValueDependencies::contains)) {
           dependencyClash = true;
           break;
         }
