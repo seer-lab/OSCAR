@@ -162,7 +162,7 @@ for file in files:
                 trace_pairs_count[trace_pair] = 0
             trace_pairs_count[trace_pair] += 1
 
-            trace_pair = f'{trace_pairs_count[trace_pair]}{trace_pair}'
+            trace_pair = f'{trace_pairs_count[trace_pair]}_{trace_pair}'
 
         # Transform interleaving pair representation in single mapped unicode
         if trace_pair not in trace_pairs:
