@@ -4,7 +4,7 @@ import argparse
 import os
 import shutil
 import subprocess
-import analysis
+import jellyfish as jf
 import numpy
 import numpy as np
 import time
@@ -28,6 +28,14 @@ argparser = argparse.ArgumentParser(
     epilog='Run with argument -h for help.'
 )
 
+DISTANCE_ALGS = {
+    0: "Levenshtein",
+    1: "Damerau-Levenshtein",
+    2: "Jaro",
+    3: "Jaro-Wrinkler",
+    4: "Hamming",
+}
+
 argparser.add_argument('program_dir', help='location of program to run.')
 argparser.add_argument('executable', help='Name of program\'s main class to run or jar file name.')
 argparser.add_argument('program_args', type=str, help='Arguments to be passed to program.')
@@ -35,7 +43,7 @@ argparser.add_argument('program_args', type=str, help='Arguments to be passed to
 argparser.add_argument('-c', '--count', default="30", type=str,
                        help='Number of times to run program (comma separated).')
 argparser.add_argument('-da', '--distance_algorithm', default="0", type=int,
-                       help='Distance algorithm: 0->Levenshtein; 1->Damerau-Levenshtein.')
+                       help=f'Distance algorithm: {DISTANCE_ALGS}.')
 argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
 argparser.add_argument('-dt', '--disable_thread_ids', action='store_true', help='Disable thread ID parsing.')
 argparser.add_argument('-dl', '--duplicate_trace_locations', action='store_true',
@@ -44,6 +52,11 @@ argparser.add_argument('-u', '--unordered_thread_ids', action='store_true', help
 argparser.add_argument('-dc', '--disable_coverage', action='store_true', help='Disable coverage analysis.')
 
 argv = argparser.parse_args()
+
+# Check distance alg valid
+if argv.distance_algorithm < 0 or argv.distance_algorithm > len(DISTANCE_ALGS) - 1:
+    print(f'Invalid distance algorithm.')
+    exit(1)
 
 # Check if file exists
 if not os.path.isdir(argv.program_dir):
@@ -194,18 +207,31 @@ if not argv.disable_coverage:
             for y in range(x + 1, len(interleavings_split)):
                 # Levenshtein
                 if argv.distance_algorithm == 0:
-                    interleaving_dist = analysis.l_distance(interleavings_split[x], interleavings_split[y])
+                    interleaving_dist = jf.levenshtein_distance(interleavings_split[x], interleavings_split[y])
 
                 # Damerau-Levenshtein
                 if argv.distance_algorithm == 1:
-                    interleaving_dist = analysis.dl_distance(interleavings_split[x], interleavings_split[y])
+                    interleaving_dist = jf.damerau_levenshtein_distance(interleavings_split[x], interleavings_split[y])
 
-                interleaving_dists.append(interleaving_dist)
+                # Jaro
+                if argv.distance_algorithm == 2:
+                    interleaving_dist = jf.jaro_similarity(interleavings_split[x], interleavings_split[y])
+
+                # Jaro-Wrinkler
+                if argv.distance_algorithm == 3:
+                    interleaving_dist = jf.jaro_winkler_similarity(interleavings_split[x], interleavings_split[y])
+
+                # Hamming
+                if argv.distance_algorithm == 4:
+                    interleaving_dist = jf.hamming_distance(interleavings_split[x], interleavings_split[y])
+
+            interleaving_dists.append(interleaving_dist)
 
         avg_dist_runs[rc] = round(np.average(interleaving_dists), 2)
         std_dev_runs[rc] = round(float(np.std(interleaving_dists)), 2)
 
+    distance_alg = DISTANCE_ALGS[argv.distance_algorithm]
     print(f'\tUnique interleavings: {flatten_results_map(uniq_interleavings_runs)}')
-    print(f'\tAverage Levenshtein distance: {flatten_results_map(avg_dist_runs)}')
-    print(f'\tLevenshtein distance standard deviation: {flatten_results_map(std_dev_runs)}')
+    print(f'\tAverage {distance_alg} distance: {flatten_results_map(avg_dist_runs)}')
+    print(f'\t{distance_alg} distance standard deviation: {flatten_results_map(std_dev_runs)}')
     print(f'\tAverage Cluster Size: {flatten_results_map(avg_cluster_size)}')

@@ -5,10 +5,10 @@ import numpy as np
 SORTED_DEFAULT_VALUES = sorted([50, 100, 250, 500, 1000])
 
 PROGRAM = "../../output Main"
-TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 1"
+TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 3"
 DISABLE_COVERAGE = False
 NUMBER_RUNS = [5, 25, 50]  # [5, 10, 15]
-NUMBER_THREADS = [2]  # SORTED_DEFAULT_VALUES  # [3]
+NUMBER_THREADS = [4]  # SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = "-lfo -np tbbtr -nc lb sb -m 1"
 
 VARIABLE_ARGS = [
@@ -42,6 +42,8 @@ avg_cluster_sizes = {}
 
 n_runs = ",".join([str(element) for element in NUMBER_RUNS])
 
+DISTANCE_ALG = ""
+
 # Run multiple times
 for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
     avg_run_times = {}
@@ -72,10 +74,12 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
                 if "Unique interleavings" in line:
                     uniq_interleavings[v_arg] = line.split(": ")[1].strip()
 
-                if "Average Levenshtein distance:" in line:
+                if "distance:" in line:
                     avg_coverages[v_arg] = line.split(": ")[1].strip()
+                    if DISTANCE_ALG is "":
+                        DISTANCE_ALG = line.split("Average")[1].split("distance")[0].strip()
 
-                if "Levenshtein distance standard deviation:" in line:
+                if "distance standard deviation:" in line:
                     std_coverages[v_arg] = line.split(": ")[1].strip()
 
                 if "Average Cluster Size:" in line:
@@ -99,11 +103,11 @@ else:
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(uniq_interleavings, v_arg)
 
-    print("Average Levenshtein distance: ")
+    print(f"Average {DISTANCE_ALG} distance: ")
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(avg_coverages, v_arg)
 
-    print("Levenshtein distance standard deviation: ")
+    print(f"{DISTANCE_ALG} distance standard deviation: ")
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(std_coverages, v_arg)
 
