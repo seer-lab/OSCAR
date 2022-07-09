@@ -46,8 +46,8 @@ argparser.add_argument('-da', '--distance_algorithm', default="0", type=int,
                        help=f'Distance algorithm: {DISTANCE_ALGS}.')
 argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
 argparser.add_argument('-dt', '--disable_thread_ids', action='store_true', help='Disable thread ID parsing.')
-argparser.add_argument('-dl', '--duplicate_trace_locations', action='store_true',
-                       help='Disable unique ids for repeated thread locations.')
+argparser.add_argument('-u', '--unique_trace_locations', action='store_true',
+                       help='Enable unique ids for repeated trace locations.')
 argparser.add_argument('-u', '--unordered_thread_ids', action='store_true', help='Maintain original thread ID order.')
 argparser.add_argument('-dc', '--disable_coverage', action='store_true', help='Disable coverage analysis.')
 
@@ -157,7 +157,7 @@ for file in files:
             trace_pair = f'{thread_id}{trace_pair}'
 
         # Check if this interleaving pair is duplicate and needs new assigned id
-        if not argv.duplicate_trace_locations:
+        if argv.unique_trace_locations:
             if trace_pair not in trace_pairs_count:
                 trace_pairs_count[trace_pair] = 0
             trace_pairs_count[trace_pair] += 1
