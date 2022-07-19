@@ -14,9 +14,14 @@ public abstract class JimpleTransformer extends BodyTransformer implements IJimp
   private final String subphase;
 
   private final Class<? extends JimpleTransformer> clazz;
-  private final Consumer<JimpleBodyBox> routine;
+  protected Consumer<JimpleBodyBox> routine;
 
-  public JimpleTransformer(String subPhase, Class<? extends JimpleTransformer> clazz, Consumer<JimpleBodyBox> routine)  {
+  public JimpleTransformer(String subPhase, Class<? extends JimpleTransformer> clazz) {
+    this.subphase = phase + "." + subPhase;
+    this.clazz = clazz;
+  }
+
+  public JimpleTransformer(String subPhase, Class<? extends JimpleTransformer> clazz, Consumer<JimpleBodyBox> routine) {
     this.subphase = phase + "." + subPhase;
     this.clazz = clazz;
     this.routine = routine;
