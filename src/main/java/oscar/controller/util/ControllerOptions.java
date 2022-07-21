@@ -200,7 +200,7 @@ public final class ControllerOptions {
     System.out.println("Usage:");
     System.out.println("\tjava [java_options] <mainclass> [oscar_controller_options]");
     System.out.println("\t\t(to execute a class)");
-    System.out.println("\tor: java -jar <mainclass> [oscar_controller_options]");
+    System.out.println("\tor: java [java_options] -jar <mainclass> [oscar_controller_options]");
     System.out.println("\t\t(to execute a jar file)");
 
     System.out.println();

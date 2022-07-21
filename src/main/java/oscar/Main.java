@@ -57,7 +57,7 @@ public class Main {
           break;
         case "Help":
           System.out.println("Usage:");
-          System.out.println("\tjava oscar <targetfile> <mainclass> <outputdirectory> [oscar_options]");
+          System.out.println("\tjava [java_options] oscar <targetfile> <mainclass> <outputdirectory> [oscar_options]");
           System.out.println("OSCAR options include:");
           for (ControllerOption option : ENGINE_OPTIONS)
             System.out.printf(
