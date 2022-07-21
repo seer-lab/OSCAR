@@ -198,13 +198,13 @@ public final class ControllerOptions {
 
   private static void printHelp() {
     System.out.println("Usage:");
-    System.out.println("\tjava [java_options] <mainclass> [oscar_options]");
+    System.out.println("\tjava [java_options] <mainclass> [oscar_controller_options]");
     System.out.println("\t\t(to execute a class)");
     System.out.println("\tor: java -jar <mainclass> [oscar_options]");
     System.out.println("\t\t(to execute a jar file)");
 
     System.out.println();
-    System.out.println("OSCAR options include:");
+    System.out.println("OSCAR controller gitoptions include:");
 
     for (ControllerOption option : CONTROLLER_OPTIONS)
       System.out.printf(
