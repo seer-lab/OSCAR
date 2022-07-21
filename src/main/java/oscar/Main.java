@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class Main {
-  public static final String VERSION = "0.1.4";
+  public static final String VERSION = "0.1.5";
 
   private static final List<ControllerOption> ENGINE_OPTIONS = Arrays.asList(
       new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),
@@ -57,7 +57,7 @@ public class Main {
           break;
         case "Help":
           System.out.println("Usage:");
-          System.out.println("\toscar <targetfile> <mainclass> <outputdirectory> [oscar_options]");
+          System.out.println("\tjava oscar <targetfile> <mainclass> <outputdirectory> [oscar_options]");
           System.out.println("OSCAR options include:");
           for (ControllerOption option : ENGINE_OPTIONS)
             System.out.printf(
