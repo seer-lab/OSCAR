@@ -1,0 +1,112 @@
+
+	Description of bug 	
+
+	
+Created By: Shmuel Ur 06/15/2004 02:50 AM
+	
+
+	
+
+ID: 310725106
+
+ID: 029667722
+
+SOFTWARE TESTING COURSE
+
+THE BUG PROJECT
+
+ 
+
+1. THE  INFORMAL STORY
+
+            Once upon a time, there was a junior programmer. This programmer finished B.A in \u201cSingleThread\u201d University, in which multithreaded programming was unknown. Later this programmer went to work at \u201cYntel\u201d company.
+
+            The programmer worked 1 year, and on the second he got unusual job, which was to implement a multithreaded core for a File System for Jinux OS. When a programmer thought about how to implement disk blocks allocation and deallocation management, he decided to use an \u201cAllocation Vector\u201d which i-th entry will indicate the status of i-th block.
+
+            After some work, the programmer implemented the allocation/deallocation blocks mechanism, as shown in the Java code. He tested the code in multithreaded environment and all went right.
+
+            After 3 month he finished the job and the new multithreaded core for the FS were added to Jinux OS and the OS is got-out for sale.
+
+            Not much time passed until customers started to complain that their files sometimes include garbage, and some times not. In this stage, the programmer started to test the FS he wrote again.
+
+            After 6 month of testing he found out that he synchronized the accesses for \u201cread\u201d and for \u201dwrite\u201d to the Allocation Vector, but didn\u2019t synchronized between them. There was a not synchronized GAP in block allocation between \u201cfinding index of free block\u201d and \u201cmarking the block as allocated\u201d. The programmer corrected the mistake and customers were happy, until more bugs were found\u2026
+
+ 
+
+2. THE FORMAL STORY
+
+ 
+
+    \u25cf The program performs management of allocated and deallocated blocks, by using Allocation Vector/BitVector/Bitmap, in which i-th entry indicates the status of i-th block.
+
+    \u25cf The bug is in that when block is allocated, first \u201cfree block index found\u201d and then \u201cthe free block is marked as allocated\u201d, and this two actions are not synchronized between them, therefore there is a synchronization GAP between this two functions, in which anything can be done.
+
+    \u25cf The BUG PATTERN is weak-reality-two-stage-access.
+
+    \u25cf Lines of the bug are: File \u201cTestThread1.java\u201d lines 48-50.
+
+ 
+
+3. USAGE
+
+            In the java program the class Test got the main method, which gets the following parameters as input from command-line:
+
+1. Output file name.
+
+2. Concurrency parameter which can be:
+
+    \u201clittle\u201d => Allocation Vector size: 20000 entries.
+
+                      Thread1, number of accesses: 1000 allocations and deallocations.
+
+                      Thread2, number of accesses: 1000 allocations and deallocations.
+
+                      (In this case the run is ~99% correct)
+
+ 
+
+    \u201caverage\u201d => Allocation Vector size: 10000 entries.
+
+                           Thread1, number of accesses: 2000 allocations and deallocations.
+
+                           Thread2, number of accesses: 2000 allocations and deallocations.
+
+                        (In this case the run is ~95% correct)
+
+    \u201clot\u201d => Allocation Vector size: 5000 entries.
+
+                   Thread1, number of accesses: 5000 allocations and deallocations.
+
+                   Thread2, number of accesses: 5000 allocations and deallocations.
+
+                   (In this case the run is ~70% correct)
+
+ 
+
+ 
+
+4. DICTIONARY OF OUTPUT TUPLES
+
+            Available output tuples are the following ones:
+
+ 
+
+1. <Test, Thread1 tried to allocate block which is allocated, weak-reality (Two stage access)>
+
+ 
+
+2. <Test, Thread1 tried to free block which is free, weak-reality (Two stage access)> 
+
+ 
+
+3. <Test, Thread2 tried to allocate block which is allocated, weak-reality (Two stage access)>
+
+ 
+
+4. <Test, Thread2 tried to free block which is free, weak-reality (Two stage access)>
+
+ 
+
+5. <Test, correct-run, none>
+
+-----------------------------------------------------------------------------------------------------------

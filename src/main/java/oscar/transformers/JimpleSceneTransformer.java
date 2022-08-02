@@ -39,7 +39,7 @@ public abstract class JimpleSceneTransformer extends SceneTransformer implements
 
   private void recursiveTransform(SootMethod method) {
     // Avoid blacklisted methods/classes
-    if (Engine.isClassBlacklisted(method))
+    if (Engine.isClassBlacklisted(method) || method.isPhantom())
       return;
 
     // Avoid visiting same method multiple times

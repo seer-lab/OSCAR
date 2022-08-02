@@ -71,8 +71,9 @@ public final class ControllerOptions {
 
       switch (matchingArgs.get(0).getName()) {
         case "InjectedArgs":
-          options.InjectedArgs = argv[i + 1];
-          i++;
+          // Read all injected args
+          while (i + 1 < argv.length && !argv[i + 1].startsWith("-"))
+            options.InjectedArgs += argv[++i] + " ";
           break;
         case "ConfigFile":
           options.ConfigFile = argv[i + 1];
@@ -132,14 +133,14 @@ public final class ControllerOptions {
           options.NoisePlacements.clear();
 
           // Read all noise placements
-          while (i + 1 < argv.length && !argv[i + 1].contains("-"))
+          while (i + 1 < argv.length && !argv[i + 1].startsWith("-"))
             options.NoisePlacements.add(NoisePlacement.fromString(argv[++i]));
           break;
         case "NoiseCategories":
           options.NoiseCategories.clear();
 
           // Read all noise placement categories and add all their respective noise types
-          while (i + 1 < argv.length && !argv[i + 1].contains("-"))
+          while (i + 1 < argv.length && !argv[i + 1].startsWith("-"))
             options.NoiseCategories.add(NoiseCategory.fromString(argv[++i]));
 
           break;

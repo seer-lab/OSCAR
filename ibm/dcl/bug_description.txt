@@ -1,0 +1,488 @@
+Bug Desctiption 	
+
+	
+Created By: Shmuel Ur 06/15/2004 03:35 AM
+	
+
+	
+
+University of Haifa
+
+Department of Computer Science
+
+Course: Software Testing
+
+ 
+
+Bug Report \u2013 Final Project
+
+Double Checked Locking Pattern
+
+ 
+
+Lecturer: Shmuel Ur
+
+Submitted by :
+
+Guy David
+
+ I.D: 034529602
+
+Date : 24.10.2003
+
+ 
+
+ 
+
+ 
+
+Table of Contents
+
+1. Introduction \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u20263
+
+2. The Singleton pattern \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u20263
+
+3. Double Checked Locking (DCL) \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026.5
+
+4. My Application \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026.6
+
+    - A Bug scenario in my simulation program \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026...6
+
+5. RaceFinder \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026.8
+
+    - The Tests \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u20268
+
+    - Experimental Results \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u20269
+
+6. Manual Testing \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u202610
+
+7. FindBugs \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026..11
+
+8. Summery \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026.13
+
+Appendix A \u2013 The Java Memory Model \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026..14
+
+ 
+
+ 
+1. introduction
+
+Sometimes it's appropriate to have exactly one instance of a class: window managers, print spoolers, and file systems are prototypical examples. Typically, those types of objects\u2014known as singletons\u2014are accessed by disparate objects throughout a software system, and therefore require a global point of access. With the Singleton design pattern we can:
+
+    * Ensure that only one instance of a class is created
+    * Provide a global point of access to the object
+
+Double checked locking pattern was created to deal cleverly with the singleton pattern, and reserve system resources like avoiding unnecessary synchronization.
+
+ 
+
+2. The Singleton pattern
+
+The Singleton pattern can be described like this:
+
+Ensure a class has only one instance, and provide a global point of access to it.
+
+ 
+
+ 
+
+As you can see from the figure above, there's not a whole lot to the Singleton design pattern. Singletons maintain a static reference to the sole singleton instance and return a reference to that instance from a static instance() method. For example :
+
+class SomeClass {
+  private Resource resource = null;
+
+  public Resource getResource() {
+    if (resource == null)
+      resource = new Resource();// line 2
+    return resource;
+  }
+}
+
+The resource will only be instanciated once, and after that, the application will not reach line 2 anymore.
+
+When we use a single threaded application, there is no problem. The problems begin when used with multiple threads. In order to avoid two threads to allocate two instances of the singleton, or avoiding the situation where an object is used without its full initialization, we need some kind of synchronization. The first option is to use a synchronized method. Unfortunately, synchronized methods run much slower -- as much as 100 times slower -- than ordinary unsynchronized methods. We must remember that after the singleton was instanciated the application will not reach to line 2 (above).
+
+ 
+
+ 
+
+3. Double-checked locking (DCL)
+
+In an effort to create more efficient code, Java programmers created the double-checked locking idiom to be used with the Singleton creation pattern to limit how much code is synchronized. This pattern attempts to avoid the overhead of acquiring a lock by first doing an unsynchronized check to see if the resource has been created.
+
+Using DCL, the getResource() method would look like this:
+
+
+class SomeClass {
+  private Resource resource = null;
+
+  public Resource getResource() {
+    if (resource == null) {
+      synchronized {
+        if (resource == null)
+          resource = new Resource();
+      }
+    }
+    return resource;
+  }
+}
+
+After the first call to getResource(), resource is already initialized, which avoids the synchronization hit in the most common code path. DCL also averts the race condition by checking resource a second time inside the synchronized block; that ensures that only one thread will try to initialize resource.
+
+However, DCL seems like a clever optimization -- but it doesn't work. The pattern is incorrect according to the Java memory model [MP01], and it is not guaranteed to work. Instead of failing consistently, it will fail sporadically. In addition, the reasons for its failure are not obvious and involve intimate details of the Java memory model [for more information about the java memory model see appendix A]. These facts make a code failure due to double-checked locking very difficult to track down.
+
+4. My application
+
+The application simulates a process of travel agents booking flight tickets on a plane. The number of travel agents and tickets can be controled by the user. Each agent works in a different thread and they all trying to book the tickets simultaneously. Needless to say that every ticket can be bought only once \u2013 and this is the singleton.
+
+One of the things that could happen, when using this pattern, is that an object is used without its full initialization, and in my program I have focused to check this scenario.( in this program using the object means checking it with the function check_ticket_details(), this way I could keep track if there was a bug).
+
+ 
+
+A Bug scenario in my simulation program:
+
+The Double Checked Locking pattern is placed in the run() function in class TravelAgent, which is in charge of running the thread (the agent) that is trying to buy the tickets.
+
+ 
+
+A scenario for the bug:
+
+ 
+
+         public void run(){
+
+          for( int i = 0; i < seats_num; i++) {
+
+           if (seats[i].ticket==null) {
+
+               synchronized(seats[i]){ --> line 1
+
+               if (seats[i].ticket==null) { --> line 2
+
+                   seats[i].ticket=new Ticket(this.name);àline 3
+
+               }
+
+               }
+
+           }
+
+           else {
+
+              synchronized(seats[i]){
+
+               check_ticket_details(i);
+
+              }
+
+ 
+
+           }
+
+          }
+
+      }
+
+ 
+
+ 
+
+ 
+
+Assume 2 threads are trying to create a ticket:
+
+ 
+
+1. Thread 1 enters the run() method.
+
+ 
+
+2. Thread 1 enters the synchronized block at line 1 because instance is null.
+
+ 
+
+3. Thread 1 checks again  at line 2 if the instance is null (it still is) and enters the if block.
+
+4. Thread 1 proceeds to line 3 and makes instance non-null, but before the constructor executes.
+
+ 
+
+5. Thread 1 is preempted by thread 2.
+
+ 
+
+6. Thread 2 checks to see if instance is null. Because it is not,
+
+thread 2 goes to the else part at line 4 and there uses fully constructed,     but partially initialized, object.
+
+ 
+
+7. Thread 2 is preempted by thread 1.
+
+ 
+
+8. Thread 1 completes the initialization of the ticket object by running its constructor.
+
+ 
+
+The result of this scenario is, using an object without fully initializing it.
+
+ 
+
+5. RaceFinder
+
+The Tests:
+
+The goal in running RaceFinder was, trying to make the application reach a scenario similar to the one I have described in the previous section.
+
+I would like to mention that RaceFinder had a problem running the instrumented application in " lot " concurrency, and all the tests with RaceFinder were made in little and average concurrency.
+
+(I have talked to Yaniv, the one who sent me the instrumentation, and he said that the problem is in the instrumentation, not in my application).
+
+Concurrencies : little -      travel agents - 3 ,      tickets - 5
+
+                       average - travel agents - 20 ,     tickets - 30
+
+                       lot -         travel agents - 1000 , tickets - 1000
+
+ 
+
+Basic test:
+
+The first test I did, was running RaceFinder with no noise at all. Every concurrency ran 200 times.
+
+Yield test:
+
+The yield() function causes the currently executing thread object to temporarily pause and allow other threads to execute, For that reason insertion of yield noise could make the bug happen.
+
+I have tested with yield noise in 3 intensities:
+
+Loop probability: 30  - 60 \u2013 90.
+
+Yield probability: 30  - 60 - 90.
+
+Barrier test:
+
+The barrier noise inputs delays in the access to the variables in the application. Such delays could be helpful in creating the bug scenario.
+
+The barrier I have put was: barrier time \u2013 100 and barrier probability \u2013 100.
+
+I have also tested with no barrier and with only the yield noise.
+
+Variables:
+
+The variables I chose to put the noise on, were the singleton variable \u2013 seats().Tickets and the array seats. These variables are also with the highest number of accesses, so, it is likely that variables that are accessed a lot has a good probability to create the bug. I have tested every one of these two variable as a single variable noise and also ran RaceFinder with a subset of 2 random chosen variables.
+
+White noise:
+
+The white noise here comes to create the noise (yield and barrier) in every possible place in the application, and not only when variable accessed.
+
+In all test I have used "noise before event" and "noise after event" options.
+
+ 
+
+Experimental Results:
+
+In all the tests I made with RaceFinder, the bug was not found. No noise, from the noises above, in separate or together, could not make the application generate the bug.
+
+The graphs below show the results of all the experiments I have mentioned above. Every test with different parameter I mentioned, was made 200 times. The graphs are the same for all tests because of the nature of the results. The graphs show the number of tickets (singletons) allocated successfully (with no DCL bug) in every one of the tests.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+6. Manual Testing:
+
+As part of the testing, I have also tried to create a scenario of the bug, manually. According to the scenario I have wrote earlier, I have tried to force a context switch in the tickets, the singleton, constructor. For that I have put a yield() function ( one or more ) in the constructor:
+
+ 
+
+static class Ticket {
+
+      String status;
+
+      int flight;
+
+      int airline;
+
+         int agent_name;
+
+ 
+
+ 
+
+        Ticket(int name){
+
+              
+
+              Thread.yield();
+
+          flight = flight_num;
+
+          airline = airline_company_code;
+
+          status = new String("Sold");
+
+          agent_name =name;
+
+      }
+
+     }
+
+ 
+
+That way, I thought, the running thread will get to the constructor, give up the CPU, and other thread will try to use the object that was not initialized. For that matter I have tried a lot of different concurrencies, to create that exact scenario. I have also tried putting wait() instead of yield(), I have numbered the threads to keep track by printing to screen.
+
+Results:
+
+In all my tests, I have never succeeded in creating to bug. It seems like the JVM keeps it own track of objects and, either doesn't do context switch inside of a constructor, or if it does, it doesn\u2019t let anybody use the object before it completed the constructor.
+
+Like I have said before, it is very hard to make that bug happen, we have to know a lot about the memory model of the JVM, and in some JVM it is even harder (I have read somewhere, that for instance, on the Symantec JVM, a form of double checked bug locking can be seen).
+
+ 
+
+7. The FindBugs Tool
+
+Tool overview:
+
+FindBugs is a program to find bugs in Java programs. It looks for instances of "bug patterns", meaning, code instances that are likely to be errors.
+
+(To more about FindBugs see http://www.cs.umd.edu/~pugh/java/bugs/ )
+
+The results:
+
+As you can see in the screenshots below, the FindBud tool, did recognize the bug.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+8. Summery
+
+As can be seen, The DCL pattern is very hard to detect by noise makers. To understand when the bug can happen, and why, we have to have a deep understanding of the java memory model. Despite the fact the bug is hard to find, it is well known that, the double-checked locking, in whatever form, should not be used because it is not guaranteed that it will work on any JVM implementation. In this case we can see the importance of tools that use static analysis like code pattern checking, FindBugs for example, to recognize bugs, especially bugs like DCL that are very hard to detect by dynamic analysis.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Appendix A
+
+The Java Memory Model
+
+DCL is not guaranteed to work. To understand why, we need to look at the relationship between the JVM and the computer environment on which it runs. In particular, we need to look at the Java Memory Model (JMM), defined in Chapter 17 of the Java Language Specification, which details how Java handles the interaction between threads and memory.
+
+Unlike most other languages, Java defines its relationship to the underlying hardware through a formal memory model that is expected to hold on all Java platforms.
+
+When running in a synchronous (single-threaded) environment, a program's interaction with memory is quite simple, or at least it appears so. Programs store items into memory locations and expect that they will still be there the next time those memory locations are examined.
+
+Actually, the truth is quite different, we think of programs as executing sequentially -- in the order specified by the program code -- that doesn't always happen. Compilers, processors, and caches are free to take all sorts of liberties with our programs and data, as long as they don't affect the result of the computation. For example, compilers can generate instructions in a different order from the obvious interpretation the program suggests and store variables in registers instead of memory; processors may execute instructions in parallel or out of order; and caches may vary the order in which writes commit to main memory. The JMM says that all of these various reorderings and optimizations are acceptable, so long as the environment maintains as-if-serial semantics -- that is, so long as you achieve the same result as you would have if the instructions were executed in a strictly sequential environment.
+
+with multithreaded programs, one thread can read memory locations that another thread has written. If thread A modifies some variables in a certain order, in the absence of synchronization, thread B may not see them in the same order -- or may not see them at all, for that matter. That could result because the compiler reordered the instructions or temporarily stored a variable in a register and wrote it out to memory later; or because the processor executed the instructions in parallel or in a different order than the compiler specified; or because the instructions were in different regions of memory, and the cache updated the corresponding main memory locations in a different order than the one in which they were written. Whatever the circumstances, multithreaded programs are inherently less predictable, unless you explicitly ensure that threads have a consistent view of memory by using synchronization.
+
+ 
+

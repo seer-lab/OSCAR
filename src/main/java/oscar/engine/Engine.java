@@ -31,6 +31,7 @@ import soot.util.Chain;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
@@ -67,8 +68,7 @@ public final class Engine {
       LoggerFormatter.class,
       LoggerFactory.class
   );
-
-  private static FILE_TYPE targetFileType;
+  public static boolean JarMode;
 
   private final String targetFile;
   private static String mainClass = null;
@@ -80,8 +80,14 @@ public final class Engine {
   public Engine(String targetFile, String mainClass, String outputDirectory) {
     Engine.mainClass = mainClass;
     this.targetFile = targetFile;
-    this.targetDirectory = Paths.get(targetFile).getParent().toString();
     this.outputDirectory = outputDirectory;
+
+    // Parse target path
+    Path targetPath = Paths.get(targetFile);
+    if (targetPath.toFile().isDirectory())
+      this.targetDirectory = targetPath.toString();
+    else
+      this.targetDirectory = targetPath.getParent().toString();
 
     // Data structures for shared variable analysis and parsing
     HashMap<String, HashSet<String>> variableDependencies = new HashMap<>();
@@ -109,12 +115,6 @@ public final class Engine {
   }
 
   public void run() {
-    // Get target file type and check if valid
-    targetFileType = getInputFileType(targetFile);
-
-    if (targetFileType == FILE_TYPE.INVALID)
-      throw new RuntimeException("Invalid input file type.");
-
     // Set Soot configurations
     G.reset();
 
@@ -147,28 +147,24 @@ public final class Engine {
     }
 
     // Check if JAR file and process accordingly
-    switch (targetFileType) {
-      case JAR:
-        Options.v().set_output_dir(OSCAR_TEMP_GENERATED_DIR);
+    if (JarMode) {
+      Options.v().set_output_dir(OSCAR_TEMP_GENERATED_DIR);
 
-        // Extract jar contents to directory
-        //noinspection resource
-        ZipFile jar = new ZipFile(targetFile);
+      // Extract jar contents to directory
+      //noinspection resource
+      ZipFile jar = new ZipFile(targetFile);
 
-        try {
-          jar.extractAll(OSCAR_TEMP_EXTRACT_DIR);
-        } catch (IOException e) {
-          throw new RuntimeException("Failed to extract jar. Check permissions.", e);
-        }
-        break;
-
-      case CLASS:
-        try {
-          FileUtils.copyDirectory(new File(targetDirectory), new File(OSCAR_TEMP_EXTRACT_DIR));
-        } catch (IOException e) {
-          throw new RuntimeException("Failed to copy target files to temporary directory.", e);
-        }
-        break;
+      try {
+        jar.extractAll(OSCAR_TEMP_EXTRACT_DIR);
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to extract jar. Check permissions.", e);
+      }
+    } else {
+      try {
+        FileUtils.copyDirectory(new File(targetDirectory), new File(OSCAR_TEMP_EXTRACT_DIR));
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to copy target files to temporary directory.", e);
+      }
     }
 
     ClassWriter.writeClassPackageToFile(Controller.class, OSCAR_TEMP_EXTRACT_DIR);
@@ -201,7 +197,7 @@ public final class Engine {
     PackManager.v().writeOutput();
 
     // If output is jar, create jar
-    if (targetFileType == FILE_TYPE.JAR) {
+    if (JarMode) {
       Options.v().set_output_dir(OSCAR_TEMP_GENERATED_DIR);
 
       String[] splitTargetJarPath = targetFile.split("/");
@@ -304,32 +300,6 @@ public final class Engine {
                     " with subphase " + subPhase + " in phase " + phase);
   }
 
-  private static FILE_TYPE getInputFileType(String file) {
-    String[] tokenizedFilePath = file.split("\\.");
-
-    FILE_TYPE type;
-
-    switch (tokenizedFilePath[tokenizedFilePath.length - 1]) {
-      case "jar":
-        type = FILE_TYPE.JAR;
-        break;
-      case "class":
-        type = FILE_TYPE.CLASS;
-        break;
-      default:
-        type = FILE_TYPE.INVALID;
-        break;
-    }
-
-    return type;
-  }
-
-  private enum FILE_TYPE {
-    JAR,
-    CLASS,
-    INVALID
-  }
-
   private static List<File> getDirectoryContent(String dir) {
     File dirFile = new File(dir);
     int maxDirDepth = dirFile.getPath().split(File.separator).length + 1;
@@ -342,18 +312,6 @@ public final class Engine {
                     .stream()
                     .filter(f -> f.getPath().split(File.separator).length == maxDirDepth)
                     .collect(Collectors.toCollection(ArrayList::new));
-  }
-
-  public static String generateRandomString(int size) {
-    byte[] arr = new byte[size];
-    random.nextBytes(arr);
-
-    StringBuilder sb = new StringBuilder();
-    for (byte b : arr) {
-      sb.append(String.format("%02X", b));
-    }
-
-    return sb.toString();
   }
 
   public static String getMainClass() {

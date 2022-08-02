@@ -17,6 +17,7 @@ public class Main {
   private static final List<ControllerOption> ENGINE_OPTIONS = Arrays.asList(
       new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),
       new ControllerOption("Blacklist", "Set blacklisted classes by prefix (these will not be noised)", "List", Engine.BlacklistedClasses.toString(), "-b", "--blacklist"),
+      new ControllerOption("Jar", "Inject a program as a JAR file.", "Flag", "False", "-j", "--jar"),
       new ControllerOption("Help", "Print Help.", "Flag", "False", "-h", "--help"),
       new ControllerOption("Version", "Print Version.", "Flag", "False", "-v", "--version")
   );
@@ -44,6 +45,9 @@ public class Main {
       switch (matchingArgs.get(0).getName()) {
         case "Verbose":
           LoggerFactory.setLevel(Level.ALL);
+          break;
+        case "Jar":
+          Engine.JarMode = true;
           break;
         case "Blacklist":
           Engine.BlacklistedClasses = new ArrayList<>();
