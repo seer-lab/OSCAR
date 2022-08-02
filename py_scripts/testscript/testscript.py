@@ -46,10 +46,11 @@ argparser.add_argument('-da', '--distance_algorithm', default="0", type=int,
                        help=f'Distance algorithm: {DISTANCE_ALGS}.')
 argparser.add_argument('-j', '--jar', action='store_true', help='Run program as a jar.')
 argparser.add_argument('-dt', '--disable_thread_ids', action='store_true', help='Disable thread ID parsing.')
-argparser.add_argument('-u', '--unique_trace_locations', action='store_true',
+argparser.add_argument('-utl', '--unique_trace_locations', action='store_true',
                        help='Enable unique ids for repeated trace locations.')
-argparser.add_argument('-u', '--unordered_thread_ids', action='store_true', help='Maintain original thread ID order.')
+argparser.add_argument('-uti', '--unordered_thread_ids', action='store_true', help='Maintain original thread ID order.')
 argparser.add_argument('-dc', '--disable_coverage', action='store_true', help='Disable coverage analysis.')
+argparser.add_argument('-of', '--output_flags', type=str, help='Flags which will be checked in program output.')
 
 argv = argparser.parse_args()
 
@@ -82,6 +83,9 @@ runs = run_counts[len(run_counts) - 1]
 
 print(f'Running program {argv.count} times')
 
+FLAGS = str(argv.output_flags).split(",")
+flags_detected = {}
+
 # Run program x times
 for i in range(0, runs):
     print(f'Running {i + 1}/{runs}')
@@ -102,6 +106,21 @@ for i in range(0, runs):
         print(result.stderr.decode('utf-8'))
         print(result.stdout.decode('utf-8'))
         exit(1)
+
+    # Check the output for flags
+    output = result.stdout.decode('utf-8')
+
+    # Parse line by line to check for flags
+    for line in output.split("\n"):
+        for flag in FLAGS:
+            if flag in line:
+                if line in flags_detected:
+                    flags_detected[line] = flags_detected[line] + 1
+                else:
+                    flags_detected[line] = 1
+
+    for rc in str(argv.count).split(","):
+        run_counts.append(int(rc))
 
     runtimes.append(time.time_ns() / 1_000_000 - start_time)
 
@@ -235,3 +254,6 @@ if not argv.disable_coverage:
     print(f'\tAverage {distance_alg} distance: {flatten_results_map(avg_dist_runs)}')
     print(f'\t{distance_alg} distance standard deviation: {flatten_results_map(std_dev_runs)}')
     print(f'\tAverage Cluster Size: {flatten_results_map(avg_cluster_size)}')
+
+    for flag in flags_detected:
+        print(f'\tDetected flag {flag}: {flags_detected[flag]}')

@@ -16,15 +16,13 @@ public class Main {
 
   public static void main(String[] args) {
 
-    PrintStream out=null;
       try{
           if(args.length>0){
-                out=new PrintStream(new FileOutputStream(args[0]));
                // System.setOut(out);//directint all the "out" printing to the file.
                if(args.length==1){//the default value=little
                   System.out.println("The default value=little");
                }
-                 out.print("<Account program,");
+                 System.out.println("<Account program,");
                   if(args.length==2){//the concurrency is optional
                         String concurrencyLevel=args[1];
                             if(concurrencyLevel.compareTo("little")==0){ ManageAccount.num=2;
@@ -79,14 +77,14 @@ public class Main {
                           more=true;
                           }
         }
-        if((less==true)&&(more==true))out.print(" There is amount with more than 300and there is amount with less than 300, No Lock>");
-        if((less==false)&&(more==true))out.print(" There is amount with more than 300, No Lock>");
-        if((less==true)&&(more==false))out.print(" There is amount with less than 300, No Lock>");
-        if((less==false)&&(more==false))out.print(" All amounts are 300,None>");
-        out.close();
+        if((less==true)&&(more==true))System.out.println(" There is amount with more than 300and there is amount with less than 300, No Lock>");
+        if((less==false)&&(more==true))System.out.println(" There is amount with more than 300, No Lock>");
+        if((less==true)&&(more==false))System.out.println(" There is amount with less than 300, No Lock>");
+        if((less==false)&&(more==false))System.out.println(" All amounts are 300,None>");
+
         }
     catch(Exception e){//FileNotFound,Security
-           if(out!=null)out.close();
+
         }
 
   }//end of function main

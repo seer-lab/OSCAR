@@ -4,12 +4,15 @@ import numpy as np
 
 SORTED_DEFAULT_VALUES = sorted([50, 100, 250, 500, 1000])
 
-PROGRAM = "../../output Main"
-TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 3"
+OSCAR_DIR = "../"
+OSCAR_ARGS = "ibm/account account.Main output"
+PROGRAM = "../../output account.Main"
+TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2"
 DISABLE_COVERAGE = False
-NUMBER_RUNS = [5, 25, 50]  # [5, 10, 15]
-NUMBER_THREADS = [4]  # SORTED_DEFAULT_VALUES  # [3]
+NUMBER_RUNS = [5]  # [5, 10, 15]
+NUMBER_THREADS = ["out little"]  # SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = "-lfo -np tbbtr -nc lb sb -m 1"
+OUTPUT_FLAGS = ["amount"]
 
 VARIABLE_ARGS = [
     "-M 5",
@@ -32,7 +35,7 @@ def pgfplots_format(param, k):
 
 
 if DISABLE_COVERAGE:
-    TESTSCRIPT_ARGS += " -dc"
+    TESTSCRIPT_ARGS += "-dc"
 
 v_arg_avg_run_times = {}
 uniq_interleavings = {}
@@ -44,17 +47,42 @@ n_runs = ",".join([str(element) for element in NUMBER_RUNS])
 
 DISTANCE_ALG = ""
 
+# Run Oscar
+result = subprocess.run(f"cd {OSCAR_DIR} && mvn clean", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+if result.returncode != 0:
+    print(result.stderr.decode('utf-8'))
+    print(result.stdout.decode('utf-8'))
+    exit(1)
+
+result = subprocess.run(f"cd {OSCAR_DIR} && mvn compile", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+if result.returncode != 0:
+    print(result.stderr.decode('utf-8'))
+    print(result.stdout.decode('utf-8'))
+    exit(1)
+result = subprocess.run(f"cd {OSCAR_DIR} && mvn exec:java -Dexec.mainClass=oscar.Main -Dexec.args=\"{OSCAR_ARGS}\"",
+                        shell=True,
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+if result.returncode != 0:
+    print(result.stderr.decode('utf-8'))
+    print(result.stdout.decode('utf-8'))
+    exit(1)
+
+output_flags_per_args = {}
+
 # Run multiple times
 for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
     avg_run_times = {}
+    output_flags_detected = {}
 
     for n_threads in tqdm(NUMBER_THREADS, desc="Number of Threads", leave=False):
         run_times = []
 
+        output_flags = ",".join([str(element) for element in OUTPUT_FLAGS])
+
         p_args = f"{FIXED_ARGS} {v_arg}"
         t_args = f"{TESTSCRIPT_ARGS} -c {n_runs}"
 
-        cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {n_threads} {p_args}\" {t_args}'
+        cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {n_threads} {p_args}\" {t_args} -of {output_flags}'
         result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         if result.returncode != 0:
@@ -67,7 +95,14 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
 
         # Parse line by line
         for line in output.split("\n"):
+            if "Detected flag" in line:
+                line_clean = line.split("Detected flag")[1]
+                flag = line_clean.split(":")[0].strip()
+                flag_count = line_clean.split(":")[1].strip()
+
+                output_flags_detected[flag] = flag_count
             if "Average runtime (ms):" in line:
+                oscar_output_reached = True
                 run_times.append(float(line.split(": ")[1]))
 
             if not DISABLE_COVERAGE:
@@ -76,7 +111,7 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
 
                 if "distance:" in line:
                     avg_coverages[v_arg] = line.split(": ")[1].strip()
-                    if DISTANCE_ALG is "":
+                    if DISTANCE_ALG == "":
                         DISTANCE_ALG = line.split("Average")[1].split("distance")[0].strip()
 
                 if "distance standard deviation:" in line:
@@ -90,6 +125,7 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
     v_arg_avg_run_times[v_arg] = ""
     for key in avg_run_times.keys():
         v_arg_avg_run_times[v_arg] += f"({key}, {round(avg_run_times[key], 2)})"
+    output_flags_per_args[v_arg] = output_flags_detected
 
 print()
 print()
@@ -114,3 +150,9 @@ else:
     print("Average Cluster Size: ")
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(avg_cluster_sizes, v_arg)
+
+print("Program Flags: ")
+for v_arg in output_flags_per_args:
+    print(f"\t{v_arg}")
+    for flag in output_flags_per_args[v_arg]:
+        print(f"\t\tFLAG=\"{flag}\" COUNT={output_flags_per_args[v_arg][flag]}")
