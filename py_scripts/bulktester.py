@@ -11,7 +11,7 @@ TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2"
 DISABLE_COVERAGE = False
 NUMBER_RUNS = [5]  # [5, 10, 15]
 NUMBER_THREADS = ["out little"]  # SORTED_DEFAULT_VALUES  # [3]
-FIXED_ARGS = "-lfo -np tbbtr -nc lb sb -m 1"
+FIXED_ARGS = "-lfo -np tbbtr svbbsfa svbasfa -nc lb sb -m 1"
 OUTPUT_FLAGS = ["amount"]
 
 VARIABLE_ARGS = [
