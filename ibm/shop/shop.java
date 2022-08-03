@@ -54,8 +54,8 @@ public class shop{
 		else
 			file="output.txt";
 					
-		OutputStream oStream = new FileOutputStream (file) ;
- 		DataOutputStream out = new DataOutputStream (oStream) ;
+		//OutputStream oStream = new FileOutputStream (file) ;
+ 		//DataOutputStream out = new DataOutputStream (oStream) ;
 		
 					
 		shop sp=new shop();
@@ -77,8 +77,8 @@ public class shop{
 		
 		/* create supplier (yields after invocation)
 	 	 */
-	    	
-		out.writeBytes("< shop, ");
+
+			System.out.println("< shop, ");
 		supplier s=new supplier(sp,sp.costumers_amount);
 		s.start();
 		
@@ -120,9 +120,9 @@ public class shop{
 			while(costumers[num].isAlive()){}
 			num++;
 			}
-		out.writeBytes(", ");			
-		writeBug(S,out);
-		out.close();
+			System.out.println(", ");
+		writeBug(S);
+		//out.close();
 		
 	
 		}
@@ -137,21 +137,21 @@ public class shop{
 	}
 		
 		
-	static void  writeBug(Signal S,DataOutputStream out) throws IOException
+	static void  writeBug(Signal S) throws IOException
 	{
 		String BugOneStr="denail ( init sleep)";
 		String BugTwoStr="denail ( init sleep) + weak reality (lock unlock lock)";  
 		int i=S.get();
-		if(i==2)out.writeBytes(BugTwoStr);
-		else if (i==1) out.writeBytes(BugOneStr);
-	    else out.writeBytes("no bug");
-	    out.writeBytes(" >"); 
+		if(i==2)System.out.println(BugTwoStr);
+		else if (i==1) System.out.println(BugOneStr);
+	    else System.out.println("no bug");
+		System.out.println(" >");
 	return;
 	}	
 		
    public synchronized void printCustomer(String S,DataOutputStream out)throws IOException
    {
-   	out.writeBytes(S);
+   //	out.writeBytes(S);
    	return;
    }
 }

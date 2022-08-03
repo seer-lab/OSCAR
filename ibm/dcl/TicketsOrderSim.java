@@ -134,9 +134,9 @@ public class TicketsOrderSim {
            System.out.println("You have not entered enough arguments.");
 	   System.exit(0);
          }
-         File output = new File(args[0]);
+         //File output = new File(args[0]);
 	 try {
-     	      FileWriter out = new FileWriter(output);
+     	      //FileWriter out = new FileWriter(output);
 	      get_input(args);
 
               agents = new TravelAgent[agents_num];
@@ -163,16 +163,16 @@ public class TicketsOrderSim {
               }
 
      	      if (bug_accured == false) {
-     	          out.write("<TicketsOrderSim, All Tickets were sold properly, No Bug Happened>\n");
+							System.out.println("<TicketsOrderSim, All Tickets were sold properly, No Bug Happened>\n");
      	      }
 	      else {
-		  System.out.print("Bug Happened  "+ bug_count+"  Times");
-     	          out.write("<TicketsOrderSim, "+bug_count+" Tickets were used without being initialized, Double Checked Locking - Partial initialization>\n");
+		  System.out.println("Bug Happened  "+ bug_count+"  Times");
+							System.out.println("<TicketsOrderSim, "+bug_count+" Tickets were used without being initialized, Double Checked Locking - Partial initialization>\n");
 	      }
-	      out.close();
+	      //out.close();
 	 }
 	 catch (IOException e) {
-             System.out.print("\nIOException Happened.");
+		 		System.out.println("\nIOException Happened.");
              System.exit(0);
          }
 

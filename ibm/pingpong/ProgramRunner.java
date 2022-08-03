@@ -18,9 +18,6 @@ public class ProgramRunner {
     private BuggedProgram bug;
 
 
-    private DataOutputStream out;
-
-
     private int threadsNumber;
 
 
@@ -28,17 +25,16 @@ public class ProgramRunner {
      *
      * @param threadsNumber
      */
-    public ProgramRunner(DataOutputStream output, int threadsNumber) {
-        this.out = output;
+    public ProgramRunner(int threadsNumber) {
         this.threadsNumber = threadsNumber;
-        this.bug = new BuggedProgram(output, threadsNumber);
+        this.bug = new BuggedProgram(threadsNumber);
     }
 
 
     public void doWork() {
         String newLine = System.getProperty("line.separator");
         try {
-            out.writeBytes("Number Of Threads: " + this.threadsNumber + " Number Of Bugs: ");
+            System.out.println(("Number Of Threads: " + this.threadsNumber + " Number Of Bugs: ");
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
@@ -47,34 +43,34 @@ public class ProgramRunner {
 
 
     public static void main(String[] args) {
-        File output = new File("output.txt");
+        //File output = new File("output.txt");
 
-        DataOutputStream out = null;
+        //DataOutputStream out = null;
         try {
-            FileOutputStream os = new FileOutputStream(output);
-            out = new DataOutputStream(os);
+            //FileOutputStream os = new FileOutputStream(output);
+            //out = new DataOutputStream(os);
         } catch (FileNotFoundException e) {
             e.printStackTrace(System.err);
         }
         try {
 
             String newLine = System.getProperty("line.separator");
-            out.writeBytes("In this file you will find the number of the bug appearances " +
+            System.out.println("In this file you will find the number of the bug appearances " +
                     "accordingly to the number of threads that the " +
                     "bugged program utilized with:" + newLine + newLine);
 
-            out.writeBytes("Few Threads: " + newLine + newLine);
-            ProgramRunner fewThreads = new ProgramRunner(out, 17);
+            System.out.println("Few Threads: " + newLine + newLine);
+            ProgramRunner fewThreads = new ProgramRunner(17);
             fewThreads.doWork();
-            out.writeBytes(newLine + "************************************" + newLine + newLine);
-            out.writeBytes("Average Threads: " + newLine + newLine);
-            ProgramRunner averageThreads = new ProgramRunner(out, 40);
+            System.out.println(newLine + "************************************" + newLine + newLine);
+            System.out.println("Average Threads: " + newLine + newLine);
+            ProgramRunner averageThreads = new ProgramRunner( 40);
             averageThreads.doWork();
-            out.writeBytes(newLine + "************************************" + newLine + newLine);
-            out.writeBytes("A Lot Of Threads: " + newLine + newLine);
-            ProgramRunner aLotOfThreads = new ProgramRunner(out, 120);
+            System.out.println(newLine + "************************************" + newLine + newLine);
+            System.out.println("A Lot Of Threads: " + newLine + newLine);
+            ProgramRunner aLotOfThreads = new ProgramRunner( 120);
             aLotOfThreads.doWork();
-            out.writeBytes(newLine + "************************************" + newLine + newLine);
+            System.out.println(newLine + "************************************" + newLine + newLine);
 
         } catch (IOException e) {
             e.printStackTrace(System.err);

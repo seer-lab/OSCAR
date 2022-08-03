@@ -179,11 +179,11 @@ public class GarageManager
         if(args == null)
             return;
 
-        if(args.length > 0)
-            outputFile = OpenOutputFile(args[0]);
-        else
-            outputFile = OpenOutputFile("Output.txt");
-
+        //if(args.length > 0)
+        //    outputFile = OpenOutputFile(args[0]);
+        //else
+        //    outputFile = OpenOutputFile("Output.txt");
+//
        if((args.length >1))
             strBugProbability = args[1];
 
@@ -223,32 +223,32 @@ public class GarageManager
            {
                 iBugProbability = 250;
                System.out.println("Bug Probability Is little");
-               outputFile.write("Bug Probability Is little");
+               //outputFile.write("Bug Probability Is little");
            }
            else if(strBugProbability.compareTo("average") == 0)
             {
                 iBugProbability = 160;
                System.out.println("Bug Probability Is average");
-               outputFile.write("Bug Probability Is average");
+              // outputFile.write("Bug Probability Is average");
            }
            else if(strBugProbability.compareTo("lot") == 0)
             {
                 iBugProbability = 80;
                System.out.println("Bug Probability Is lot");
-               outputFile.write("Bug Probability Is lot");
+               //.write("Bug Probability Is lot");
            }
            else
            {
                System.out.println("Bug Probability inserted by user is not : little, average, lot :");
                System.out.println("Default bug Probability Is little");
 
-               outputFile.write("Bug Probability inserted by user is not : little, average, lot :");
-               outputFile.newLine();
-               outputFile.write("Default bug Probability Is little");
+               //outputFile.write("Bug Probability inserted by user is not : little, average, lot :");
+              // outputFile.newLine();
+              // outputFile.write("Default bug Probability Is little");
            }
-           outputFile.newLine();
-           outputFile.newLine();
-           outputFile.flush();
+           //outputFile.newLine();
+           //outputFile.newLine();
+           //outputFile.flush();
        }
        catch(java.io.IOException error)
        {
@@ -397,38 +397,38 @@ public class GarageManager
                 if(!printedOutput && printedCard == NUMBER_OF_WORKERS)
                 {
                      System.out.print("< GarageManager, (");
-                    outputFile.write("< GarageManager, (");
+                   // outputFile.write("< GarageManager, (");
                     for(int i = 0; i < NUMBER_OF_WORKERS; i++)
                     {
                         if(i != NUMBER_OF_WORKERS - 1)
                         {
                             System.out.print(status.workersTaskLength[i] + ", ");
-                            outputFile.write(status.workersTaskLength[i] + ", ");
+                            //outputFile.write(status.workersTaskLength[i] + ", ");
                         }
                         else
                         {
                             System.out.print(status.workersTaskLength[i] + "), ");
-                            outputFile.write(status.workersTaskLength[i] + "), ");
+                           // outputFile.write(status.workersTaskLength[i] + "), ");
                         }
                     }
 
                     if(bugAccured)
                     {
                         System.out.print("Blocking-Critical-Section Bug>");
-                        outputFile.write("Blocking-Critical-Section Bug>");
+                      //  outputFile.write("Blocking-Critical-Section Bug>");
                     }
                     else
                     {
                         System.out.print("No-Bug>");
-                        outputFile.write("No-Bug>");
+                      //  outputFile.write("No-Bug>");
                     }
 
                     System.out.flush();
                     System.out.println();
-                    outputFile.newLine();
-
-                    outputFile.flush();
-                    outputFile.close();
+                   // outputFile.newLine();
+//
+                   // outputFile.flush();
+                   // outputFile.close();
                      return true;
                 }
             }

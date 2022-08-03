@@ -57,7 +57,7 @@ public class BufWriter extends Thread {
       outF = new FileOutputStream(outFile);
     }
     catch (FileNotFoundException e) {return;}
-    DataOutputStream outStream = new DataOutputStream(outF);
+    //DataOutputStream outStream = new DataOutputStream(outF);
 
 
 //Starting threads ...
@@ -85,18 +85,18 @@ public class BufWriter extends Thread {
     try
     {
       res = buf._count - (checker.getWrittenCount()+buf._pos);
-      outStream.writeChars("<BufWriter,");
-      outStream.writeChars(res+",");
+      //outStream.writeChars("<BufWriter,");
+      //outStream.writeChars(res+",");
       System.out.print("<BufWriter,");
       if (res != 0) {
-        outStream.writeChars("[Wrong/No-Lock]>");
+       // outStream.writeChars("[Wrong/No-Lock]>");
         System.out.println("[Wrong/No-Lock]>");
       }
       else {
-        outStream.writeChars("[None]>");
+        //outStream.writeChars("[None]>");
         System.out.println("[None]>");
       }
-      outStream.close();
+     // outStream.close();
     }
     catch (IOException e) {}
     return;

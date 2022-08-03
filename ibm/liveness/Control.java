@@ -15,8 +15,8 @@ public class Control extends Thread {
 
   public void run() {
     try {
-      DataOutputStream oFile = new DataOutputStream(new BufferedOutputStream(new
-          FileOutputStream(outputFile)));
+      //DataOutputStream oFile = new DataOutputStream(new BufferedOutputStream(new
+       //   FileOutputStream(outputFile)));
       while (true) {
         try { this.sleep(sleep_time); } catch (InterruptedException e) {}
         if (active == 0) { break; } // bypassing bug-stopping mechanism
@@ -24,16 +24,16 @@ public class Control extends Thread {
           if (HttpClient.suspendedClientsExists() == false) {
             break;
           } else {
-            oFile.writeUTF("BugGen,1,Liveness - Bug (Dormancy)");
+            //oFile.writeUTF("BugGen,1,Liveness - Bug (Dormancy)");
             System.out.println("BugGen,1,Liveness - Bug (Dormancy)");
-            oFile.close();
+            //oFile.close();
             System.exit(1);
           }
         }
       }
-      oFile.writeUTF("BugGen,0,none");
+      //oFile.writeUTF("BugGen,0,none");
       System.out.println("BugGen,0,none");
-      oFile.close();
+      //oFile.close();
     } catch (IOException e) {
       System.out.println("-E- " + e.toString());
       System.exit(1);

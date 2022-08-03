@@ -27,7 +27,7 @@ public class deadLock implements Runnable
        else if (concurrencyParam.equals("lot")) MAX=15;
        threadArr=new Thread [MAX];                                                          // we decide how many thread should be in here.
               try {
-           output =new FileOutputStream(fileName);
+           //output =new FileOutputStream(fileName);
        } catch (FileNotFoundException e) {
            e.printStackTrace();
        }
@@ -47,7 +47,7 @@ public class deadLock implements Runnable
        System.out.println("after join!!!!!!!!!!!!!!!!!!!!!!");
                                                                                                                            // once we get here it means all went well
        String str1="< bug1,1,none>";                                                      //the tupple when it's working
-        output.write(str1.getBytes());
+     System.out.println(str1);
    }
 
     public void run()
@@ -73,8 +73,7 @@ public class deadLock implements Runnable
           System.out.println("deadlock on "+to);                                                                             //for debug
          String str="< bug1,0,deadlock on "+to+" >";                                   //output
             try {
-                output.write(str.getBytes());
-                output.close();
+              System.out.println(str);
             } catch (IOException e) {
                 System.exit(1);
             }

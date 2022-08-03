@@ -647,11 +647,11 @@ filename= args[0];
 
     try {
      // System.out.println("inside!");
-      File output = new File(filename);
-      FileWriter out = new FileWriter(output);
+      //File output = new File(filename);
+      //FileWriter out = new FileWriter(output);
 
-      out.write("< XtangoAnimator , finished , None >" + "\r\n");
-      out.close();
+      System.out.println("< XtangoAnimator , finished , None >" + "\r\n");
+      //out.close();
 
     }
 
@@ -1389,11 +1389,11 @@ class CexchangePos
       if (XtangoAnimator.i==icon2.position){
         try {
     // System.out.println("inside!");
-     File output = new File(XtangoAnimator.filename);
-     FileWriter out = new FileWriter(output);
+     //ile output = new File(XtangoAnimator.filename);
+     //ileWriter out = new FileWriter(output);
 
-     out.write("< XtangoAnimator , deadlock occured , deadlock >" + "\r\n");
-     out.close();
+          System.out.println("< XtangoAnimator , deadlock occured , deadlock >" + "\r\n");
+     //out.close();
 
    }
 

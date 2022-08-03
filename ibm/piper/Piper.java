@@ -31,12 +31,12 @@ public class  Piper {
     public void setFile() {
 
         try  {
-            _fw = new FileWriter (_fileName);
-            _pw = new PrintWriter (_fw);
+           // _fw = new FileWriter (_fileName);
+            //_pw = new PrintWriter (_fw);
         } catch (IOException e)  { e.printStackTrace(); }
 
-        _pw.println("Program name: Piper.java");
-        _pw.print("Results: ");
+        System.out.println("Program name: Piper.java");
+        System.out.println("Results: ");
     }
 
 //**************** function fillPlane ********************************************************
@@ -78,10 +78,10 @@ public class  Piper {
 
         //_pw.println("Empty the plane");
         if ( _emptyCount >= NUM_OF_SEATS )
-            _pw.println("The bug was found");
-        else   _pw.println("The bug was not found");
+            System.out.println("The bug was found");
+        else   System.out.println("The bug was not found");
 
-        _pw.println("Bug-pattern indicate: Denial bug tales [Condition-For-Wait]");
-        _pw.close();
+        System.out.println("Bug-pattern indicate: Denial bug tales [Condition-For-Wait]");
+        _//pw.close();
     }
 }

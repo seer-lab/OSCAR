@@ -111,22 +111,22 @@ public class ThreadTest {
      * svae results to file
      */
     private void writeResults() throws IOException {
-        FileWriter writer = new FileWriter(filename);
-        PrintWriter printer = new PrintWriter(writer);
+        //FileWriter writer = new FileWriter(filename);
+        //PrintWriter printer = new PrintWriter(writer);
 
         int results = getWorkers();
-        printer.print("ThreadTest, ");
+        System.out.println("ThreadTest, ");
 
         if (results >= WORKERS_ALLOWED) {
-            printer.print("DEADLOCK");
+            System.out.println("DEADLOCK");
         } else {
-            printer.print(results);
+            System.out.println(results);
         }
 
         if (results > 0) {
-            printer.println(", BLOCKING_CRITICAL_SECTION");
+            System.out.println(", BLOCKING_CRITICAL_SECTION");
         } else {
-            printer.println(", none");
+            System.out.println(", none");
         }
 
         printer.close();

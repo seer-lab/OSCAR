@@ -63,8 +63,8 @@ public class MergeSort extends Thread
                 System.out.println("BUG");
                 try
                 {
-                   fWriter = new FileWriter(outputFile,true);
-                   bWriter = new BufferedWriter(fWriter);
+                   //fWriter = new FileWriter(outputFile,true);
+                   //bWriter = new BufferedWriter(fWriter);
 
                 }
                 catch(IOException e)
@@ -76,9 +76,9 @@ public class MergeSort extends Thread
                 number=Integer.toString(availableThreads);
                 try
                 {
-                  bWriter.write("<MergeSort," + number+">");
-                  bWriter.newLine();
-                   bWriter.close();
+                        System.out.println("<MergeSort," + number+">");
+                  //bWriter.newLine();
+                  // bWriter.close();
 
                 }
                 catch(IOException e)
@@ -117,8 +117,8 @@ public class MergeSort extends Thread
                 bIsInit = true;
                 try
                {
-                  fWriter = new FileWriter(outputFile);
-                  bWriter = new BufferedWriter(fWriter);
+                 // fWriter = new FileWriter(outputFile);
+                 // bWriter = new BufferedWriter(fWriter);
 
                }
                catch(IOException e)
@@ -142,22 +142,22 @@ public class MergeSort extends Thread
           try
 
           {
-            fWriter = new FileWriter("sortedoutput.txt");
-            bWriter = new BufferedWriter(fWriter);
+            //fWriter = new FileWriter("sortedoutput.txt");
+           // bWriter = new BufferedWriter(fWriter);
 
           }
           catch (IOException e) {
             System.exit( -1);
           }
           try {
-            bWriter.write("Sorted using " + m_iThreadLimit + " thread/s");
-            bWriter.newLine();
+                  System.out.println("Sorted using " + m_iThreadLimit + " thread/s");
+          //  bWriter.newLine();
             for (int iCnt = 0; iCnt < m_iArray.length; iCnt++)
             {
-              bWriter.write(iCnt + " : " + m_iArray[iCnt]);
-              bWriter.newLine();
+                    System.out.println(iCnt + " : " + m_iArray[iCnt]);
+              //bWriter.newLine();
             }
-            bWriter.close();
+           // bWriter.close();
 
           }
           catch (IOException e) {

@@ -96,15 +96,15 @@ public class Test {
     // tuple to output file.
     try {
      if (Thread1Result[0] == -2) {
-       out.write("<Test, Thread1 tried to allocate block which is allocated, weak-reality (Two stage access)>\n".getBytes());
+       System.out.println("<Test, Thread1 tried to allocate block which is allocated, weak-reality (Two stage access)>\n");
      } else if (Thread1Result[0] == -3){
-       out.write("<Test, Thread1 tried to free block which is free, weak-reality (Two stage access)>\n".getBytes());
+       System.out.println("<Test, Thread1 tried to free block which is free, weak-reality (Two stage access)>\n");
      } else if (Thread2Result[0] == -2) {
-       out.write("<Test, Thread2 tried to allocate block which is allocated, weak-reality (Two stage access)>\n".getBytes());
+       System.out.println("<Test, Thread2 tried to allocate block which is allocated, weak-reality (Two stage access)>\n");
      } else if (Thread2Result[0] == -3){
-       out.write("<Test, Thread2 tried to free block which is free, weak-reality (Two stage access)>\n".getBytes());
+       System.out.println("<Test, Thread2 tried to free block which is free, weak-reality (Two stage access)>\n");
      } else {
-         out.write("<Test, correct-run, none>\n".getBytes());
+       System.out.println("<Test, correct-run, none>\n");
      }
    } catch (IOException ex) {
        System.err.println("Error writing to output file...");

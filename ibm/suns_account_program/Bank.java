@@ -64,7 +64,7 @@ public class Bank{
 		// Give report.
 		System.out.println("Bank records = "+Bank_Total+", accounts balance = "+Total_Balance+".");
 		if(Bank_Total == Total_Balance)
-			System.out.println("Records match.");
+			System.out.println("records match.");
 		else
 			System.out.println("ERROR: records don't match !!!");
 	}

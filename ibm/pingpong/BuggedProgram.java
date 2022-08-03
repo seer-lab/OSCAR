@@ -18,9 +18,6 @@ import java.util.Iterator;
 public class BuggedProgram {
 
 
-    private DataOutputStream output;
-
-
     private int threadNumber;
 
 
@@ -34,8 +31,7 @@ public class BuggedProgram {
      *
      * @param output
      */
-    public BuggedProgram(DataOutputStream output, int threadNumber) {
-        this.output = output;
+    public BuggedProgram(int threadNumber) {
         this.threadNumber = threadNumber;
         this.pingPongPlayer = new PingPong();
     }
@@ -69,8 +65,8 @@ public class BuggedProgram {
 
         try {
             String newLine = System.getProperty("line.separator");
-            output.writeBytes(String.valueOf(this.bugAppearanceNumber + " bugs. " + newLine));
-            System.out.println("Bug appeanace Number" + this.bugAppearanceNumber);
+            System.out.println(String.valueOf(this.bugAppearanceNumber + " bugs. " + newLine));
+            System.out.println("Bug appearance Number" + this.bugAppearanceNumber);
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }

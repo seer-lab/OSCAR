@@ -74,14 +74,12 @@ public class Reporter
             // Creating the output file
             rFile = new File(output);
             rFile = rFile.getAbsoluteFile();
-            out = new OutputStreamWriter (new FileOutputStream(rFile));
 
             // checking and printing the result
-            out.write("<BubbleSort Program,");// Printing the name of the program
+            System.out.println("<BubbleSort Program,");// Printing the name of the program
             for(int i = 0;i < arrSize;++i) // printing the result array
-                out.write(printedArray[i] + " ");
-            out.write(IndicateBug(originalArray));// writing the bug to the output file
-            out.close();
+                System.out.println(printedArray[i] + " ");
+            System.out.println(IndicateBug(originalArray));// writing the bug to the output file
         }
         catch(IOException e)
         {

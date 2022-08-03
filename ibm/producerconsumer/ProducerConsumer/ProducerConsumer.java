@@ -47,9 +47,9 @@ class Server extends ProducerConsumer {
 			this.client.interruptFlag = true;
             try {
                 cnt++;
-			    OutputFile.println(msg1 + cnt);
+			    //OutputFile.println(msg1 + cnt);
                 System.out.println(msg1 + cnt);
-                OutputFile.println(msg2);
+               // OutputFile.println(msg2);
                 System.out.println(msg2);
         	    throw new IOException("File Output Error");
 		    }catch (IOException e1) {}
@@ -101,9 +101,9 @@ class Client extends ProducerConsumer {
                         System.out.println(msg3 + cnt);
                         System.out.println(msg4);
                         System.out.println(msg5);
-                        OutputFile.println(msg3 + cnt);
-                        OutputFile.println(msg4);
-                        OutputFile.println(msg5);
+                        //OutputFile.println(msg3 + cnt);
+                        //OutputFile.println(msg4);
+                        //OutputFile.println(msg5);
                         throw new IOException("File Output Error");
                     }catch (IOException e3) {}
 			    }
@@ -121,9 +121,9 @@ class Client extends ProducerConsumer {
                     System.out.println(msg3 + cnt);
                     System.out.println(msg4);
                     System.out.println(msg5);
-                    OutputFile.println(msg3 + cnt);
-                    OutputFile.println(msg4);
-                    OutputFile.println(msg5);
+                    //OutputFile.println(msg3 + cnt);
+                   //OutputFile.println(msg4);
+                   //OutputFile.println(msg5);
                     throw new IOException("File Output Error");
                 }catch (IOException e3) {}
 			}
@@ -151,9 +151,9 @@ class Client extends ProducerConsumer {
                         System.out.println(msg3 + cnt);
                         System.out.println(msg4);
                         System.out.println(msg5);
-                        OutputFile.println(msg3 + cnt);
-                        OutputFile.println(msg4);
-                        OutputFile.println(msg5);
+                        //OutputFile.println(msg3 + cnt);
+                        //OutputFile.println(msg4);
+                        //OutputFile.println(msg5);
                         throw new IOException("File Output Error");
                 }catch (IOException e3) {}
 			}
@@ -223,22 +223,22 @@ public class ProducerConsumer extends Thread {
 			    if ( ((args[1]).equals("little")) || ((args[1]).equals("LITTLE")) ){
 				    IterNum = 3;
                     System.out.println("Concurrency Level is LOW");
-                    OutputFile.println("Concurrency Level is LOW");
+                   // OutputFile.println("Concurrency Level is LOW");
 			    }
 			    else if ( ((args[1]).equals("average")) || ((args[1]).equals("AVERAGE")) ){
 				    IterNum = 5;
                     System.out.println("Concurrency Level is MEDIUM");
-                    OutputFile.println("Concurrency Level is MEDIUM");
+                    //OutputFile.println("Concurrency Level is MEDIUM");
 			    }
 			    else if ( ((args[1]).equals("lot")) || ((args[1]).equals("LOT")) ){
 				    IterNum = 20;
                     System.out.println("Concurrency Level is HIGH");
-                    OutputFile.println("Concurrency Level is HIGH");
+                  //  OutputFile.println("Concurrency Level is HIGH");
 			    }
                 else {
 	   	            IterNum = 3;
                     System.out.println("Concurrency Level is LOW By Default");
-                    OutputFile.println("Concurrency Level is LOW By Default");
+                   // OutputFile.println("Concurrency Level is LOW By Default");
                 }
             }
         }

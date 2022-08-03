@@ -68,8 +68,8 @@ public class Loader {
      }
 
      try{
-       RandomAccessFile outFile=new RandomAccessFile(outputFile,"rw");//create new file
-       outFile.writeBytes("SortProgram "+outString);
+       //RandomAccessFile outFile=new RandomAccessFile(outputFile,"rw");//create new file
+       System.out.println("SortProgram "+outString);
      }
      catch (Exception e){
        System.out.println(""+e);

@@ -179,32 +179,32 @@ public class BuggyProgram{
 
     buffer.append(", \n" + pattern + ">\n");
 
-    try {
-      outputFile= new FileWriter(outputFilename);
-
-      outputFile.write(buffer.toString());
-    } catch (IOException ex){
-      System.out.println("File \"" + outputFilename + "\" is possibly "+
-                         "corrupted.\n");
-      System.exit(1);
-    } catch (NullPointerException ex){
-      System.out.println("File \"" + outputFilename + "\" is possibly "+
-                         "corrupted cannot be accessed.\n");
-      System.exit(1);
-    } catch (Exception ex){
-      System.out.println("File \"" + outputFilename + "\" is possibly "+
-                         "corrupted cannot be accessed.\n");
-      System.exit(1);
-    } finally {
-      if (outputFile != null){
-        try {
-          outputFile.close();
-        } catch (IOException ex){
-          System.out.println("Could not close the file \"" + outputFilename +
-                             "\".\n");
-        }
-      }
-    }
+    //try {
+    //  //outputFile= new FileWriter(outputFilename);
+//
+    System.out.println(buffer.toString());
+    //} catch (IOException ex){
+    //  System.out.println("File \"" + outputFilename + "\" is possibly "+
+    //                     "corrupted.\n");
+    //  System.exit(1);
+    //} catch (NullPointerException ex){
+    //  System.out.println("File \"" + outputFilename + "\" is possibly "+
+    //                     "corrupted cannot be accessed.\n");
+    //  System.exit(1);
+    //} catch (Exception ex){
+    //  System.out.println("File \"" + outputFilename + "\" is possibly "+
+    //                     "corrupted cannot be accessed.\n");
+    //  System.exit(1);
+    //} finally {
+    //  if (outputFile != null){
+    //    try {
+    //      outputFile.close();
+    //    } catch (IOException ex){
+    //      System.out.println("Could not close the file \"" + outputFilename +
+    //                         "\".\n");
+    //    }
+    //  }
+    //}
   }
 
 

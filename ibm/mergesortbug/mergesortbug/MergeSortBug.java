@@ -229,14 +229,14 @@ public class MergeSortBug extends Thread {
         return;
       }
 
-      FileWriter output;
+      //FileWriter output;
 
       try {
-        output = new FileWriter(args[0]);
-        output.write("MergeSort Bug, " +
+        //output = new FileWriter(args[0]);
+        System.out.println("MergeSort Bug, " +
                      "Lowest number of threads available is: " +
                      lowestNumThreads + ", Not-Atomic");
-        output.close();
+        //output.close();
       }
       catch (IOException ex1) {
       }

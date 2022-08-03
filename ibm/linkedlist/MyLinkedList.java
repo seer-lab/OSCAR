@@ -114,27 +114,27 @@
 		//Prints list
         public void printList( MyLinkedList theList ) throws IOException
         {
-			PrintWriter of = new PrintWriter(new FileWriter(".\\" + _fileName,true),true);
+			//PrintWriter of = new PrintWriter(new FileWriter(".\\" + _fileName,true),true);
 
             if( theList.isEmpty( ) )
-                of.println( "Empty list" );
+							System.out.println( "Empty list" );
             else
             {
-				of.print("list : (->");
+							System.out.print("list : (->");
 
                 MyLinkedListItr itr = theList.first( );
                 for( ; !itr.isPastEnd( ); itr.advance( ) )
-                    of.print( (Integer)itr.retrieve( ) + "->" );
+									System.out.print( (Integer)itr.retrieve( ) + "->" );
 
-                of.print(") , ");
+							System.out.println(") , ");
             }
 
 			if ( this.size() == 10 )						//theoretical size of list is 10
-				of.print("length : " + this.size() +  " , No Bug >");
+				System.out.println("length : " + this.size() +  " , No Bug >");
 			else
-				of.print("length : " + this.size() +  " , Non-Atomic Bug >");
+				System.out.println("length : " + this.size() +  " , Non-Atomic Bug >");
 
-			of.close();
+			//of.close();
 
 
         }
