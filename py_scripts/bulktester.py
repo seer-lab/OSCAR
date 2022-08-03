@@ -63,6 +63,7 @@ if result.returncode != 0:
     print(result.stderr.decode('utf-8'))
     print(result.stdout.decode('utf-8'))
     exit(1)
+
 result = subprocess.run(f"cd {OSCAR_DIR} && mvn exec:java -Dexec.mainClass=oscar.Main -Dexec.args=\"{OSCAR_ARGS}\"",
                         shell=True,
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
