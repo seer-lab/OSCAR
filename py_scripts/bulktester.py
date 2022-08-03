@@ -9,7 +9,7 @@ OSCAR_ARGS = "ibm/account account.Main output"
 PROGRAM = "../../output account.Main"
 TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2"
 DISABLE_COVERAGE = False
-NUMBER_RUNS = [5]  # [5, 10, 15]
+NUMBER_RUNS = SORTED_DEFAULT_VALUES  # [5, 10, 15]
 NUMBER_THREADS = ["out little"]  # SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = "-lfo -np tbbtr svbbsfa svbasfa -nc lb sb -m 1"
 OUTPUT_FLAGS = ["amount"]
@@ -35,7 +35,7 @@ def pgfplots_format(param, k):
 
 
 if DISABLE_COVERAGE:
-    TESTSCRIPT_ARGS += "-dc"
+    TESTSCRIPT_ARGS += " -dc"
 
 v_arg_avg_run_times = {}
 uniq_interleavings = {}
