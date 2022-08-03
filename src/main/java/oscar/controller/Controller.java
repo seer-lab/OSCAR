@@ -39,6 +39,10 @@ public final class Controller {
    * @param uuid      instrumented location generated uuid
    */
   public static void noise(NoisePlacement placement, String uuid) {
+    // Check if the controller has been initialized. This can occur if noise is inserted into static blocks.
+    if (options == null)
+      return;
+
     // Check if location enabled
     if (!options.NoiseCategories.contains(placement.getCategory())) {
       logger.fine("[SLEEP] Skipping noise category '" + placement.getCategory().name() + "'.");
