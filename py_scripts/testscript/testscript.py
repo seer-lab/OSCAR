@@ -197,6 +197,9 @@ print()
 print("Results:")
 print(f'\tAverage runtime (ms): {round(np.average(runtimes), 0)}')
 
+for flag in flags_detected:
+    print(f'\tDetected flag {flag}: {flags_detected[flag]}')
+
 if not argv.disable_coverage:
     avg_dist_runs = {}
     std_dev_runs = {}
@@ -255,5 +258,3 @@ if not argv.disable_coverage:
     print(f'\t{distance_alg} distance standard deviation: {flatten_results_map(std_dev_runs)}')
     print(f'\tAverage Cluster Size: {flatten_results_map(avg_cluster_size)}')
 
-    for flag in flags_detected:
-        print(f'\tDetected flag {flag}: {flags_detected[flag]}')
