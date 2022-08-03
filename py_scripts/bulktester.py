@@ -47,6 +47,10 @@ n_runs = ",".join([str(element) for element in NUMBER_RUNS])
 
 DISTANCE_ALG = ""
 
+# Compile program
+program_location = OSCAR_DIR + OSCAR_ARGS.split(" ")[0]
+subprocess.run(f"cd {program_location} && javac $(find ./* | grep .java)")
+
 # Run Oscar
 result = subprocess.run(f"cd {OSCAR_DIR} && mvn clean", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 if result.returncode != 0:
