@@ -24,7 +24,7 @@ public final class Controller {
     return options.InjectedArgs.split(" ");
   }
 
-  public static void end() {
+  public synchronized static void end() {
     if (options.ControllerOutput != null)
       options.ControllerOutput.terminate();
 
