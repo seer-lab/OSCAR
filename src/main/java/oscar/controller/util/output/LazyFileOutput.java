@@ -16,34 +16,35 @@ public class LazyFileOutput extends FileOutput {
   }
 
   @Override
-  public synchronized void write(String output) {
+  public void write(String output) {
     logger.fine("Writing to buffer.");
 
     if (output == null)
       throw new RuntimeException("Null string fed to file output.");
 
-    buffer.add(output + "\n");
+    synchronized (buffer) {
+      buffer.add(output + "\n");
+    }
   }
 
   @Override
   public void terminate() {
-    for (String s : buffer) {
-      if (s == null)
-        throw new RuntimeException("Null string fed to file output buffer.");
+    if (writer == null)
+      throw new RuntimeException("Writer is null.");
 
-      try {
-        writer.write(s);
-      } catch (IOException e) {
-        throw new RuntimeException("Failed to write to file '" + filepath + "'.", e);
+    try {
+      synchronized (buffer) {
+        for (String s : buffer) {
+          if (s == null)
+            throw new RuntimeException("Null string fed to file output buffer.");
+
+          writer.write(s);
+        }
       }
+      writer.flush();
+      writer.close();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to write to file '" + filepath + "'.", e);
     }
-
-    if (writer != null)
-      try {
-        writer.flush();
-        writer.close();
-      } catch (IOException e) {
-        throw new RuntimeException("Failed to close writer.");
-      }
   }
 }
