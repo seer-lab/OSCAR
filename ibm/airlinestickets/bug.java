@@ -65,19 +65,11 @@ public  class bug implements Runnable{
         String str2="< "+fileName+" , Concurency="+Concurency+" , "+"Interleaving"+" >";
 
          if (Num_Of_Seats_Sold > Maximum_Capacity)
-             try {
                System.out.println(str2);
                  //output.write(str2.getBytes());
-             } catch (IOException e) {
-                 e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-             }
          else
-             try {
                System.out.println(str1);
                //output.write(str1.getBytes());
-             } catch (IOException e) {
-                 e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-             }
      }
 /**
  * the selling post:
