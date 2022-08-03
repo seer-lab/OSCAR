@@ -49,7 +49,7 @@ DISTANCE_ALG = ""
 
 # Compile program
 program_location = OSCAR_DIR + OSCAR_ARGS.split(" ")[0]
-subprocess.run(f"cd {program_location} && javac $(find ./* | grep .java)")
+subprocess.run(f"cd {program_location} && javac $(find ./* | grep .java)", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 # Run Oscar
 result = subprocess.run(f"cd {OSCAR_DIR} && mvn clean", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
