@@ -45,7 +45,7 @@ public class Test {
       }
 
       // Opening output file with name 'args[0]' for append write.
-      out = new FileOutputStream(args[0], false);
+      //out = new FileOutputStream(args[0], false);
 
       // Checking concurrency parameter correctness.
       if ( (args[1].compareTo("little") != 0) &&
