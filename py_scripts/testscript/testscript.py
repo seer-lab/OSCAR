@@ -105,7 +105,7 @@ for i in range(0, runs):
     if result.returncode != 0:
         print(result.stderr.decode('utf-8'))
         print(result.stdout.decode('utf-8'))
-        exit(1)
+        #exit(1)
 
     # Check the output for flags
     output = result.stdout.decode('utf-8')
