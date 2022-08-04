@@ -227,7 +227,7 @@ function main
 	construct Latch [repeat latchLabel]
 		_ [^ P]
 	construct LatchCount [number]
-		_ [length Latch] 	[printMetric '"# of Latches  "] 
+		_ [length Latch] 	[printMetric '"# of Latches = "] 
 	construct Barrier [repeat barrierLabel]
 		_ [^ P]
 	construct BarrierCount [number]
