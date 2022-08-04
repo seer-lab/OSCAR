@@ -71,7 +71,11 @@ public class Variable {
     // Create ref for return stmt
     Variable lValueVar = getReturnsVariableFromMethod(bodyBox.body().getMethod());
 
-    return new StatementVariables(lValueVar, Set.of(rValueVar));
+    // Check if rvalue is empty
+    if (rValueVar == null)
+      return new StatementVariables(lValueVar, Set.of());
+    else
+      return new StatementVariables(lValueVar, Set.of(rValueVar));
   }
 
   private static Variable getReturnsVariableFromMethod(SootMethod method) {
@@ -153,6 +157,7 @@ public class Variable {
 
   /**
    * Extract test method from predicate function
+   *
    * @param baseMethod
    * @return the method that contains the predicate function
    */
