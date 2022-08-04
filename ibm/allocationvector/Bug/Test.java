@@ -67,17 +67,17 @@ public class Test {
      */
     // Setting threads run configuration according to concurrency parameter.
     if (args[1].compareTo("little") == 0) {
-      vector = new AllocationVector(20000);
-      Thread1Result = new int[1000];
-      Thread2Result = new int[1000];
+      vector = new AllocationVector(2000);
+      Thread1Result = new int[100];
+      Thread2Result = new int[100];
     } else if (args[1].compareTo("average") == 0) {
-      vector = new AllocationVector(10000);
-      Thread1Result = new int[2000];
-      Thread2Result = new int[2000];
+      vector = new AllocationVector(1000);
+      Thread1Result = new int[200];
+      Thread2Result = new int[200];
     } else if (args[1].compareTo("lot") == 0) {
-      vector = new AllocationVector(5000);
-      Thread1Result = new int[5000];
-      Thread2Result = new int[5000];
+      vector = new AllocationVector(500);
+      Thread1Result = new int[500];
+      Thread2Result = new int[500];
     }
 
     // Creating threads, starting their run and waiting till they finish.
