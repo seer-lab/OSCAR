@@ -176,7 +176,7 @@ public class BufferNotify {
         boolean quitMe= WaitForBug(numOfThreads);
         // the results
         System.out.println(_tuple);
-        Output(args[0],_tuple);
+        //Output(args[0],_tuple);
         if (quitMe) { // need to exit the program due to the bug
             System.out.println("program found a bug, exiting");
             System.exit(1);
