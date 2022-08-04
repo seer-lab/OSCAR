@@ -93,7 +93,6 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
         if result.returncode != 0:
             print(result.stderr.decode('utf-8'))
             print(result.stdout.decode('utf-8'))
-            exit(1)
 
         # Parse output
         output = result.stdout.decode('utf-8')
