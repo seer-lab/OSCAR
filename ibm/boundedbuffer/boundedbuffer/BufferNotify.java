@@ -21,9 +21,9 @@ public class BufferNotify {
     /** each thread that _finish raise the _finish counter*/
     static private int _finish=0;
     /** number of producer in a little concurrency run  **/
-    static private int _littleP = 2;
+    static int _littleP = 2;
     /** number of consumers in a little concurrency run  **/
-    static private int _littleC = 1;
+    static int _littleC = 1;
     /** number of producer in an average concurrency run  **/
     static private int _averageP = 16;
     /** number of consumers in an average concurrency run  **/
