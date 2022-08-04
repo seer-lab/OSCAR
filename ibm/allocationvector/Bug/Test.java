@@ -1,4 +1,5 @@
 package Bug;
+
 import java.io.*;
 
 /**
@@ -11,21 +12,23 @@ public class Test {
   private static final int runsNum = 1;
 
   /**
-  * MAIN METHOD.
-  * Gets from command-line: 1. Name of output file.
-  *                         2. Concurrency Parameter (little,average,lot).
-  * @param args command-line arguments as written above.
-  */
+   * MAIN METHOD.
+   * Gets from command-line: 1. Name of output file.
+   * 2. Concurrency Parameter (little,average,lot).
+   *
+   * @param args command-line arguments as written above.
+   */
 
   public static void main(String[] args) {
-    for (int i=0; i < runsNum; i++) {
+    for (int i = 0; i < runsNum; i++) {
       runTest(args);
     }
   }
 
   /**
    * Gets from 'args': 1. Name of output file.
-   *                   2. Concurrency Parameter (little,average,lot).
+   * 2. Concurrency Parameter (little,average,lot).
+   *
    * @param args command-line arguments as written above.
    */
   public static void runTest(String[] args) {
@@ -48,14 +51,14 @@ public class Test {
       //out = new FileOutputStream(args[0], false);
 
       // Checking concurrency parameter correctness.
-      if ( (args[1].compareTo("little") != 0) &&
-           (args[1].compareTo("average") != 0) &&
-           (args[1].compareTo("lot") != 0)) {
+      if ((args[1].compareTo("little") != 0) &&
+          (args[1].compareTo("average") != 0) &&
+          (args[1].compareTo("lot") != 0)) {
         throw new Exception();
       }
     } catch (Exception e) {
-        System.err.println("Invalid command-line arguments...");
-        System.exit(1);
+      System.err.println("Invalid command-line arguments...");
+      System.exit(1);
     }
 
     /**
@@ -78,11 +81,12 @@ public class Test {
     }
 
     // Creating threads, starting their run and waiting till they finish.
-    Thread1 = new TestThread1(vector,Thread1Result);
-    Thread2 = new TestThread1(vector,Thread2Result);
+    Thread1 = new TestThread1(vector, Thread1Result);
+    Thread2 = new TestThread1(vector, Thread2Result);
     Thread1.start();
-    for (int i = 0; i < 100000; i++); // "Pause" between threads run to try "hide"
-                                      // the BUG.
+    for (int i = 0; i < 100000; i++)
+      ; // "Pause" between threads run to try "hide"
+    // the BUG.
     Thread2.start();
     try {
       Thread1.join();
@@ -94,21 +98,18 @@ public class Test {
 
     // Checking correctness of threads run results and printing the according
     // tuple to output file.
-    try {
-     if (Thread1Result[0] == -2) {
-       System.out.println("<Test, Thread1 tried to allocate block which is allocated, weak-reality (Two stage access)>\n");
-     } else if (Thread1Result[0] == -3){
-       System.out.println("<Test, Thread1 tried to free block which is free, weak-reality (Two stage access)>\n");
-     } else if (Thread2Result[0] == -2) {
-       System.out.println("<Test, Thread2 tried to allocate block which is allocated, weak-reality (Two stage access)>\n");
-     } else if (Thread2Result[0] == -3){
-       System.out.println("<Test, Thread2 tried to free block which is free, weak-reality (Two stage access)>\n");
-     } else {
-       System.out.println("<Test, correct-run, none>\n");
-     }
-   } catch (IOException ex) {
-       System.err.println("Error writing to output file...");
-       System.exit(1);
-   }
+    if (Thread1Result[0] == -2) {
+      System.out.println("<Test, Thread1 tried to allocate block which is allocated, weak-reality (Two stage access)>\n");
+    } else if (Thread1Result[0] == -3) {
+      System.out.println("<Test, Thread1 tried to free block which is free, weak-reality (Two stage access)>\n");
+    } else if (Thread2Result[0] == -2) {
+      System.out.println("<Test, Thread2 tried to allocate block which is allocated, weak-reality (Two stage access)>\n");
+    } else if (Thread2Result[0] == -3) {
+      System.out.println("<Test, Thread2 tried to free block which is free, weak-reality (Two stage access)>\n");
+    } else {
+      System.out.println("<Test, correct-run, none>\n");
+    }
+    System.err.println("Error writing to output file...");
+    System.exit(1);
   }
 }
