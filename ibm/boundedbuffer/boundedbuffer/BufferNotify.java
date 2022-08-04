@@ -19,33 +19,33 @@ public class BufferNotify {
     /** item produced by each Producer thread*/
     static int _ITEMS_PRODUCED=10;
     /** each thread that _finish raise the _finish counter*/
-    static private int _finish=0;
+    static int _finish=0;
     /** number of producer in a little concurrency run  **/
     static int _littleP = 2;
     /** number of consumers in a little concurrency run  **/
     static int _littleC = 1;
     /** number of producer in an average concurrency run  **/
-    static private int _averageP = 16;
+    static int _averageP = 16;
     /** number of consumers in an average concurrency run  **/
-    static private int _averageC = 8;
+    static int _averageC = 8;
     /** number of producer in a lot concurrency run  **/
-    static private int _lotP = 32;
+    static int _lotP = 32;
     /** number of consumers in a lot concurrency run  **/
-    static private int _lotC = 16;
+    static int _lotC = 16;
     /** number of producer in a default run  **/
-    static private final int _defaultP = _littleP;
+    static final int _defaultP = _littleP;
     /** number of consumers in a default  run  **/
-    static private final int _defaultC = _littleC;
+    static final int _defaultC = _littleC;
     /** the default concurrency (1=little, 2=average, 3=lot) **/
-    static private final int _defaultCon = 1;
+    static final int _defaultCon = 1;
     /** the priority of the producers **/
-    static private int _prodPriority = Thread.MAX_PRIORITY;
+    static int _prodPriority = Thread.MAX_PRIORITY;
     /** the priority of the consumers **/
-    static private int _consPriority = Thread.MIN_PRIORITY;
+    static int _consPriority = Thread.MIN_PRIORITY;
     /** the output message String **/
-    static private String _tuple;
+    static String _tuple;
     /** creates new shared buffer **/
-    static private Buffer _myBuffer= new Buffer();
+    static Buffer _myBuffer= new Buffer();
 
     /*----------------------------------------------------------------*/
     /*                 Producer & Consumer thread class               */
