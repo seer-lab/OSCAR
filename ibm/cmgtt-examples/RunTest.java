@@ -7,7 +7,7 @@
 
 public class RunTest extends DummyControl {
 
-    public int timesToRun = 5000; // like > 10 iterations of CMGTT
+    public int timesToRun = 500; // like > 10 iterations of CMGTT
 
     TestBuff buf;
 
