@@ -69,23 +69,16 @@ public class Reporter
      */
     public void Report(String output, int [] originalArray) throws IOException
     {
-        try
-        {
-            // Creating the output file
-            rFile = new File(output);
-            rFile = rFile.getAbsoluteFile();
+        // Creating the output file
+        rFile = new File(output);
+        rFile = rFile.getAbsoluteFile();
 
-            // checking and printing the result
-            System.out.println("<BubbleSort Program,");// Printing the name of the program
-            for(int i = 0;i < arrSize;++i) // printing the result array
-                System.out.println(printedArray[i] + " ");
-            System.out.println(IndicateBug(originalArray));// writing the bug to the output file
-        }
-        catch(IOException e)
-        {
-            System.out.println("IOException in creating Bubble Sort output file");
-            throw e;
-        }
+        // checking and printing the result
+        System.out.println("<BubbleSort Program,");// Printing the name of the program
+        for(int i = 0;i < arrSize;++i) // printing the result array
+            System.out.println(printedArray[i] + " ");
+        System.out.println(IndicateBug(originalArray));// writing the bug to the output file
+        System.out.println("IOException in creating Bubble Sort output file");
    }
 
     private String IndicateBug(int [] originalArray)
