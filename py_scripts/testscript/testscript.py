@@ -117,6 +117,7 @@ for i in range(0, runs):
                     flags_detected[line] = flags_detected[line] + 1
                 else:
                     flags_detected[line] = 1
+                break
 
     for rc in str(argv.count).split(","):
         run_counts.append(int(rc))
