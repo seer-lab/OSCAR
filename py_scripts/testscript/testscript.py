@@ -105,7 +105,6 @@ for i in range(0, runs):
     if result.returncode != 0:
         print(result.stderr.decode('utf-8'))
         print(result.stdout.decode('utf-8'))
-        #exit(1)
 
     # Check the output for flags
     output = result.stdout.decode('utf-8')
@@ -128,68 +127,6 @@ print(f'Finished running. Analyzing files.')
 
 ###############################################################################################################
 
-# Try to analyze created files
-os.chdir('oscar_output')
-files = os.listdir('.')
-
-location_ids = {}
-interleavings = []
-trace_pairs = {}
-
-for file in files:
-    content = open(file, 'r')  # .read()
-    thread_ids = []
-    trace_pairs_count = {}
-
-    interleaving = ''
-
-    # Get all thread ids for ordering
-    for line in content:
-        thread_id = int(line.split(' ')[0].strip())
-        if thread_id not in thread_ids:
-            thread_ids.append(thread_id)
-
-    # Check if thread ids should maintain order when mapped
-    if argv.unordered_thread_ids:
-        thread_ids = numpy.sort(thread_ids)
-
-    # Map thread ids
-    mapped_thread_ids = {}
-    for i in range(0, len(thread_ids)):
-        mapped_thread_ids[thread_ids[i]] = to_unicode(i)
-
-    # Parse normally
-    content = open(file, 'r')
-
-    for line in content:
-        thread_id = mapped_thread_ids[int(line.split(' ')[0].strip())]
-
-        # Make the interleaving id value start from 0
-        location_id = line.split(' ')[1].strip()
-        if location_id not in location_ids:
-            location_ids[location_id] = to_unicode(len(location_ids) + len(thread_ids))
-        location_id = location_ids[location_id]
-
-        # Append content with or without thread id
-        trace_pair = location_id
-        if not argv.disable_thread_ids:
-            trace_pair = f'{thread_id}{trace_pair}'
-
-        # Check if this interleaving pair is duplicate and needs new assigned id
-        if argv.unique_trace_locations:
-            if trace_pair not in trace_pairs_count:
-                trace_pairs_count[trace_pair] = 0
-            trace_pairs_count[trace_pair] += 1
-
-            trace_pair = f'{trace_pairs_count[trace_pair]}_{trace_pair}'
-
-        # Transform interleaving pair representation in single mapped unicode
-        if trace_pair not in trace_pairs:
-            trace_pairs[trace_pair] = to_unicode(len(trace_pairs))
-
-        interleaving += trace_pairs[trace_pair]
-
-    interleavings.append(interleaving)
 
 ###############################################################################################################
 
@@ -201,6 +138,70 @@ for flag in flags_detected:
     print(f'\tDetected flag {flag}: {flags_detected[flag]}')
 
 if not argv.disable_coverage:
+    # Try to analyze created files
+    os.chdir('oscar_output')
+    files = os.listdir('.')
+
+    location_ids = {}
+    interleavings = []
+    trace_pairs = {}
+
+    for file in files:
+        content = open(file, 'r')  # .read()
+        thread_ids = []
+        trace_pairs_count = {}
+
+        interleaving = ''
+
+        # Get all thread ids for ordering
+        for line in content:
+            thread_id = int(line.split(' ')[0].strip())
+            if thread_id not in thread_ids:
+                thread_ids.append(thread_id)
+
+        # Check if thread ids should maintain order when mapped
+        if argv.unordered_thread_ids:
+            thread_ids = numpy.sort(thread_ids)
+
+        # Map thread ids
+        mapped_thread_ids = {}
+        for i in range(0, len(thread_ids)):
+            mapped_thread_ids[thread_ids[i]] = to_unicode(i)
+
+        # Parse normally
+        content = open(file, 'r')
+
+        for line in content:
+            thread_id = mapped_thread_ids[int(line.split(' ')[0].strip())]
+
+            # Make the interleaving id value start from 0
+            location_id = line.split(' ')[1].strip()
+            if location_id not in location_ids:
+                location_ids[location_id] = to_unicode(len(location_ids) + len(thread_ids))
+            location_id = location_ids[location_id]
+
+            # Append content with or without thread id
+            trace_pair = location_id
+            if not argv.disable_thread_ids:
+                trace_pair = f'{thread_id}{trace_pair}'
+
+            # Check if this interleaving pair is duplicate and needs new assigned id
+            if argv.unique_trace_locations:
+                if trace_pair not in trace_pairs_count:
+                    trace_pairs_count[trace_pair] = 0
+                trace_pairs_count[trace_pair] += 1
+
+                trace_pair = f'{trace_pairs_count[trace_pair]}_{trace_pair}'
+
+            # Transform interleaving pair representation in single mapped unicode
+            if trace_pair not in trace_pairs:
+                trace_pairs[trace_pair] = to_unicode(len(trace_pairs))
+
+            interleaving += trace_pairs[trace_pair]
+
+        interleavings.append(interleaving)
+
+    # Parse interleavings
     avg_dist_runs = {}
     std_dev_runs = {}
     uniq_interleavings_runs = {}
