@@ -25,11 +25,11 @@ public class Loader {
     int array[];   //array of integers
 
     if (conc.equals("low"))
-      len = 200;
+      len = 100;
     if (conc.equals("medium"))
-      len = 1000;
+      len = 500;
     if (conc.equals("high"))
-      len = 2500;
+      len = 1000;
 
     array = new int[len];
     Thread curTh = Thread.currentThread();
