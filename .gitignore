@@ -5,4 +5,4 @@ target
 .oscar_temp
 .idea
 testscript/.idea/workspace.xml
-
+*.doc#
