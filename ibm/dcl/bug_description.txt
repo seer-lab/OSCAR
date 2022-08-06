@@ -67,7 +67,10 @@ Appendix A \u2013 The Java Memory Model \u2026\u2026\u2026\u2026\u2026\u2026\u20
  
 1. introduction
 
-Sometimes it's appropriate to have exactly one instance of a class: window managers, print spoolers, and file systems are prototypical examples. Typically, those types of objects\u2014known as singletons\u2014are accessed by disparate objects throughout a software system, and therefore require a global point of access. With the Singleton design pattern we can:
+Sometimes it's appropriate to have exactly one instance of a class: window managers, print spoolers,
+and file systems are prototypical examples. Typically, those types of objects\u2014known as
+singletons\u2014are accessed by disparate objects throughout a software system,
+and therefore require a global point of access. With the Singleton design pattern we can:
 
     * Ensure that only one instance of a class is created
     * Provide a global point of access to the object
@@ -86,7 +89,9 @@ Ensure a class has only one instance, and provide a global point of access to it
 
  
 
-As you can see from the figure above, there's not a whole lot to the Singleton design pattern. Singletons maintain a static reference to the sole singleton instance and return a reference to that instance from a static instance() method. For example :
+As you can see from the figure above, there's not a whole lot to the Singleton design pattern.
+Singletons maintain a static reference to the sole singleton instance and return a reference to that
+instance from a static instance() method. For example :
 
 class SomeClass {
   private Resource resource = null;

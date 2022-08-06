@@ -109,8 +109,8 @@ public class TicketsOrderSim {
       agents_num = 20;
       seats_num = 30;
     } else if (args[1].compareTo("lot") == 0) {
-      agents_num = 1000;
-      seats_num = 1000;
+      agents_num = 200;
+      seats_num = 300;
     } else
       System.out.println("You have entered a wrong concurrency parameter.\nThe parameters are little, average, lot.");
 
