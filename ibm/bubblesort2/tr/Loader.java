@@ -27,7 +27,7 @@ public class Loader {
      if(conc.equals("medium"))
        len=1000;
      if(conc.equals("high"))
-       len=5000;
+       len=2500;
 
 
 
