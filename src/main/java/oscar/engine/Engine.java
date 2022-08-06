@@ -17,6 +17,7 @@ import oscar.transformers.analysers.shared.SharedVariableParser;
 import oscar.transformers.injectors.ControllerInjector;
 import oscar.transformers.injectors.ExitCaptureInjector;
 import oscar.transformers.noisers.lock.ReentrantLockNoiser;
+import oscar.transformers.noisers.misc.ClassInitializationNoiser;
 import oscar.transformers.noisers.shared.SharedVariableNoiser;
 import oscar.transformers.noisers.sync.SynchronizedBlockNoiser;
 import oscar.transformers.noisers.sync.SynchronizedMethodCallNoiser;
@@ -107,6 +108,7 @@ public final class Engine {
         new SynchronizedBlockNoiser(),
         new SynchronizedMethodCallNoiser(),
         new ReentrantLockNoiser(),
+        new ClassInitializationNoiser(),
 
         // Injectors ------------------
         new ControllerInjector(),

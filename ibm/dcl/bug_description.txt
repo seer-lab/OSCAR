@@ -133,9 +133,15 @@ However, DCL seems like a clever optimization -- but it doesn't work. The patter
 
 4. My application
 
-The application simulates a process of travel agents booking flight tickets on a plane. The number of travel agents and tickets can be controled by the user. Each agent works in a different thread and they all trying to book the tickets simultaneously. Needless to say that every ticket can be bought only once \u2013 and this is the singleton.
+The application simulates a process of travel agents booking flight tickets on a plane.
+The number of travel agents and tickets can be controled by the user.
+Each agent works in a different thread and they all trying to book the tickets simultaneously.
+ Needless to say that every ticket can be bought only once \u2013 and this is the singleton.
 
-One of the things that could happen, when using this pattern, is that an object is used without its full initialization, and in my program I have focused to check this scenario.( in this program using the object means checking it with the function check_ticket_details(), this way I could keep track if there was a bug).
+One of the things that could happen, when using this pattern, is that an object is used without
+its full initialization, and in my program I have focused to check this scenario.( in this program
+using the object means checking it with the function check_ticket_details(), this way I could keep
+track if there was a bug).
 
  
 
@@ -154,78 +160,32 @@ A scenario for the bug:
           for( int i = 0; i < seats_num; i++) {
 
            if (seats[i].ticket==null) {
-
                synchronized(seats[i]){ --> line 1
 
                if (seats[i].ticket==null) { --> line 2
-
                    seats[i].ticket=new Ticket(this.name);àline 3
-
+                  }
                }
-
-               }
-
-           }
-
-           else {
-
+           } else {
               synchronized(seats[i]){
-
-               check_ticket_details(i);
-
+                 check_ticket_details(i);
               }
-
- 
-
            }
-
           }
-
       }
 
- 
-
- 
-
- 
-
 Assume 2 threads are trying to create a ticket:
-
- 
-
 1. Thread 1 enters the run() method.
-
- 
-
 2. Thread 1 enters the synchronized block at line 1 because instance is null.
-
- 
-
 3. Thread 1 checks again  at line 2 if the instance is null (it still is) and enters the if block.
-
 4. Thread 1 proceeds to line 3 and makes instance non-null, but before the constructor executes.
-
- 
-
 5. Thread 1 is preempted by thread 2.
-
- 
-
 6. Thread 2 checks to see if instance is null. Because it is not,
-
 thread 2 goes to the else part at line 4 and there uses fully constructed,     but partially initialized, object.
-
- 
-
 7. Thread 2 is preempted by thread 1.
-
- 
-
 8. Thread 1 completes the initialization of the ticket object by running its constructor.
 
- 
-
-The result of this scenario is, using an object without fully initializing it.
+ The result of this scenario is, using an object without fully initializing it.
 
  
 

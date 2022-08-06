@@ -9,7 +9,7 @@ public enum NoiseCategory {
   SYNCHRONIZATION_BASED,
   THREAD_BASED,
   LOCK_BASED,
-
+  MISCELLANEOUS,
   SHARED_VARIABLE_BASED;
 
   NoiseCategory() {}

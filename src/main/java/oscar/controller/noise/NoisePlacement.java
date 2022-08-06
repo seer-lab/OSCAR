@@ -10,19 +10,22 @@ public enum NoisePlacement {
   AFTER_SYNC_METHOD_CALL(NoiseCategory.SYNCHRONIZATION_BASED),
   BEFORE_SYNC_BLOCK(NoiseCategory.SYNCHRONIZATION_BASED),
   AFTER_SYNC_BLOCK(NoiseCategory.SYNCHRONIZATION_BASED),
-
+  //---------------------------------------------------------
   BEFORE_THREAD_LAUNCH(NoiseCategory.THREAD_BASED),
   AFTER_THREAD_LAUNCH(NoiseCategory.THREAD_BASED),
   BEFORE_THREAD_ROUTINE(NoiseCategory.THREAD_BASED),
-
+  //---------------------------------------------------------
   BEFORE_REENTRANT_LOCK_LOCK(NoiseCategory.LOCK_BASED),
   AFTER_REENTRANT_LOCK_UNLOCK(NoiseCategory.LOCK_BASED),
-
+  //---------------------------------------------------------
   BEFORE_SHARED_FIELD_ACCESS(NoiseCategory.SHARED_VARIABLE_BASED),
   BEFORE_SHARED_LOCAL_ACCESS(NoiseCategory.SHARED_VARIABLE_BASED),
-
+  //---------------------------------------------------------
   AFTER_SHARED_FIELD_ACCESS(NoiseCategory.SHARED_VARIABLE_BASED),
-  AFTER_SHARED_LOCAL_ACCESS(NoiseCategory.SHARED_VARIABLE_BASED);
+  AFTER_SHARED_LOCAL_ACCESS(NoiseCategory.SHARED_VARIABLE_BASED),
+
+  // Experimental
+  BEFORE_CLASS_INITIALIZATION(NoiseCategory.MISCELLANEOUS);
 
   private final NoiseCategory category;
 
