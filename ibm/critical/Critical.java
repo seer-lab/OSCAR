@@ -14,6 +14,8 @@ public class Critical {
     t2 = new Thread(s2);
     t2.start();
 
+    Counter c = new Counter();
+
     try {
       t1.join();
  	 }
@@ -24,7 +26,21 @@ public class Critical {
  	 }
  	 catch ( InterruptedException e ) {}
 
+    System.exit(0);
    }
+}
+
+class Counter implements Runnable {
+
+  @Override
+  public void run() {
+    try {
+      Thread.sleep(3000);
+      System.out.println("Deadlock detected.");
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
 
 class Section implements Runnable {
@@ -39,10 +55,10 @@ class Section implements Runnable {
    }
 
    public void run() {
-     
+
       if(threadNumber == 0)
       {
-       
+
          t.turn = 0;
          System.out.println("In critical section, thread number = " + threadNumber);
          while(t.turn != 0);
