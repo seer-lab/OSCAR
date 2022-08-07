@@ -216,7 +216,7 @@ public class ThreadTest {
             } catch (java.lang.ArithmeticException e) {
                 synchronized (deadThreads) {
                     deadThreads.inc();
-                    System.out.println("Diveided by zero");
+                    System.out.println("Divided by zero");
                 }
                 System.out.println("thread #" + id + " exception exiting . . .");
             } catch (DeadLockException de) {

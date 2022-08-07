@@ -44,12 +44,12 @@ public final class Controller {
       return;
 
     // Check if location enabled
-    if (!options.NoiseCategories.contains(placement.getCategory())) {
+    if (!options.NoiseLocations.contains(placement.getCategory())) {
       logger.fine("[SLEEP] Skipping noise category '" + placement.getCategory().name() + "'.");
       return;
     }
 
-    if (!options.NoisePlacements.contains(placement)) {
+    if (!options.NoiseHeuristics.contains(placement)) {
       logger.fine("[SLEEP] Skipping noise placement type '" + placement.name() + "'.");
       return;
     }
