@@ -14,7 +14,7 @@ public class Critical {
     t2 = new Thread(s2);
     t2.start();
 
-    new Counter();
+    new Counter().start();
 
     try {
       t1.join();
@@ -37,7 +37,7 @@ class Counter implements Runnable {
   @Override
   public void run() {
     try {
-      Thread.sleep(3000);
+      Thread.sleep(1000);
       System.out.println("Deadlock detected.");
     } catch (InterruptedException e) {
     }
