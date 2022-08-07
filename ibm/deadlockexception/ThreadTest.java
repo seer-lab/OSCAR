@@ -128,8 +128,6 @@ public class ThreadTest {
         } else {
             System.out.println(", none");
         }
-
-        printer.close();
     }
 
     /** class to keep track of running instances */
