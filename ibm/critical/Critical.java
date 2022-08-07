@@ -8,7 +8,7 @@ public class Critical {
     Section s1 = new Section(c, 0);
     Section s2 = new Section(c, 1);
 
-    new Counter().start();
+    new Thread(new Counter()).start();
 
     t1 = new Thread(s1);
     t1.start();
