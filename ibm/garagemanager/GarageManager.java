@@ -10,7 +10,7 @@ public class GarageManager {
   private boolean foreignWorkersHired = false;
   private java.io.BufferedWriter outputFile;
   private String strBugProbability = "littile";
-  private int iBugProbability = 200, printedCard = 0;
+  public int iBugProbability = 200, printedCard = 0;
 
   private boolean bugAccured = false;
 
