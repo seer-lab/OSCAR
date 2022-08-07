@@ -1,7 +1,7 @@
 public class Critical {
-   public int turn;
+  public int turn;
 
-   public static void main(String[] args){
+  public static void main(String[] args) {
     Thread t1, t2;
 
     Critical c = new Critical();
@@ -18,16 +18,18 @@ public class Critical {
 
     try {
       t1.join();
- 	 }
- 	 catch ( InterruptedException e ) {}
+    } catch (InterruptedException e) {
+      System.exit(0);
+    }
 
     try {
-       t2.join();
- 	 }
- 	 catch ( InterruptedException e ) {}
+      t2.join();
+    } catch (InterruptedException e) {
+      System.exit(0);
+    }
 
     System.exit(0);
-   }
+  }
 }
 
 class Counter implements Runnable {
@@ -46,41 +48,37 @@ class Counter implements Runnable {
 
 class Section implements Runnable {
 
-   Critical t;
-   int threadNumber;
+  Critical t;
+  int threadNumber;
 
-   public Section(Critical t, int threadNumber)
-   {
-      this.t = t;
-      this.threadNumber = threadNumber;
-   }
+  public Section(Critical t, int threadNumber) {
+    this.t = t;
+    this.threadNumber = threadNumber;
+  }
 
-   public void run() {
+  public void run() {
 
-      if(threadNumber == 0)
-      {
+    if (threadNumber == 0) {
 
-         t.turn = 0;
-         System.out.println("In critical section, thread number = " + threadNumber);
-         while(t.turn != 0);
-         System.out.println("Out critical section, thread number = " + threadNumber);
-         t.turn = 1;
-       }
-      else
-      {
-         if(threadNumber == 1)
-         {
-            t.turn = 1;
-            System.out.println("In critical section, thread number = " + threadNumber);
-            while(t.turn != 1);
-            System.out.println("Out critical section, thread number = " + threadNumber);
-            t.turn = 0;          }
-         else
-         {
-            System.err.println("This algorithm only supports two threads");
-         }
+      t.turn = 0;
+      System.out.println("In critical section, thread number = " + threadNumber);
+      while (t.turn != 0)
+        ;
+      System.out.println("Out critical section, thread number = " + threadNumber);
+      t.turn = 1;
+    } else {
+      if (threadNumber == 1) {
+        t.turn = 1;
+        System.out.println("In critical section, thread number = " + threadNumber);
+        while (t.turn != 1)
+          ;
+        System.out.println("Out critical section, thread number = " + threadNumber);
+        t.turn = 0;
+      } else {
+        System.err.println("This algorithm only supports two threads");
       }
-   }
+    }
+  }
 }
 
 
