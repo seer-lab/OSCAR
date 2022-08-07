@@ -115,12 +115,12 @@ public class ThreadTest {
         //PrintWriter printer = new PrintWriter(writer);
 
         int results = getWorkers();
-        System.out.println("ThreadTest, ");
+        System.out.print("ThreadTest, ");
 
         if (results >= WORKERS_ALLOWED) {
-            System.out.println("DEADLOCK");
+            System.out.print("DEADLOCK");
         } else {
-            System.out.println(results);
+            System.out.print(results);
         }
 
         if (results > 0) {
