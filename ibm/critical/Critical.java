@@ -39,10 +39,9 @@ class Counter implements Runnable {
     try {
       Thread.sleep(3000);
       System.out.println("Deadlock detected.");
-      System.exit(0);
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
     }
+    System.exit(0);
   }
 }
 
