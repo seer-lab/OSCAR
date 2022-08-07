@@ -205,7 +205,9 @@ public class ThreadTest {
                 for (int i = 0; i < ITERATE; ++i) {
                     System.out.print(". ");
 
-                    result = i / (int) (Math.random() * factor);  //might throw exception
+                    result = i / (int) (Math.random() * factor);
+                    if (Math.random() < 0.05)
+                        result /= 0;  //might throw exception
                 }
 
                 finalizeWork();
