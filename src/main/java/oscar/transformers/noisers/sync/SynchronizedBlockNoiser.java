@@ -1,7 +1,6 @@
 package oscar.transformers.noisers.sync;
 
-import oscar.controller.noise.NoiseCategory;
-import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseLocation;
 import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleTransformer;
 import soot.*;
@@ -26,9 +25,9 @@ public final class SynchronizedBlockNoiser extends JimpleTransformer {
       if (monitorCall instanceof JEnterMonitorStmt)
         bodyBox.body()
                .getUnits()
-               .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_SYNC_BLOCK), monitorCall);
+               .insertBefore(bodyBox.generator().Statement.noise(NoiseLocation.BEFORE_SYNC_BLOCK), monitorCall);
       else if (monitorCall instanceof JExitMonitorStmt) {
-        List<Unit> units = bodyBox.generator().Statement.noise(NoisePlacement.AFTER_SYNC_BLOCK);
+        List<Unit> units = bodyBox.generator().Statement.noise(NoiseLocation.AFTER_SYNC_BLOCK);
         bodyBox.body().getUnits().insertAfter(units, monitorCall);
       } else
         throw new RuntimeException("Invalid monitor call statement");

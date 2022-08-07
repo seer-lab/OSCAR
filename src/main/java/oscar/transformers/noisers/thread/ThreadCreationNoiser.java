@@ -1,6 +1,6 @@
 package oscar.transformers.noisers.thread;
 
-import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseLocation;
 import oscar.engine.body.JimpleBodyBox;
 import oscar.engine.utils.JimpleThreadUtils;
 import oscar.transformers.JimpleSceneTransformer;
@@ -44,11 +44,11 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
     for (JInvokeStmt stmt : invokeStmts) {
       bodyBox.body()
              .getUnits()
-             .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_THREAD_LAUNCH), stmt);
+             .insertBefore(bodyBox.generator().Statement.noise(NoiseLocation.BEFORE_THREAD_LAUNCH), stmt);
 
       bodyBox.body()
              .getUnits()
-             .insertAfter(bodyBox.generator().Statement.noise(NoisePlacement.AFTER_THREAD_LAUNCH), stmt);
+             .insertAfter(bodyBox.generator().Statement.noise(NoiseLocation.AFTER_THREAD_LAUNCH), stmt);
     }
   }
 
@@ -61,7 +61,7 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
       return;
 
     // Insert noise and signal statements after first (identity statement)
-    List<Unit> noiseStmts = bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_THREAD_ROUTINE);
+    List<Unit> noiseStmts = bodyBox.generator().Statement.noise(NoiseLocation.BEFORE_THREAD_ROUTINE);
     bodyBox.body().getUnits().insertBefore(noiseStmts, bodyBox.body().getFirstNonIdentityStmt());
 
     // Add instrumented tag and validate body

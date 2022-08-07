@@ -1,7 +1,6 @@
 package oscar.engine.generators;
 
-import oscar.controller.noise.NoisePlacement;
-import oscar.controller.noise.NoiseCategory;
+import oscar.controller.noise.NoiseLocation;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.*;
@@ -99,13 +98,13 @@ public class StatementGenerator {
     return statements;
   }
 
-  public List<Unit> noise(NoisePlacement noisePlacement) {
+  public List<Unit> noise(NoiseLocation noiseLoc) {
     // Instantiate enum value
-    JimpleLocal enumLocal = localGenerator.fromType(RefType.v(noisePlacement.getClass().getName()));
+    JimpleLocal enumLocal = localGenerator.fromType(RefType.v(noiseLoc.getClass().getName()));
 
     StaticFieldRef enumField = Jimple.v().newStaticFieldRef(new AbstractSootFieldRef(
-        Scene.v().getSootClass(noisePlacement.getClass().getName()),
-        noisePlacement.name(),
+        Scene.v().getSootClass(noiseLoc.getClass().getName()),
+        noiseLoc.name(),
         enumLocal.getType(),
         true
     ));
@@ -114,7 +113,7 @@ public class StatementGenerator {
 
     Stmt noiseStmt = staticInvoke(
         "oscar.controller.Controller",
-        "void noise(oscar.controller.noise.NoisePlacement,java.lang.String)",
+        "void noise(oscar.controller.noise.NoiseLocation,java.lang.String)",
         List.of(enumLocal, StringConstant.v(UUID.randomUUID().toString()))
     );
 

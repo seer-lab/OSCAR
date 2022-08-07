@@ -1,6 +1,6 @@
 package oscar.transformers.noisers.misc;
 
-import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseLocation;
 import oscar.engine.Engine;
 import oscar.engine.body.JimpleBodyBox;
 import oscar.engine.utils.JimpleThreadUtils;
@@ -30,11 +30,11 @@ public final class ThreadExternalFieldNoiser extends JimpleTransformer {
     for (JAssignStmt stmt :  getOutsideVariableAccess(bodyBox, methodClass)) {
       bodyBox.body()
              .getUnits()
-             .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_THREAD_EXTERNAL_FIELD_REF), stmt);
+             .insertBefore(bodyBox.generator().Statement.noise(NoiseLocation.BEFORE_THREAD_EXTERNAL_FIELD_REF), stmt);
 
       bodyBox.body()
              .getUnits()
-             .insertAfter(bodyBox.generator().Statement.noise(NoisePlacement.AFTER_THREAD_EXTERNAL_FIELD_REF), stmt);
+             .insertAfter(bodyBox.generator().Statement.noise(NoiseLocation.AFTER_THREAD_EXTERNAL_FIELD_REF), stmt);
     }
   }
 

@@ -1,8 +1,8 @@
 package oscar.controller.util;
 
 import oscar.Main;
-import oscar.controller.noise.NoisePlacement;
-import oscar.controller.noise.NoiseCategory;
+import oscar.controller.noise.NoiseLocation;
+import oscar.controller.noise.NoiseHeuristic;
 import oscar.controller.util.output.*;
 import oscar.utils.logger.LoggerFactory;
 
@@ -29,8 +29,8 @@ public final class ControllerOptions {
       new ControllerOption("DisablePreNoiseTracing", "Disable pre-noise tracing", "Flag", "False", "-d1", "--disable-pre-noise-trace"),
       new ControllerOption("DisablePostNoiseTracing", "Disable post-noise tracing", "Flag", "False", "-d2", "--disable-post-noise-trace"),
       new ControllerOption("YieldMode", "Set noise type to yield.", "Flag", "False", "-y", "--yield"),
-      new ControllerOption("NoiseHeuristics", "Set the list of active noise heuristics.", "List<String>", "All", "-nh", "--noise-heuristics"),
-      new ControllerOption("NoiseLocations", "Set the list of active noise locations.", "List<String>", "Empty", "-nl", "--noise-locations"),
+      new ControllerOption("NoiseHeuristics", "Set the list of active noise heuristics.", "List<String>", "{}", "-nh", "--noise-heuristics"),
+      new ControllerOption("NoiseLocations", "Set the list of active noise locations.", "List<String>", "{}", "-nl", "--noise-locations"),
       new ControllerOption("PrintNoiseHeuristics", "Print all possible noise heuristics.", "Flag", "-", "-pnh", "--print-noise-heuristics"),
       new ControllerOption("Version", "Print OSCAR version.", "Flag", "-", "-v", "--version"),
       new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),
@@ -46,8 +46,8 @@ public final class ControllerOptions {
   public boolean DisableNoise = false;
   public boolean DisablePostNoiseTracing = false;
   public boolean DisablePreNoiseTracing = false;
-  public final HashSet<NoisePlacement> NoiseHeuristics = NoisePlacement.getAll();
-  public final HashSet<NoiseCategory> NoiseLocations = new HashSet<>();
+  public final HashSet<NoiseLocation> NoiseLocations = new HashSet<>();
+  public final HashSet<NoiseHeuristic> NoiseHeuristics = new HashSet<>();
 
   public boolean Verbose = false;
   public boolean YieldMode = false;
@@ -134,14 +134,14 @@ public final class ControllerOptions {
 
           // Read all noise placements
           while (i + 1 < argv.length && !argv[i + 1].startsWith("-"))
-            options.NoiseHeuristics.add(NoisePlacement.fromString(argv[++i]));
+            options.NoiseHeuristics.add(NoiseHeuristic.fromString(argv[++i]));
           break;
         case "NoiseLocations":
           options.NoiseLocations.clear();
 
-          // Read all noise placement categories and add all their respective noise types
+          // Read all noise locations and add all of their respective noise types
           while (i + 1 < argv.length && !argv[i + 1].startsWith("-"))
-            options.NoiseLocations.add(NoiseCategory.fromString(argv[++i]));
+            options.NoiseLocations.add(NoiseLocation.fromString(argv[++i]));
 
           break;
         case "PrintNoiseHeuristics":
@@ -188,12 +188,6 @@ public final class ControllerOptions {
     if (options.MinNoiseIntensity + options.MaxNoiseIntensity == 0)
       options.DisableNoise = true;
 
-    // Activate all noise categories from activated noise placements and vice versa
-    Arrays.stream(NoisePlacement.values())
-          .filter(np -> options.NoiseLocations.contains(np.getCategory()))
-          .forEach(options.NoiseHeuristics::add);
-    options.NoiseHeuristics.stream().map(NoisePlacement::getCategory).forEach(options.NoiseLocations::add);
-
     return options;
   }
 
@@ -236,7 +230,7 @@ public final class ControllerOptions {
         "-------------------------"
     );
 
-    for (NoiseCategory nc : NoiseCategory.values())
+    for (NoiseHeuristic nc : NoiseHeuristic.values())
       System.out.printf(
           "\t%-25s\t%-25s\n",
           nc.name().replace("_", " "),
@@ -261,7 +255,7 @@ public final class ControllerOptions {
         "-------------------------"
     );
 
-    for (NoisePlacement np : NoisePlacement.values())
+    for (NoiseLocation np : NoiseLocation.values())
       System.out.printf(
           "\t%-25s\t%-35s\t%-25s\n",
           np.getCategory().name().replace("_", " "),

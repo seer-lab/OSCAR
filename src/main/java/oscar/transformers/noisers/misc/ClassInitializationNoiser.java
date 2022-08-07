@@ -1,17 +1,11 @@
 package oscar.transformers.noisers.misc;
 
-import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseLocation;
 import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleTransformer;
-import soot.*;
-import soot.jimple.JimpleBody;
 import soot.jimple.Stmt;
-import soot.jimple.internal.*;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public final class ClassInitializationNoiser extends JimpleTransformer {
 
@@ -29,7 +23,7 @@ public final class ClassInitializationNoiser extends JimpleTransformer {
     Stmt firstStmt = bodyBox.body().getFirstNonIdentityStmt();
     bodyBox.body()
            .getUnits()
-           .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_CLASS_INITIALIZATION), firstStmt);
+           .insertBefore(bodyBox.generator().Statement.noise(NoiseLocation.BEFORE_CLASS_INITIALIZATION), firstStmt);
   }
 }
 

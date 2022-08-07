@@ -1,6 +1,6 @@
 package oscar.controller;
 
-import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseLocation;
 import oscar.controller.util.ControllerOptions;
 import oscar.utils.logger.LoggerFactory;
 
@@ -35,22 +35,17 @@ public final class Controller {
   /**
    * Make the injected program sleep
    *
-   * @param placement instrumented location type
+   * @param noiseLoc instrumented location type
    * @param uuid      instrumented location generated uuid
    */
-  public static void noise(NoisePlacement placement, String uuid) {
+  public static void noise(NoiseLocation noiseLoc, String uuid) {
     // Check if the controller has been initialized. This can occur if noise is inserted into static blocks.
     if (options == null)
       return;
 
     // Check if location enabled
-    if (!options.NoiseLocations.contains(placement.getCategory())) {
-      logger.fine("[SLEEP] Skipping noise category '" + placement.getCategory().name() + "'.");
-      return;
-    }
-
-    if (!options.NoiseHeuristics.contains(placement)) {
-      logger.fine("[SLEEP] Skipping noise placement type '" + placement.name() + "'.");
+    if (!options.NoiseHeuristics.contains(noiseLoc.getCategory()) && !options.NoiseLocations.contains(noiseLoc)) {
+      logger.fine("[SLEEP] Skipping noise location '" + noiseLoc.name() + "'.");
       return;
     }
 
@@ -61,7 +56,7 @@ public final class Controller {
         options.ControllerOutput.write(threadID + " " + uuid);
 
       if (!options.Quiet)
-        logger.fine("[SIGNAL][PRE-NOISE][" + placement.getCategory() + "]" + "[" + uuid + "]");
+        logger.fine("[SIGNAL][PRE-NOISE][" + noiseLoc.getCategory() + "]" + "[" + uuid + "]");
     }
 
     // Do not noise if noise is disabled
@@ -76,8 +71,8 @@ public final class Controller {
     try {
       if (!options.YieldMode) {
         logger.finest("[SLEEP]" +
-                          "[" + placement.getCategory().name() + "]" +
-                          "[" + placement.name() + "]" +
+                          "[" + noiseLoc.getCategory().name() + "]" +
+                          "[" + noiseLoc.name() + "]" +
                           "[" + uuid + "]: "
                           + noiseIntensity + " MS."
         );
@@ -85,8 +80,8 @@ public final class Controller {
         Thread.sleep(noiseIntensity);
       } else {
         logger.finest("[" + "Yield" + "]" +
-                          "[" + placement.getCategory().name() + "]" +
-                          "[" + placement.name() + "]" +
+                          "[" + noiseLoc.getCategory().name() + "]" +
+                          "[" + noiseLoc.name() + "]" +
                           "[" + uuid + "]: "
                           + noiseIntensity + " times."
         );
@@ -103,7 +98,7 @@ public final class Controller {
       options.ControllerOutput.write(threadID + " " + uuid);
 
       if (!options.Quiet)
-        logger.fine("[SIGNAL][POST-NOISE][" + placement.getCategory() + "]" + "[" + uuid + "]");
+        logger.fine("[SIGNAL][POST-NOISE][" + noiseLoc.getCategory() + "]" + "[" + uuid + "]");
     }
   }
 

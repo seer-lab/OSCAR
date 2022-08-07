@@ -39,13 +39,13 @@ public class ThreadTest {
     private final static int ITERATE = 10;          // number of "work" iterations
 
     // number of threads currently running
-    private Counter numWorkers;
+    public Counter numWorkers;
 
-    private Counter deadThreads; //number of threads that exited by exception (Error)
+    public Counter deadThreads; //number of threads that exited by exception (Error)
 
 
-    private int factor;
-    private String filename;
+    public int factor;
+    public String filename;
 
     public ThreadTest(String[] args) {
         filename = (args.length == 0 ? DEFAULT_FILE_NAME : args[0]);

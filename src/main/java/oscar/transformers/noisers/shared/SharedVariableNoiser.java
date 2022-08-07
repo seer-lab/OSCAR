@@ -1,8 +1,7 @@
 package oscar.transformers.noisers.shared;
 
-import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseLocation;
 import oscar.engine.body.JimpleBodyBox;
-import oscar.transformers.JimpleSceneTransformer;
 import oscar.transformers.JimpleTransformer;
 import oscar.transformers.analysers.StatementVariables;
 import oscar.transformers.analysers.Variable;
@@ -11,7 +10,6 @@ import soot.jimple.internal.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SharedVariableNoiser extends JimpleTransformer {
@@ -81,24 +79,24 @@ public class SharedVariableNoiser extends JimpleTransformer {
         continue;
 
       // Check noise placement type
-      NoisePlacement beforeNoisePlacement;
-      NoisePlacement afterNoisePlacement;
+      NoiseLocation beforeNoiseHeuristic;
+      NoiseLocation afterNoiseHeuristic;
 
       if (lValueVar.isField() || statementVariables.getRValues().stream().anyMatch(Variable::isField)) {
-        beforeNoisePlacement = NoisePlacement.BEFORE_SHARED_FIELD_ACCESS;
-        afterNoisePlacement = NoisePlacement.AFTER_SHARED_FIELD_ACCESS;
+        beforeNoiseHeuristic = NoiseLocation.BEFORE_SHARED_FIELD_ACCESS;
+        afterNoiseHeuristic = NoiseLocation.AFTER_SHARED_FIELD_ACCESS;
       } else {
-        beforeNoisePlacement = NoisePlacement.BEFORE_SHARED_LOCAL_ACCESS;
-        afterNoisePlacement = NoisePlacement.AFTER_SHARED_LOCAL_ACCESS;
+        beforeNoiseHeuristic = NoiseLocation.BEFORE_SHARED_LOCAL_ACCESS;
+        afterNoiseHeuristic = NoiseLocation.AFTER_SHARED_LOCAL_ACCESS;
       }
 
       bodyBox.body()
              .getUnits()
-             .insertBefore(bodyBox.generator().Statement.noise(beforeNoisePlacement), assignment);
+             .insertBefore(bodyBox.generator().Statement.noise(beforeNoiseHeuristic), assignment);
 
       bodyBox.body()
              .getUnits()
-             .insertAfter(bodyBox.generator().Statement.noise(afterNoisePlacement), assignment);
+             .insertAfter(bodyBox.generator().Statement.noise(afterNoiseHeuristic), assignment);
     }
 
   }

@@ -1,7 +1,6 @@
 package oscar.transformers.noisers.sync;
 
-import oscar.controller.noise.NoiseCategory;
-import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseLocation;
 import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleTransformer;
 import soot.*;
@@ -22,8 +21,8 @@ public final class SynchronizedMethodCallNoiser extends JimpleTransformer {
 
     // Create statement to insert sleep noise before and after sync blocks
     for (Unit invocation : syncMethodInvocations) {
-      body.body().getUnits().insertBefore(body.generator().Statement.noise(NoisePlacement.BEFORE_SYNC_METHOD_CALL), invocation);
-      body.body().getUnits().insertAfter(body.generator().Statement.noise(NoisePlacement.AFTER_SYNC_METHOD_CALL), invocation);
+      body.body().getUnits().insertBefore(body.generator().Statement.noise(NoiseLocation.BEFORE_SYNC_METHOD_CALL), invocation);
+      body.body().getUnits().insertAfter(body.generator().Statement.noise(NoiseLocation.AFTER_SYNC_METHOD_CALL), invocation);
     }
   }
 

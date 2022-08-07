@@ -1,7 +1,6 @@
 package oscar.transformers.noisers.lock;
 
-import oscar.controller.noise.NoiseCategory;
-import oscar.controller.noise.NoisePlacement;
+import oscar.controller.noise.NoiseLocation;
 import oscar.engine.body.JimpleBodyBox;
 import oscar.transformers.JimpleTransformer;
 import soot.Unit;
@@ -27,9 +26,9 @@ public final class ReentrantLockNoiser extends JimpleTransformer {
       if (getInvokeExprMethodName(lockCall).equals("lock"))
         bodyBox.body()
             .getUnits()
-            .insertBefore(bodyBox.generator().Statement.noise(NoisePlacement.BEFORE_REENTRANT_LOCK_LOCK), lockCall);
+            .insertBefore(bodyBox.generator().Statement.noise(NoiseLocation.BEFORE_REENTRANT_LOCK_LOCK), lockCall);
       else if (getInvokeExprMethodName(lockCall).equals("unlock")) {
-        List<Unit> units = bodyBox.generator().Statement.noise(NoisePlacement.AFTER_REENTRANT_LOCK_UNLOCK);
+        List<Unit> units = bodyBox.generator().Statement.noise(NoiseLocation.AFTER_REENTRANT_LOCK_UNLOCK);
         bodyBox.body().getUnits().insertAfter(units, lockCall);
       } else
         throw new RuntimeException("Invalid reentrant lock call statement");
