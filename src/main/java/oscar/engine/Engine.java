@@ -22,6 +22,7 @@ import oscar.transformers.noisers.shared.SharedVariableNoiser;
 import oscar.transformers.noisers.sync.SynchronizedBlockNoiser;
 import oscar.transformers.noisers.sync.SynchronizedMethodCallNoiser;
 import oscar.transformers.noisers.thread.ThreadCreationNoiser;
+import oscar.transformers.noisers.misc.ThreadExternalFieldNoiser;
 import oscar.utils.ClassWriter;
 import oscar.utils.logger.LoggerFactory;
 import oscar.utils.logger.LoggerFormatter;
@@ -109,6 +110,7 @@ public final class Engine {
         new SynchronizedMethodCallNoiser(),
         new ReentrantLockNoiser(),
         new ClassInitializationNoiser(),
+        new ThreadExternalFieldNoiser(),
 
         // Injectors ------------------
         new ControllerInjector(),

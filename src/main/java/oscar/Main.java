@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class Main {
-  public static final String VERSION = "0.1.6";
+  public static final String VERSION = "0.1.7";
 
   private static final List<ControllerOption> ENGINE_OPTIONS = Arrays.asList(
       new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),

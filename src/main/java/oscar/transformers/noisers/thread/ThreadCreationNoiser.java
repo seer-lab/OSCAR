@@ -2,6 +2,7 @@ package oscar.transformers.noisers.thread;
 
 import oscar.controller.noise.NoisePlacement;
 import oscar.engine.body.JimpleBodyBox;
+import oscar.engine.utils.JimpleThreadUtils;
 import oscar.transformers.JimpleSceneTransformer;
 import soot.*;
 import soot.jimple.JimpleBody;
@@ -69,6 +70,16 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
     bodyBox.body().validate();
   }
 
+  public static Set<JInvokeStmt> getStartAndRunStatements(JimpleBody body) {
+    return body.getUnits()
+               .stream()
+               .filter(JInvokeStmt.class::isInstance)
+               .map(JInvokeStmt.class::cast)
+               .filter(s -> s.getInvokeExpr() instanceof JVirtualInvokeExpr)
+               .filter(JimpleThreadUtils::isThreadStartOrRunStatement)
+               .collect(Collectors.toSet());
+  }
+
   /**
    * Get runnable classes that are inserted as parameter into initialized threads
    *
@@ -93,7 +104,7 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
                .filter(RefType.class::isInstance)
                .map(RefType.class::cast)
                .map(RefType::getSootClass)
-               .filter(ThreadCreationNoiser::isRunnableClass)
+               .filter(JimpleThreadUtils::isRunnableClass)
                .collect(Collectors.toSet());
   }
 
@@ -141,75 +152,6 @@ public final class ThreadCreationNoiser extends JimpleSceneTransformer {
                .filter(sie -> ((RefType) sie.getReturnType()).getClassName().equals("java.lang.Runnable"))
                .map(SootMethodInterface::getDeclaringClass)
                .collect(Collectors.toSet());
-  }
-
-  private static Set<JInvokeStmt> getStartAndRunStatements(JimpleBody body) {
-    return body.getUnits()
-               .stream()
-               .filter(JInvokeStmt.class::isInstance)
-               .map(JInvokeStmt.class::cast)
-               .filter(s -> s.getInvokeExpr() instanceof JVirtualInvokeExpr)
-               .filter(ThreadCreationNoiser::isThreadStartOrRunStatement)
-               .collect(Collectors.toSet());
-  }
-
-  private static boolean isThreadStartOrRunStatement(JInvokeStmt stmt) {
-    SootMethodRef ref = stmt.getInvokeExpr().getMethodRef();
-    String methodName = ref.getName();
-    SootClass sootClass = ref.getDeclaringClass();
-
-    // Check if class contains start or run methods
-    return List.of("start", "run").contains(methodName) && isThreadOrRunnableClass(sootClass);
-  }
-
-  /***
-   * Recursively check if the class is a thread class, extends a thread class or implements a Runnable interface
-   * @param sootClass class that will be checked recursively
-   * @return true if class is extends Thread or implements Runnable
-   */
-  private static boolean isThreadOrRunnableClass(SootClass sootClass) {
-    if (sootClass.getName().equals("java.lang.Thread"))
-      return true;
-
-    for (SootClass implementsClass : sootClass.getInterfaces())
-      if (implementsRunnable(implementsClass))
-        return true;
-
-    if (sootClass.hasSuperclass())
-      return isThreadOrRunnableClass(sootClass.getSuperclass());
-
-    return false;
-  }
-
-  /***
-   * Recursively check if class extends from a Runnable class
-   * @param sootClass class to check
-   * @return true if extends Runnable
-   */
-  @SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
-  private static boolean implementsRunnable(SootClass sootClass) {
-    if (sootClass.getName().equals("java.lang.Runnable"))
-      return true;
-    else if (sootClass.hasSuperclass())
-      return implementsRunnable(sootClass.getSuperclass());
-
-    return false;
-  }
-
-  /***
-   * Recursively check if the class implements a Runnable interface
-   * @param sootClass class to check
-   * @return true if is Runnable
-   */
-  private static boolean isRunnableClass(SootClass sootClass) {
-    for (SootClass implementsClass : sootClass.getInterfaces())
-      if (implementsRunnable(implementsClass))
-        return true;
-
-    if (sootClass.hasSuperclass())
-      return isRunnableClass(sootClass.getSuperclass());
-
-    return false;
   }
 }
 
