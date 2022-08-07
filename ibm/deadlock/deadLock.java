@@ -58,6 +58,7 @@ public class deadLock implements Runnable {
   }
 
   public static void main(String args[]) throws IOException {
+    new Thread(new Counter()).start();
     new deadLock(args[0], args[1]);
   }
 
@@ -81,4 +82,16 @@ public class deadLock implements Runnable {
     }
   }
 
+  public static class Counter implements Runnable {
+
+    @Override
+    public void run() {
+      try {
+        Thread.sleep(1000);
+        System.out.println("deadlock detected.");
+      } catch (InterruptedException e) {
+      }
+      System.exit(0);
+    }
+  }
 }
