@@ -157,9 +157,6 @@ public class TicketsOrderSim {
       System.out.println("Bug Happened  " + bug_count + "  Times");
       System.out.println("<TicketsOrderSim, " + bug_count + " Tickets were used without being initialized, Double Checked Locking - Partial initialization>\n");
     }
-    //out.close();
-    System.out.println("\nIOException Happened.");
-    System.exit(0);
 
     System.out.println("Finished");
   }
