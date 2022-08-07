@@ -28,11 +28,7 @@ public class deadLock implements Runnable {
     else if (concurrencyParam.equals("lot"))
       MAX = 15;
     threadArr = new Thread[MAX];                                                          // we decide how many thread should be in here.
-    try {
-      //output =new FileOutputStream(fileName);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
+
     for (int i = 0; i < MAX; i++)                                                                    //we start the thread
     {
       threadArr[i] = new Thread(this, "" + i);
