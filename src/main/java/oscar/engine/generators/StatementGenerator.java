@@ -1,6 +1,7 @@
 package oscar.engine.generators;
 
 import oscar.controller.noise.NoiseLocation;
+import oscar.transformers.noisers.NoiserTag;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.*;
@@ -95,6 +96,9 @@ public class StatementGenerator {
         new JVirtualInvokeExpr(printLocal, printStreamMethod.makeRef(), List.of(printMsg, arrayLocal));
     statements.add(new JInvokeStmt(printInvokeExpr));
 
+    for (Unit statement : statements)
+      statement.addTag(NoiserTag.OSCAR_INSTRUMENTED);
+
     return statements;
   }
 
@@ -116,6 +120,9 @@ public class StatementGenerator {
         "void noise(oscar.controller.noise.NoiseLocation,java.lang.String)",
         List.of(enumLocal, StringConstant.v(UUID.randomUUID().toString()))
     );
+
+    enumAssign.addTag(NoiserTag.OSCAR_INSTRUMENTED);
+    noiseStmt.addTag(NoiserTag.OSCAR_INSTRUMENTED);
 
     return List.of(enumAssign, noiseStmt);
   }
