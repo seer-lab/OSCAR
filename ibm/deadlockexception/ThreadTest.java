@@ -206,8 +206,6 @@ public class ThreadTest {
                     System.out.print(". ");
 
                     result = i / (int) (Math.random() * factor);
-                    if (Math.random() < 0.0001)
-                        result /= 0;  //might throw exception
                 }
 
                 finalizeWork();
