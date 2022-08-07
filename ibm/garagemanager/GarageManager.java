@@ -12,7 +12,7 @@ public class GarageManager {
   private String strBugProbability = "littile";
   public int iBugProbability = 200, printedCard = 0;
 
-  private boolean bugAccured = false;
+  public boolean bugAccured = false;
 
   protected GarageStatus status;
 
