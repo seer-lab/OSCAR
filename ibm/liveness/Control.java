@@ -30,6 +30,11 @@ public class Control extends Thread {
         } else {
           //oFile.writeUTF("BugGen,1,Liveness - Bug (Dormancy)");
           System.out.println("BugGen,1,Liveness - Bug (Dormancy)");
+          System.out.flush();
+          try {
+            Thread.sleep(1);
+          } catch (InterruptedException e) {
+          }
           //oFile.close();
           System.exit(1);
         }
