@@ -24,8 +24,8 @@ public class Control extends Thread {
       if (active == 0) {
         break;
       } // bypassing bug-stopping mechanism
-      if (HttpClient.runningClientsExists() == false) {
-        if (HttpClient.suspendedClientsExists() == false) {
+      if (!HttpClient.runningClientsExists()) {
+        if (!HttpClient.suspendedClientsExists()) {
           break;
         } else {
           //oFile.writeUTF("BugGen,1,Liveness - Bug (Dormancy)");

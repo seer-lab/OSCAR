@@ -6,7 +6,7 @@ import java.util.*;
 
 public class BugGen {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
     if (args.length < 1 || args.length > 2) {
       System.out.println("BugGen Usage:\nBugGen [output_file] [control (default 0)]");
       return;
@@ -29,5 +29,7 @@ public class BugGen {
       clients[i] = new HttpClient(Integer.toString(i));
       clients[i].start();
     }
+
+    c.join();
   }
 }
