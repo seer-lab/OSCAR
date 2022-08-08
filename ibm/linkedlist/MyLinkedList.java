@@ -105,7 +105,7 @@ class MyLinkedList {
   public void printList(MyLinkedList theList) throws IOException {
     //PrintWriter of = new PrintWriter(new FileWriter(".\\" + _fileName,true),true);
 
-    if (this.size() == 10)            //theoretical size of list is 10
+    if (this.size() == 15000)            //theoretical size of list is 10
       System.out.println("length : " + this.size() + " , No Bug >");
     else
       System.out.println("length : " + this.size() + " , Non-Atomic Bug >");
