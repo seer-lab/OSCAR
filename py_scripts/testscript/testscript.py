@@ -136,7 +136,7 @@ print("Results:")
 print(f'\tAverage runtime (ms): {round(np.average(runtimes), 0)}')
 
 for flag in flags_detected:
-    print(f'\tDetected flag___{flag}____{flags_detected[flag]}')
+    print(f'\tDetected flag_-_-{flag}-_-_{flags_detected[flag]}')
 
 if not argv.disable_coverage:
     # Try to analyze created files

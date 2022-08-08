@@ -101,8 +101,8 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
         for line in output.split("\n"):
             if "Detected flag" in line:
                 line_clean = line.split("Detected flag")[1]
-                flag = line_clean.split("___")[1].split("____")[0].strip()
-                flag_count = line_clean.split("____")[1].strip()
+                flag = line_clean.split("_-_-")[1].split("-_-_")[0].strip()
+                flag_count = line_clean.split("-_-_")[1].strip()
 
                 output_flags_detected[flag] = flag_count
             if "Average runtime (ms):" in line:
