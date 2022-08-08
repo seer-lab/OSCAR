@@ -16,6 +16,18 @@ public class GarageManager {
 
   protected GarageStatus status;
 
+  public static class Counter implements Runnable {
+
+    @Override
+    public void run() {
+      try {
+        Thread.sleep(1000);
+        System.out.println("deadlock detected.");
+      } catch (InterruptedException e) {
+      }
+      System.exit(0);
+    }
+  }
 
   public void TakeWorkersFromAgency() {
     FileReader file;
@@ -373,7 +385,7 @@ public class GarageManager {
 
     public void WorkingOn(String task, int time) {
       for (int i = -1; i < time; i++)
-        System.out.println(workerName + " is  " + task);
+        i = i;
 
       taskTime = time;
       working = true;
@@ -387,6 +399,8 @@ public class GarageManager {
 
   public static void main(String[] args) {
     GarageManager bos = new GarageManager();
+
+    new Thread(new Counter()).start();
 
     bos.GetParametersFromUser(args);
     bos.TakeWorkersFromAgency();
