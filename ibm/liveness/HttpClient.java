@@ -58,7 +58,7 @@ public class HttpClient extends Thread {
         System.out.println("Client " + clientName + " needs to wait for server...");
         try {
           if (Integer.parseInt(clientName) > 18) {
-            this.sleep(3000);
+            this.sleep(1000);
           }
         } catch (InterruptedException e) {
         }

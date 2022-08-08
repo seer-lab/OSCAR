@@ -21,7 +21,7 @@ public class BugGen {
 
     int threadsNum = 20;
 
-    Control c = new Control((threadsNum * 1500),outputFileName,control);
+    Control c = new Control((1500),outputFileName,control);
     c.start();
 
     HttpClient[] clients = new HttpClient[threadsNum];
