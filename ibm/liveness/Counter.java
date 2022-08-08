@@ -1,5 +1,6 @@
 public class Counter {
   private int number;
+
   public Counter(int num) {
     number = num;
   }
