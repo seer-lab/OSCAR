@@ -63,15 +63,10 @@ class MyListBuilder implements Runnable {
       size = ((LinkedList) _list).size();
 
     try {
-
-      System.out.print("< " + "BugTester Program" + " , ");
-
       if (_debug == true) {
         ((MyLinkedList) this._list).printList((MyLinkedList) _list);
 
       } else {
-        System.out.print("list : (->");
-
         if (size == 10)            //theoretical size of list is 10
           System.out.println("length : " + size + " , No Bug >");
         else

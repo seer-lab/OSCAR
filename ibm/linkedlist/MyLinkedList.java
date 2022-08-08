@@ -105,18 +105,6 @@ class MyLinkedList {
   public void printList(MyLinkedList theList) throws IOException {
     //PrintWriter of = new PrintWriter(new FileWriter(".\\" + _fileName,true),true);
 
-    if (theList.isEmpty())
-      System.out.println("Empty list");
-    else {
-      System.out.print("list : (->");
-
-      MyLinkedListItr itr = theList.first();
-      for (; !itr.isPastEnd(); itr.advance())
-        System.out.print((Integer) itr.retrieve() + "->");
-
-      System.out.println(") , ");
-    }
-
     if (this.size() == 10)            //theoretical size of list is 10
       System.out.println("length : " + this.size() + " , No Bug >");
     else
