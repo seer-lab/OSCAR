@@ -23,14 +23,14 @@ public class BugTester {
 
           MyLinkedList mlst = new MyLinkedList(lT, nT, args[0]);
 
-          mlist1 = new MyListBuilder(mlst, 0, 5, true, args[0]);
-          mlist2 = new MyListBuilder(mlst, 5, 10, true, args[0]);
+          mlist1 = new MyListBuilder(mlst, 0, 50, true, args[0]);
+          mlist2 = new MyListBuilder(mlst, 25, 75, true, args[0]);
         } else    //showing the case in the linked list of java's collection
         {
           LinkedList lst = new LinkedList();
 
-          mlist1 = new MyListBuilder(lst, 0, 5, false, args[0]);
-          mlist2 = new MyListBuilder(lst, 5, 10, false, args[0]);
+          mlist1 = new MyListBuilder(lst, 0, 50, false, args[0]);
+          mlist2 = new MyListBuilder(lst, 25, 75, false, args[0]);
         }
 
         Thread t1 = new Thread(mlist1);
