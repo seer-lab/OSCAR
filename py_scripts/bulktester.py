@@ -2,17 +2,17 @@ import subprocess
 from tqdm import tqdm
 import numpy as np
 
-SORTED_DEFAULT_VALUES = sorted([50, 100, 250, 500, 1000])
+SORTED_DEFAULT_VALUES = sorted([10])
 
 OSCAR_DIR = "../"
-OSCAR_ARGS = "ibm/account account.Main output"
-PROGRAM = "../../output account.Main"
+OSCAR_ARGS = "ibm/bubblesort2 tr.Loader output"
+PROGRAM = "../../output tr.Loader"
 TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2"
-DISABLE_COVERAGE = False
+DISABLE_COVERAGE = True
 NUMBER_RUNS = SORTED_DEFAULT_VALUES  # [5, 10, 15]
 NUMBER_THREADS = ["out little"]  # SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = "-lfo -np tbbtr svbbsfa svbasfa -nc lb sb -m 1"
-OUTPUT_FLAGS = ["amount"]
+OUTPUT_FLAGS = ["finished","SortProgram"]
 
 VARIABLE_ARGS = [
     "-M 5",
@@ -101,8 +101,8 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
         for line in output.split("\n"):
             if "Detected flag" in line:
                 line_clean = line.split("Detected flag")[1]
-                flag = line_clean.split(":")[0].strip()
-                flag_count = line_clean.split(":")[1].strip()
+                flag = line_clean.split("___")[1].split("____")[0].strip()
+                flag_count = line_clean.split("____")[1].strip()
 
                 output_flags_detected[flag] = flag_count
             if "Average runtime (ms):" in line:
