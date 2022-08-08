@@ -29,8 +29,8 @@ public class BugTester {
         {
           LinkedList lst = new LinkedList();
 
-          mlist1 = new MyListBuilder(lst, 0, 10000, false, args[0]);
-          mlist2 = new MyListBuilder(lst, 5000, 15000, false, args[0]);
+          mlist1 = new MyListBuilder(lst, 0, 60000, false, args[0]);
+          mlist2 = new MyListBuilder(lst, 40000, 100000, false, args[0]);
         }
 
         Thread t1 = new Thread(mlist1);
