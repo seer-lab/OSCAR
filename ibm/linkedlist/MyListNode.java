@@ -1,26 +1,23 @@
-    //MyListNode.java
-    //This class implements basic node stored in a linked list .
+//MyListNode.java
+//This class implements basic node stored in a linked list .
 
-    class MyListNode
-    {
-		/*Class Members*/
-		public Object _element;			//Node's data
-        public MyListNode _next;		//Pointer to next node
-        public int _nTime = 0;			//The  time to sleep
+class MyListNode {
+  /*Class Members*/
+  public Object _element;      //Node's data
+  public MyListNode _next;    //Pointer to next node
+  public int _nTime = 0;      //The  time to sleep
 
-		//C'tor - 1
-        MyListNode( Object theElement,int nT ){ this( theElement, null , nT ); }
+  //C'tor - 1
+  MyListNode(Object theElement, int nT) {this(theElement, null, nT);}
 
-		//C'tor - 2
-        MyListNode( Object theElement, MyListNode n , int nT )
-        {
-			this._nTime = nT;
+  //C'tor - 2
+  MyListNode(Object theElement, MyListNode n, int nT) {
+    this._nTime = nT;
 
-			synchronized ( this )
-			{
-				this._element = theElement;
-				this._next = n;
-            }
+    synchronized (this) {
+      this._element = theElement;
+      this._next = n;
+    }
 
 			/*
 			//a sleep before the last element can be added to list .
@@ -42,6 +39,6 @@
 			//no else
 			////////////////////////////////////////////////
 			*/
-        }
+  }
 
-    }
+}
