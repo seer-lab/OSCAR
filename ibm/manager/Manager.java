@@ -42,6 +42,7 @@ class Manager {
     public void run() {
       while (true) {
         int curr = Manager.finished;
+
         try {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -71,6 +72,7 @@ class Manager {
     for (int i = 0; i < num_of_threads; ++i) {
       try {
         releasers[i].join();
+        finished++;
       } catch (InterruptedException e) {
       }
 
