@@ -3,6 +3,7 @@ import java.io.*;
 class Manager {
   static int request_counter = 0;
   static volatile int released_counter = 0;
+  static volatile int finished = 0;
   static boolean flag = false;
   static String req_counter_lock = new String();
   static String rel_counter_lock = new String();
@@ -26,7 +27,6 @@ class Manager {
     }
     int num_of_threads = Integer.parseInt(arg[1]);
     Manager manager = new Manager(num_of_threads);
-    new Thread(new Monitor()).start();
     System.out.println("Number of memory blocks to release:" + init_req_counter);
     System.out.println("Number of memory blocks released:" + released_counter);
     try {
@@ -41,14 +41,14 @@ class Manager {
     @Override
     public void run() {
       while (true) {
-        int curr = Manager.released_counter;
+        int curr = Manager.finished;
         try {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
           throw new RuntimeException(e);
         }
 
-        if (Manager.released_counter == curr) {
+        if (Manager.finished == curr) {
           System.out.println("deadlock");
           System.out.flush();
           System.exit(0);
@@ -65,6 +65,9 @@ class Manager {
       releasers[i] = new Trelease(i);
       releasers[i].start();
     }
+
+    new Thread(new Monitor()).start();
+
     for (int i = 0; i < num_of_threads; ++i) {
       try {
         releasers[i].join();
