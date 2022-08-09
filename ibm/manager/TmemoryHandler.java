@@ -14,21 +14,6 @@ class TmemoryHandler extends Thread {
       Manager.flag = false;
     }
     System.out.println("\nTmemoryHandler thread finish");
-    new Thread(new Monitor()).start();
-  }
-
-  public static class Monitor implements Runnable {
-    @Override
-    public void run() {
-      try {
-        Thread.sleep(1500);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-      System.out.println("deadlock");
-      System.out.flush();
-      System.exit(0);
-    }
   }
 }
 

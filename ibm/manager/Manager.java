@@ -48,13 +48,31 @@ class Manager {
 
     for (int i = 0; i < num_of_threads; ++i) {
       try {
+        Thread monitor = new Thread(new Monitor());
+        monitor.start();
         releasers[i].join();
+        monitor.interrupt();
       } catch (InterruptedException e) {
       }
     }
     try {
       t.join();
     } catch (InterruptedException e) {
+    }
+  }
+
+
+  public static class Monitor implements Runnable {
+    @Override
+    public void run() {
+      try {
+        Thread.sleep(1500);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      System.out.println("deadlock");
+      System.out.flush();
+      System.exit(0);
     }
   }
 
