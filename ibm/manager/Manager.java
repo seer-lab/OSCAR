@@ -56,7 +56,6 @@ class Manager {
       t.join();
     } catch (InterruptedException e) {
     }
-    System.exit(0);
   }
 
   public static void setNote(int index, boolean op) {
