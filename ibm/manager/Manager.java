@@ -48,10 +48,11 @@ class Manager {
 
     for (int i = 0; i < num_of_threads; ++i) {
       try {
-        Thread monitor = new Thread(new Monitor());
-        monitor.start();
-        releasers[i].join();
-        monitor.interrupt();
+        releasers[i].join(1000);
+        if (releasers[i].isAlive()) {
+          System.out.println("deadlock");
+          System.exit(0);
+        }
       } catch (InterruptedException e) {
       }
     }
