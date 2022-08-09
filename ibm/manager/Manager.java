@@ -41,15 +41,15 @@ class Manager {
     @Override
     public void run() {
       while (true) {
-        int curr = Manager.finished;
+        int curr = Manager.request_counter;
 
         try {
-          Thread.sleep(2000);
+          Thread.sleep(5000);
         } catch (InterruptedException e) {
           throw new RuntimeException(e);
         }
 
-        if (Manager.finished == curr) {
+        if (Manager.request_counter == curr) {
           System.out.println("deadlock");
           System.out.flush();
           System.exit(0);
@@ -72,17 +72,14 @@ class Manager {
     for (int i = 0; i < num_of_threads; ++i) {
       try {
         releasers[i].join();
-        finished++;
       } catch (InterruptedException e) {
       }
-
-
     }
     try {
       t.join();
     } catch (InterruptedException e) {
     }
-
+    System.exit(0);
   }
 
   public static void setNote(int index, boolean op) {
