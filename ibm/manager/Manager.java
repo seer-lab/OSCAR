@@ -1,7 +1,7 @@
 import java.io.*;
 
 class Manager {
-  static int request_counter = 0;
+  static volatile int request_counter = 0;
   static volatile int released_counter = 0;
   static volatile int finished = 0;
   static boolean flag = false;
@@ -37,27 +37,6 @@ class Manager {
     }
   }
 
-  public static class Monitor implements Runnable {
-    @Override
-    public void run() {
-      while (true) {
-        int curr = Manager.request_counter;
-
-        try {
-          Thread.sleep(5000);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-
-        if (Manager.request_counter == curr) {
-          System.out.println("deadlock");
-          System.out.flush();
-          System.exit(0);
-        }
-      }
-    }
-  }
-
   Manager(int num_of_threads) {
     Trelease[] releasers = new Trelease[num_of_threads];
     TmemoryHandler t = new TmemoryHandler();
@@ -66,8 +45,6 @@ class Manager {
       releasers[i] = new Trelease(i);
       releasers[i].start();
     }
-
-    new Thread(new Monitor()).start();
 
     for (int i = 0; i < num_of_threads; ++i) {
       try {
