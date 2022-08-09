@@ -6,11 +6,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
-
-
-
-
 // _____________________________________________________________________________
 //
 //    Module Name:
@@ -43,38 +38,28 @@
 //         when the time comes to present or record the number.
 // _____________________________________________________________________________
 
-
-
 // ================================   Packege   ================================
 package buggyprogram;
 
-
 // ==========================   Java Imported Files   ==========================
+
 import java.io.*;
 
 
-
-
 // ============================   Class definition   ===========================
-public class BuggyProgram{
+public class BuggyProgram {
 
   // ==============================   Constants   ==============================
-  public static final int    LITTLE_CONCURRENCY=   3,
-                             AVERAGE_CONCURRENCY=  33,
-                             LOT_CONCURRENCY=      333,
-                             MAX_DIGITS=           3,
-                             INVALID=              -3;
-  public static final String PROGRAM_NAME= "BuggyProgram";
+  public static final int LITTLE_CONCURRENCY = 3, AVERAGE_CONCURRENCY = 33, LOT_CONCURRENCY = 333, MAX_DIGITS = 3, INVALID = -3;
+  public static final String PROGRAM_NAME = "BuggyProgram";
 
 
   // ==============================   Variables   ==============================
-  protected static final StringBuffer buffer=       new StringBuffer();
-  protected              long         randomNumber= INVALID;
-  protected              long[]       history=      null,
-                                      generated=    null,
-                                      presented=    null;
-            static       int          numOfUsers=   AVERAGE_CONCURRENCY;
-            static       String       pattern=      "None";
+  protected static final StringBuffer buffer = new StringBuffer();
+  protected long randomNumber = INVALID;
+  protected long[] history = null, generated = null, presented = null;
+  static int numOfUsers = AVERAGE_CONCURRENCY;
+  static String pattern = "None";
 
   // ===============================   Methods   ===============================
 
@@ -89,44 +74,42 @@ public class BuggyProgram{
   //                   to starts the users' running.
   // ___________________________________________________________________________
 
-  public BuggyProgram(){
-    int    i=       0;
-    User[] user=    new User[numOfUsers];
+  public BuggyProgram() {
+    int i = 0;
+    User[] user = new User[numOfUsers];
 
-    history=   new long[numOfUsers];
-    presented= new long[numOfUsers];
-    generated= new long[numOfUsers];
+    history = new long[numOfUsers];
+    presented = new long[numOfUsers];
+    generated = new long[numOfUsers];
 
-    for (i= 0; i < numOfUsers; ++i){
-      history[i]=   INVALID;
-      presented[i]= INVALID;
-      generated[i]= INVALID;
+    for (i = 0; i < numOfUsers; ++i) {
+      history[i] = INVALID;
+      presented[i] = INVALID;
+      generated[i] = INVALID;
     }
 
-    for (i= 0; i < numOfUsers; ++i){
-      user[i]= new User(i);
+    for (i = 0; i < numOfUsers; ++i) {
+      user[i] = new User(i);
     }
 
     acivateUsers(user);
 
     //for (i= 0; i < numOfUsers; ++i){
     //  buffer.append("\nUser (" + i + ") generated " + generated[i] + ", " +
-     //               "presented " + presented[i] + ", and recorded " +
-      //              history[i]);
-   // }
+    //               "presented " + presented[i] + ", and recorded " +
+    //              history[i]);
+    // }
 
-    for (i= 0; i < numOfUsers; ++i){
-      if ((generated[i] != presented[i]) || (generated[i] != history[i]) ||
-          (presented[i] != history[i])) {
+    for (i = 0; i < numOfUsers; ++i) {
+      if ((generated[i] != presented[i]) || (generated[i] != history[i]) || (presented[i] != history[i])) {
         break;
       }
     }
 
-    if (i != numOfUsers){
-      pattern= "Weak-Reality";
+    if (i != numOfUsers) {
+      pattern = "Weak-Reality";
     }
   }
-
 
   // ___________________________________________________________________________
   //
@@ -137,51 +120,49 @@ public class BuggyProgram{
   //                   constructor.
   // ___________________________________________________________________________
 
-  public static void main(String args[]){
-    int        i=              0;
-    String     outputFilename= null;
-    FileWriter outputFile=     null;
+  public static void main(String args[]) {
+    int i = 0;
+    String outputFilename = null;
+    FileWriter outputFile = null;
 
-    if (args.length > 2 || args.length < 1){
+    if (args.length > 2 || args.length < 1) {
       System.out.println("Illegal arguments.");
       System.out.println("Arguments should be:");
       System.out.println("  1. The name of the output file, and");
-      System.out.println("  2. Optional: Parameter of concurrency (little, " +
-                         "average, lot).\n");
+      System.out.println("  2. Optional: Parameter of concurrency (little, " + "average, lot).\n");
       System.exit(1);
     }
 
-    outputFilename= args[0];
+    outputFilename = args[0];
 
-    if (args.length == 2){
-      if (args[1].toLowerCase().equals("little")){
-        numOfUsers= LITTLE_CONCURRENCY;
+    if (args.length == 2) {
+      if (args[1].toLowerCase().equals("little")) {
+        numOfUsers = LITTLE_CONCURRENCY;
       } else {
-        if (args[1].toLowerCase().equals("average")){
+        if (args[1].toLowerCase().equals("average")) {
           numOfUsers = AVERAGE_CONCURRENCY;
         } else {
-          if (args[1].toLowerCase().equals("lot")){
-            numOfUsers= LOT_CONCURRENCY;
+          if (args[1].toLowerCase().equals("lot")) {
+            numOfUsers = LOT_CONCURRENCY;
           } else {
-            System.out.println("Unrecognized parameter of concurrency.\n" +
-                               "Should be: little, average, or lot.\n");
+            System.out.println("Unrecognized parameter of concurrency.\n" + "Should be: little, average, or lot.\n");
             System.exit(1);
           }
         }
       }
     } else {
-      numOfUsers= AVERAGE_CONCURRENCY;
+      numOfUsers = AVERAGE_CONCURRENCY;
     }
 
     buffer.append("<" + PROGRAM_NAME + ",");
 
-    BuggyProgram buggyProgram= new BuggyProgram();
+    BuggyProgram buggyProgram = new BuggyProgram();
 
     buffer.append(", \n" + pattern + ">\n");
 
     //try {
     //  //outputFile= new FileWriter(outputFilename);
-//
+    //
     System.out.println(buffer.toString());
     //} catch (IOException ex){
     //  System.out.println("File \"" + outputFilename + "\" is possibly "+
@@ -207,7 +188,6 @@ public class BuggyProgram{
     //}
   }
 
-
   // ___________________________________________________________________________
   //
   //    Name: acivateUsers
@@ -216,23 +196,19 @@ public class BuggyProgram{
   //	  Description: Starts the users running.
   // ___________________________________________________________________________
 
-  public void acivateUsers(User[] user){
-    for (int i= 0; i < numOfUsers; ++i){
+  public void acivateUsers(User[] user) {
+    for (int i = 0; i < numOfUsers; ++i) {
       user[i].start();
     }
 
-    for (int i= 0; i < numOfUsers; ++i){
+    for (int i = 0; i < numOfUsers; ++i) {
       try {
         user[i].join();
-      } catch (InterruptedException ex){
+      } catch (InterruptedException ex) {
         System.out.println("interrupted!!!");
       }
     }
   }
-
-
-
-
 
   // ___________________________________________________________________________
   //
@@ -258,14 +234,13 @@ public class BuggyProgram{
 
 
   // ============================   Class definition   =========================
-  public class User extends Thread{
+  public class User extends Thread {
 
     // ==============================   Constants   ============================
 
 
     // ==============================   Variables   ============================
     int userNumber;
-
 
     // ===============================   Methods   =============================
 
@@ -279,10 +254,9 @@ public class BuggyProgram{
     //                   (according to NUM_OF_USERS), and starts their running.
     // _________________________________________________________________________
 
-    public User(int userNumber){
-      this.userNumber= userNumber;
+    public User(int userNumber) {
+      this.userNumber = userNumber;
     }
-
 
     // _________________________________________________________________________
     //
@@ -294,13 +268,13 @@ public class BuggyProgram{
     //                   and records it in the history array.
     // _________________________________________________________________________
 
-    public void run(){
-      int i= 0;
+    public void run() {
+      int i = 0;
 
-      while (i != numOfUsers){
+      while (i != numOfUsers) {
         generate();
 
-        for (i= 0; i < numOfUsers; ++i){
+        for (i = 0; i < numOfUsers; ++i) {
           if (history[i] == randomNumber) {
             break;
           }
@@ -310,7 +284,6 @@ public class BuggyProgram{
       present();
       record();
     }
-
 
     // _________________________________________________________________________
     //
@@ -322,11 +295,9 @@ public class BuggyProgram{
     //                   (according to MAX_DIGITS).
     // _________________________________________________________________________
 
-    protected synchronized void generate(){
-      generated[userNumber]= randomNumber= (long) (Math.random() *
-                                           Math.pow(10, MAX_DIGITS));
+    protected synchronized void generate() {
+      generated[userNumber] = randomNumber = (long) (Math.random() * Math.pow(10, MAX_DIGITS));
     }
-
 
     // _________________________________________________________________________
     //
@@ -337,11 +308,9 @@ public class BuggyProgram{
     //                   which has been generated, on screen.
     // _________________________________________________________________________
 
-    protected synchronized void present(){
-      System.out.println("user " + userNumber + " assigned "
-                         + (presented[userNumber]= randomNumber) + ".");
+    protected synchronized void present() {
+      System.out.println("user " + userNumber + " assigned " + (presented[userNumber] = randomNumber) + ".");
     }
-
 
     // _________________________________________________________________________
     //
@@ -352,8 +321,8 @@ public class BuggyProgram{
     //                   which has been generated, to the history array.
     // _________________________________________________________________________
 
-    protected synchronized void record(){
-      history[userNumber]= randomNumber;
+    protected synchronized void record() {
+      history[userNumber] = randomNumber;
     }
   }
 }
