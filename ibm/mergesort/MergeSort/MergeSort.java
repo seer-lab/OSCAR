@@ -61,32 +61,14 @@ public class MergeSort extends Thread
                         return 2;
                 }
                 System.out.println("BUG");
-                try
-                {
-                   //fWriter = new FileWriter(outputFile,true);
-                   //bWriter = new BufferedWriter(fWriter);
+                //fWriter = new FileWriter(outputFile,true);
+                //bWriter = new BufferedWriter(fWriter);
 
-                }
-                catch(IOException e)
-                {
-                  System.out.println("jj");
-                  System.exit(-1);
-                }
                 String number;
                 number=Integer.toString(availableThreads);
-                try
-                {
-                        System.out.println("<MergeSort," + number+">");
-                  //bWriter.newLine();
-                  // bWriter.close();
-
-                }
-                catch(IOException e)
-                {
-
-                  System.exit(-1);
-                }
-
+                System.out.println("<MergeSort," + number+">");
+                //bWriter.newLine();
+                // bWriter.close();
 
                 return (availableThreads); //The else of all - BUG
 
@@ -115,18 +97,8 @@ public class MergeSort extends Thread
                 }
                 outputFile=fileName;
                 bIsInit = true;
-                try
-               {
-                 // fWriter = new FileWriter(outputFile);
-                 // bWriter = new BufferedWriter(fWriter);
-
-               }
-               catch(IOException e)
-               {
-                 System.out.println("jj");
-                 System.exit(-1);
-               }
-
+                // fWriter = new FileWriter(outputFile);
+                // bWriter = new BufferedWriter(fWriter);
 
         }
 
@@ -139,32 +111,17 @@ public class MergeSort extends Thread
         //Print sorted vector - invoked from main()
         public void PrintResults()
         {
-          try
+                //fWriter = new FileWriter("sortedoutput.txt");
+                // bWriter = new BufferedWriter(fWriter);
 
-          {
-            //fWriter = new FileWriter("sortedoutput.txt");
-           // bWriter = new BufferedWriter(fWriter);
-
-          }
-          catch (IOException e) {
-            System.exit( -1);
-          }
-          try {
-                  System.out.println("Sorted using " + m_iThreadLimit + " thread/s");
-          //  bWriter.newLine();
-            for (int iCnt = 0; iCnt < m_iArray.length; iCnt++)
-            {
-                    System.out.println(iCnt + " : " + m_iArray[iCnt]);
-              //bWriter.newLine();
-            }
-           // bWriter.close();
-
-          }
-          catch (IOException e) {
-
-            System.out.println("jj");
-            System.exit( -1);
-          }
+                System.out.println("Sorted using " + m_iThreadLimit + " thread/s");
+                //  bWriter.newLine();
+                for (int iCnt = 0; iCnt < m_iArray.length; iCnt++)
+                {
+                        System.out.println(iCnt + " : " + m_iArray[iCnt]);
+                  //bWriter.newLine();
+                }
+                // bWriter.close();
 
         }
 
