@@ -34,8 +34,7 @@ public class MergeSortBug extends Thread {
    * The method uses the current instance's indexes and calls a static
    * MergeSections method
    */
-  public static void sortArray(int sIndex, int eIndex) throws
-      InterruptedException {
+  public static void sortArray(int sIndex, int eIndex) throws InterruptedException {
 
     // If we're dealing with one element, return to caller
     if (eIndex - sIndex == 0) {
@@ -48,8 +47,7 @@ public class MergeSortBug extends Thread {
     MergeSortBug mergeA = new MergeSortBug(sIndex, median);
     if (maxThreads > 0) {
       mergeA.start();
-    }
-    else {
+    } else {
       sortArray(sIndex, median);
     }
 
@@ -59,8 +57,7 @@ public class MergeSortBug extends Thread {
     mergeA.join();
     try {
       mergeSections(sIndex, median, median + 1, eIndex);
-    }
-    catch (InvalidInput e) {
+    } catch (InvalidInput e) {
       System.out.println("Fatal Error - invalid indexes");
     }
   }
@@ -68,17 +65,16 @@ public class MergeSortBug extends Thread {
   /**
    * Merge two sections of the array in a sorted fashion.
    * This method is synchornized, so any access to intArray is monitored.
+   *
    * @param sInd1 The first start index.
    * @param eInd1 The first end index.
    * @param sInd2 The second start index.
    * @param eInd2 The second end index.
    */
-  public static void mergeSections(int sInd1, int eInd1,
-                                   int sInd2, int eInd2) throws InvalidInput {
+  public static void mergeSections(int sInd1, int eInd1, int sInd2, int eInd2) throws InvalidInput {
 
     // Check if the indexes are valid
-    if ( (sInd1 > eInd1) || (sInd2 > eInd2) ||
-        (sInd1 < 0) || (eInd1 < 0) || (sInd2 < 0) || (eInd2 < 0)) {
+    if ((sInd1 > eInd1) || (sInd2 > eInd2) || (sInd1 < 0) || (eInd1 < 0) || (sInd2 < 0) || (eInd2 < 0)) {
       throw new InvalidInput("Invalid indexes supplied");
     }
 
@@ -96,8 +92,7 @@ public class MergeSortBug extends Thread {
     while (sInd1 <= eInd1 && sInd2 <= eInd2) {
       if (intArray[sInd1] < intArray[sInd2]) {
         tempArray[i++] = intArray[sInd1++];
-      }
-      else {
+      } else {
         tempArray[i++] = intArray[sInd2++];
       }
     }
@@ -125,14 +120,14 @@ public class MergeSortBug extends Thread {
     setMaxThreads(-1);
     try {
       sortArray(startIndex, endIndex);
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
     }
     setMaxThreads(1);
   }
 
   /**
    * Updates current running threads
+   *
    * @param modifier Can be +/- 1.
    */
   public static void setMaxThreads(int modifier) {
@@ -145,6 +140,7 @@ public class MergeSortBug extends Thread {
 
   /**
    * Contructor. Initialize variables for merge sort.
+   *
    * @param sIndex The start index this instance begins with.
    * @param eIndex The end index this instance ends in.
    */
@@ -155,6 +151,7 @@ public class MergeSortBug extends Thread {
 
   /**
    * Create a String representation of intArray
+   *
    * @return The string representing intArray
    */
   public String toString() {
@@ -187,8 +184,7 @@ public class MergeSortBug extends Thread {
       for (int i = 2; i < args.length; i++) {
         intArray[i - 2] = Integer.parseInt(args[i]);
       }
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       throw new InvalidInput("Invalid input supplied");
     }
 
@@ -209,8 +205,7 @@ public class MergeSortBug extends Thread {
       // If here, the first argument is a number and can't be treated
       // as a filename
       System.out.println("First argument must specify file name !!!");
-    }
-    catch (NumberFormatException ex) {
+    } catch (NumberFormatException ex) {
       // If here then the first argument is a string and thus can be
       // treated as a filename
       try {
@@ -218,28 +213,20 @@ public class MergeSortBug extends Thread {
         // If we reached here, then the input is valid
         try {
           sort.sortArray(0, args.length - 3);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
           // Do Nothing
         }
         System.out.println(sort);
-      }
-      catch (InvalidInput e) {
+      } catch (InvalidInput e) {
         System.out.println(e);
         return;
       }
 
       //FileWriter output;
 
-      try {
-        //output = new FileWriter(args[0]);
-        System.out.println("MergeSort Bug, " +
-                     "Lowest number of threads available is: " +
-                     lowestNumThreads + ", Not-Atomic");
-        //output.close();
-      }
-      catch (IOException ex1) {
-      }
+      //output = new FileWriter(args[0]);
+      System.out.println("MergeSort Bug, " + "Lowest number of threads available is: " + lowestNumThreads + ", Not-Atomic");
+      //output.close();
     }
   }
 }
