@@ -46,11 +46,15 @@ class Server extends ProducerConsumer {
       throw new RuntimeException("Counter >= 30");  // This is guarantied to accur since the counter is increasing always
     } catch (Exception EddieException) {
       this.client.interruptFlag = true;
-      cnt++;
-      //OutputFile.println(msg1 + cnt);
-      System.out.println(msg1 + cnt);
-      // OutputFile.println(msg2);
-      System.out.println(msg2);
+      try {
+        cnt++;
+        //OutputFile.println(msg1 + cnt);
+        System.out.println(msg1 + cnt);
+        // OutputFile.println(msg2);
+        System.out.println(msg2);
+        throw new IOException("File Output Error");
+      } catch (IOException e1) {
+      }
     }
   }
 }
@@ -89,17 +93,21 @@ class Client extends ProducerConsumer {
         }
       } catch (Exception RaceFound) {
         try {
-          sleep((int) (Math.random() * 100));
-        } catch (InterruptedException eC) {
-        }
+          try {
+            sleep((int) (Math.random() * 100));
+          } catch (InterruptedException eC) {
+          }
 
-        cnt++;
-        System.out.println(msg3 + cnt);
-        System.out.println(msg4);
-        System.out.println(msg5);
-        //OutputFile.println(msg3 + cnt);
-        //OutputFile.println(msg4);
-        //OutputFile.println(msg5);
+          cnt++;
+          System.out.println(msg3 + cnt);
+          System.out.println(msg4);
+          System.out.println(msg5);
+          //OutputFile.println(msg3 + cnt);
+          //OutputFile.println(msg4);
+          //OutputFile.println(msg5);
+          throw new IOException("File Output Error");
+        } catch (IOException e3) {
+        }
       }
     }
     // Processes whatever elements remain on the queue before exiting.
@@ -110,13 +118,17 @@ class Client extends ProducerConsumer {
           throw new Exception("RaceFound Exception");
         }
       } catch (Exception RaceFound) {
-        cnt++;
-        System.out.println(msg3 + cnt);
-        System.out.println(msg4);
-        System.out.println(msg5);
-        //OutputFile.println(msg3 + cnt);
-        //OutputFile.println(msg4);
-        //OutputFile.println(msg5);
+        try {
+          cnt++;
+          System.out.println(msg3 + cnt);
+          System.out.println(msg4);
+          System.out.println(msg5);
+          //OutputFile.println(msg3 + cnt);
+          //OutputFile.println(msg4);
+          //OutputFile.println(msg5);
+          throw new IOException("File Output Error");
+        } catch (IOException e3) {
+        }
       }
     }
     System.out.flush();
@@ -136,13 +148,17 @@ class Client extends ProducerConsumer {
           throw new Exception("RaceFound Exception");
         }
       } catch (Exception RaceFound) {
-        cnt++;
-        System.out.println(msg3 + cnt);
-        System.out.println(msg4);
-        System.out.println(msg5);
-        //OutputFile.println(msg3 + cnt);
-        //OutputFile.println(msg4);
-        //OutputFile.println(msg5);
+        try {
+          cnt++;
+          System.out.println(msg3 + cnt);
+          System.out.println(msg4);
+          System.out.println(msg5);
+          //OutputFile.println(msg3 + cnt);
+          //OutputFile.println(msg4);
+          //OutputFile.println(msg5);
+          throw new IOException("File Output Error");
+        } catch (IOException e3) {
+        }
       }
     }
 
