@@ -203,15 +203,15 @@ public class MergeSortBug extends Thread {
     // treated as a filename
     try {
       String threads = ";";
-      if (args[1].compareTo("little") == 0) {
+      if (args[0].compareTo("little") == 0) {
         threads = "4";
       }
 
-      if (args[1].compareTo("average") == 0) {
+      if (args[0].compareTo("average") == 0) {
         threads = "6";
       }
 
-      if (args[1].compareTo("lots") == 0) {
+      if (args[0].compareTo("lots") == 0) {
         threads = "14";
       }
 
