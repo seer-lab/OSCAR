@@ -52,6 +52,7 @@ class Server extends ProducerConsumer {
         System.out.println(msg1 + cnt);
         // OutputFile.println(msg2);
         System.out.println(msg2);
+        errorHappened = true;
         throw new IOException("File Output Error");
       } catch (IOException e1) {
       }
@@ -105,6 +106,7 @@ class Client extends ProducerConsumer {
           //OutputFile.println(msg3 + cnt);
           //OutputFile.println(msg4);
           //OutputFile.println(msg5);
+          errorHappened = true;
           throw new IOException("File Output Error");
         } catch (IOException e3) {
         }
@@ -126,6 +128,7 @@ class Client extends ProducerConsumer {
           //OutputFile.println(msg3 + cnt);
           //OutputFile.println(msg4);
           //OutputFile.println(msg5);
+          errorHappened = true;
           throw new IOException("File Output Error");
         } catch (IOException e3) {
         }
@@ -156,6 +159,7 @@ class Client extends ProducerConsumer {
           //OutputFile.println(msg3 + cnt);
           //OutputFile.println(msg4);
           //OutputFile.println(msg5);
+          errorHappened = true;
           throw new IOException("File Output Error");
         } catch (IOException e3) {
         }
@@ -179,6 +183,7 @@ public class ProducerConsumer extends Thread {
   static int CurrCount = 0;
   static int countSER = 0;
   static int cnt = 0;
+  public static boolean errorHappened = false;
 
   int getCurrCount() {
     return CurrCount;
@@ -260,6 +265,8 @@ public class ProducerConsumer extends Thread {
     sleep(1000);
     //   }catch (IOException e5){}
     OutputFile.close();
+    if (errorHappened)
+      System.out.println("ERROR HAPPENED");
     //        }
   }
 
