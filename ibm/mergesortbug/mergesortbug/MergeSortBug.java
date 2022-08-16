@@ -231,6 +231,8 @@ public class MergeSortBug extends Thread {
 
     //output = new FileWriter(args[0]);
     System.out.println("MergeSort Bug, " + "Lowest number of threads available is: " + lowestNumThreads + ", Not-Atomic");
+    if (lowestNumThreads < 0)
+      System.out.println("BUG");
     //output.close();
   }
 }
