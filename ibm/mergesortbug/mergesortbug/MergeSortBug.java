@@ -199,34 +199,38 @@ public class MergeSortBug extends Thread {
   }
 
   public static void main(String[] args) {
-
+    // If here then the first argument is a string and thus can be
+    // treated as a filename
     try {
-      int test = Integer.parseInt(args[0]);
-      // If here, the first argument is a number and can't be treated
-      // as a filename
-      System.out.println("First argument must specify file name !!!");
-    } catch (NumberFormatException ex) {
-      // If here then the first argument is a string and thus can be
-      // treated as a filename
-      try {
-        MergeSortBug sort = new MergeSortBug(args);
-        // If we reached here, then the input is valid
-        try {
-          sort.sortArray(0, args.length - 3);
-        } catch (InterruptedException e) {
-          // Do Nothing
-        }
-        System.out.println(sort);
-      } catch (InvalidInput e) {
-        System.out.println(e);
-        return;
+      String threads = ";";
+      if (args[1].compareTo("little") == 0) {
+        threads = "4";
       }
 
-      //FileWriter output;
+      if (args[1].compareTo("average") == 0) {
+        threads = "6";
+      }
 
-      //output = new FileWriter(args[0]);
-      System.out.println("MergeSort Bug, " + "Lowest number of threads available is: " + lowestNumThreads + ", Not-Atomic");
-      //output.close();
+      if (args[1].compareTo("lots") == 0) {
+        threads = "14";
+      }
+
+      String[] var4 = new String[]{threads, "4", "5", "6", "7", "8", "9", "6", "54", "10", "54", "6", "54", "87", "5", "46", "81", "54", "88", "4", "5", "321", "54", "8795", "215", "45454", "215", "123", "546", "22", "456", "789", "46", "456", "548", "777", "856", "321", "11", "784", "1234", "4569", "123", "123", "545454", "7785", "7898", "77785", "785", "963", "4521"};
+
+      MergeSortBug sort = new MergeSortBug(var4);
+      // If we reached here, then the input is valid
+      try {
+        sort.sortArray(0, var4.length - 3);
+      } catch (InterruptedException e) {
+        // Do Nothing
+      }
+    } catch (InvalidInput ignored) {
     }
+
+    //FileWriter output;
+
+    //output = new FileWriter(args[0]);
+    System.out.println("MergeSort Bug, " + "Lowest number of threads available is: " + lowestNumThreads + ", Not-Atomic");
+    //output.close();
   }
 }
