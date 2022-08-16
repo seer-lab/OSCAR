@@ -1,7 +1,5 @@
 
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -40,7 +38,7 @@ public class BuggedProgram {
    * when the last thread is finished - write the value of <code>BugThread-->variable</code>
    * to the output file
    */
-  public void doWork() {
+  public void doWork(int threadsNumber) {
 
     ArrayList threads = new ArrayList();
     for (int i = 0; i < threadNumber; i++) {
@@ -64,6 +62,9 @@ public class BuggedProgram {
     String newLine = System.getProperty("line.separator");
     System.out.println(String.valueOf(this.bugAppearanceNumber + " bugs. " + newLine));
     System.out.println("Bug appearance Number" + this.bugAppearanceNumber);
+
+    if (bugAppearanceNumber > 0)
+      System.out.println("BUG for " + threadsNumber + " threads");
   }
 
 

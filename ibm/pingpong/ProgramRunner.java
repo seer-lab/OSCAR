@@ -33,7 +33,7 @@ public class ProgramRunner {
   public void doWork() {
     String newLine = System.getProperty("line.separator");
     System.out.println("Number Of Threads: " + this.threadsNumber + " Number Of Bugs: ");
-    this.bug.doWork();
+    this.bug.doWork(threadsNumber);
   }
 
 
