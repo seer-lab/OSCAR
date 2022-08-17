@@ -35,14 +35,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-
-
 public final class XtangoAnimator
 
     implements WindowListener {
 
   public static Position i = null;
-  public static String filename="o";
+  public static String filename = "o";
 
   public static final int OUTLINE = 0; // for fillval in rectangle, circle,
   public static final int HALF = 1; // triangle, fill
@@ -137,7 +135,7 @@ public final class XtangoAnimator
     notify();
   }
 
-// Wait to start the animation until the Start button is clicked.
+  // Wait to start the animation until the Start button is clicked.
   public synchronized void begin() {
     System.out.println("XtangoAnimator: Push the Start button");
     // modified so user does not need to push the start button. --SDS
@@ -149,7 +147,7 @@ public final class XtangoAnimator
     //} catch (InterruptedException e) {}
   }
 
-// Wait to terminate the animation until the Close or Quit button is clicked.
+  // Wait to terminate the animation until the Close or Quit button is clicked.
   public synchronized void end() {
     if (debug) {
       System.out.println("XtangoAnimator end");
@@ -162,8 +160,8 @@ public final class XtangoAnimator
     //} catch (InterruptedException e) {}
   }
 
-// Change the background to the given color.
-// The default starter is white.
+  // Change the background to the given color.
+  // The default starter is white.
   public void bg(Color colorval) {
     if (debug) {
       System.out.println("XtangoAnimator bg: " + colorval);
@@ -171,13 +169,12 @@ public final class XtangoAnimator
     af.doCommand(new Cbg(colorval));
   }
 
-// Change the displayed coordinates to the given values.
-// The bottom left and top right corners of the animation
-// window are set to coordinates (lx,by) and (rx,ty).
+  // Change the displayed coordinates to the given values.
+  // The bottom left and top right corners of the animation
+  // window are set to coordinates (lx,by) and (rx,ty).
   public void coords(float lx, float by, float rx, float ty) {
     if (rx - lx == 0 || ty - by == 0) {
-      System.err.println
-          ("XtangoAnimator coords: rx - lx == 0 || ty - by == 0");
+      System.err.println("XtangoAnimator coords: rx - lx == 0 || ty - by == 0");
       return;
     }
     /*
@@ -191,8 +188,7 @@ public final class XtangoAnimator
      * actually needed.
      */
     if (rx - lx != ty - by) {
-      System.err.println
-          ("XtangoAnimator coords: rx - lx != ty - by");
+      System.err.println("XtangoAnimator coords: rx - lx != ty - by");
       return;
     }
     Ccoords c = new Ccoords(lx, by, rx, ty);
@@ -202,7 +198,7 @@ public final class XtangoAnimator
     }
   }
 
-// Generate the given number of animation frames with no changes in them.
+  // Generate the given number of animation frames with no changes in them.
   public void delay(int steps) {
     if (debug) {
       System.out.println("XtangoAnimator delay: " + steps);
@@ -210,10 +206,9 @@ public final class XtangoAnimator
     af.doCommand(new Cdelay(steps));
   }
 
-// Create a line with one endpoint at the given position
-// and of the given size.
-  public void line(String id, float xpos, float ypos,
-                   float xsize, float ysize, Color colorval, int widthval) {
+  // Create a line with one endpoint at the given position
+  // and of the given size.
+  public void line(String id, float xpos, float ypos, float xsize, float ysize, Color colorval, int widthval) {
     Iline ell = new Iline(id, xpos, ypos, xsize, ysize, colorval, widthval);
     af.doCommand(ell);
     if (debug) {
@@ -221,32 +216,27 @@ public final class XtangoAnimator
     }
   }
 
-// Create a line with its two endpoints at the given positions
-  public void pointLine(String id, float xpos1, float ypos1,
-                        float xpos2, float ypos2, Color colorval, int widthval) {
-    Iline ell = new Iline(id, xpos1, ypos1, xpos2 - xpos1, ypos2 - ypos1,
-                          colorval, widthval);
+  // Create a line with its two endpoints at the given positions
+  public void pointLine(String id, float xpos1, float ypos1, float xpos2, float ypos2, Color colorval, int widthval) {
+    Iline ell = new Iline(id, xpos1, ypos1, xpos2 - xpos1, ypos2 - ypos1, colorval, widthval);
     af.doCommand(ell);
     if (debug) {
       System.out.println("XtangoAnimator pointLine: " + ell);
     }
   }
 
-// Create a rectangle with lower left corner at the given position
-// and of the given size (the size must be positive).
-  public void rectangle(String id, float xpos, float ypos,
-                        float xsize, float ysize, Color colorval, int fillval) {
-    Irectangle r = new Irectangle(id, xpos, ypos, xsize, ysize,
-                                  colorval, fillval);
+  // Create a rectangle with lower left corner at the given position
+  // and of the given size (the size must be positive).
+  public void rectangle(String id, float xpos, float ypos, float xsize, float ysize, Color colorval, int fillval) {
+    Irectangle r = new Irectangle(id, xpos, ypos, xsize, ysize, colorval, fillval);
     af.doCommand(r);
     if (debug) {
       System.out.println("XtangoAnimator rectangle: " + r);
     }
   }
 
-// Create a circle with the given radius centered at the given position.
-  public void circle(String id, float xpos, float ypos,
-                     float radius, Color colorval, int fillval) {
+  // Create a circle with the given radius centered at the given position.
+  public void circle(String id, float xpos, float ypos, float radius, Color colorval, int fillval) {
     Icircle c = new Icircle(id, xpos, ypos, radius, colorval, fillval);
     af.doCommand(c);
     if (debug) {
@@ -254,78 +244,67 @@ public final class XtangoAnimator
     }
   }
 
-// Create a triangle whose three vertices are located
-// at the given three coordinates.
-  public void triangle(String id, float v1x, float v1y, float v2x,
-                       float v2y, float v3x, float v3y, Color colorval,
-                       int fillval) {
-    Itriangle t = new Itriangle(id, v1x, v1y, v2x, v2y, v3x, v3y,
-                                colorval, fillval);
+  // Create a triangle whose three vertices are located
+  // at the given three coordinates.
+  public void triangle(String id, float v1x, float v1y, float v2x, float v2y, float v3x, float v3y, Color colorval, int fillval) {
+    Itriangle t = new Itriangle(id, v1x, v1y, v2x, v2y, v3x, v3y, colorval, fillval);
     af.doCommand(t);
     if (debug) {
       System.out.println("XtangoAnimator triangle: " + t);
     }
   }
 
-// Create text with lower left corner at the given position
-// if centered is false.  If centered is true, the position
-// arguments denote the place where the center of the text is put.
-  public void text(String id, float xpos, float ypos,
-                   boolean centered, Color colorval, String string) {
-    Itext t = new Itext(id, xpos, ypos, centered, colorval, string,
-                        Itext.NORMAL);
+  // Create text with lower left corner at the given position
+  // if centered is false.  If centered is true, the position
+  // arguments denote the place where the center of the text is put.
+  public void text(String id, float xpos, float ypos, boolean centered, Color colorval, String string) {
+    Itext t = new Itext(id, xpos, ypos, centered, colorval, string, Itext.NORMAL);
     af.doCommand(t);
     if (debug) {
       System.out.println("XtangoAnimator text: " + t);
     }
   }
 
-// This works just like the text command except that
-// this text is in a much larger font.
-  public void bigText(String id, float xpos, float ypos,
-                      boolean centered, Color colorval, String string) {
-    Itext t = new Itext(id, xpos, ypos, centered, colorval, string,
-                        Itext.BIG);
+  // This works just like the text command except that
+  // this text is in a much larger font.
+  public void bigText(String id, float xpos, float ypos, boolean centered, Color colorval, String string) {
+    Itext t = new Itext(id, xpos, ypos, centered, colorval, string, Itext.BIG);
     af.doCommand(t);
     if (debug) {
       System.out.println("XtangoAnimator bigText: " + t);
     }
   }
 
-// This works just like the text command except that
-// this text is in a much smaller font.
-  public void smallText(String id, float xpos, float ypos,
-                        boolean centered, Color colorval, String string) {
-    Itext t = new Itext(id, xpos, ypos, centered, colorval, string,
-                        Itext.SMALL);
+  // This works just like the text command except that
+  // this text is in a much smaller font.
+  public void smallText(String id, float xpos, float ypos, boolean centered, Color colorval, String string) {
+    Itext t = new Itext(id, xpos, ypos, centered, colorval, string, Itext.SMALL);
     af.doCommand(t);
     if (debug) {
       System.out.println("XtangoAnimator smallText: " + t);
     }
   }
 
-// Smoothly move, via a sequence of intermediate steps,
-// the object with the given id to the specified position.
+  // Smoothly move, via a sequence of intermediate steps,
+  // the object with the given id to the specified position.
   public void move(String id, float xpos, float ypos) {
     if (debug) {
-      System.out.println("XtangoAnimator move: " + id
-                         + ", xpos=" + xpos + ", ypos=" + ypos);
+      System.out.println("XtangoAnimator move: " + id + ", xpos=" + xpos + ", ypos=" + ypos);
     }
     af.doCommand(new Cmove(id, xpos, ypos, SYNC));
   }
 
-// Smoothly move, via a sequence of intermediate steps,
-// the object with the given identifier by the given relative distance.
+  // Smoothly move, via a sequence of intermediate steps,
+  // the object with the given identifier by the given relative distance.
   public void moveRelative(String id, float xdelta, float ydelta) {
     if (debug) {
-      System.out.println("XtangoAnimator moveRelative: " + id
-                         + ", xdelta=" + xdelta + ", ydelta=" + ydelta);
+      System.out.println("XtangoAnimator moveRelative: " + id + ", xdelta=" + xdelta + ", ydelta=" + ydelta);
     }
     af.doCommand(new CmoveRelative(id, xdelta, ydelta, SYNC));
   }
 
-// Smoothly move, via a sequence of intermediate steps, the object with
-// the first id to the current position of the object with the second id.
+  // Smoothly move, via a sequence of intermediate steps, the object with
+  // the first id to the current position of the object with the second id.
   public void moveTo(String id1, String id2) {
     if (debug) {
       System.out.println("XtangoAnimator moveTo: " + id1 + " to " + id2);
@@ -333,28 +312,26 @@ public final class XtangoAnimator
     af.doCommand(new CmoveTo(id1, id2, SYNC));
   }
 
-// Move the object with the given identifier
-// to the designated position in a one frame jump.
+  // Move the object with the given identifier
+  // to the designated position in a one frame jump.
   public void jump(String id, float xpos, float ypos) {
     if (debug) {
-      System.out.println("XtangoAnimator jump: " + id
-                         + ", xpos=" + xpos + ", ypos=" + ypos);
+      System.out.println("XtangoAnimator jump: " + id + ", xpos=" + xpos + ", ypos=" + ypos);
     }
     af.doCommand(new Cjump(id, xpos, ypos));
   }
 
-// Move the object with the given identifier
-// by the provided relative distance in one jump.
+  // Move the object with the given identifier
+  // by the provided relative distance in one jump.
   public void jumpRelative(String id, float xdelta, float ydelta) {
     if (debug) {
-      System.out.println("XtangoAnimator jumpRelative: " + id
-                         + ", xdelta=" + xdelta + ", ydelta=" + ydelta);
+      System.out.println("XtangoAnimator jumpRelative: " + id + ", xdelta=" + xdelta + ", ydelta=" + ydelta);
     }
     af.doCommand(new CjumpRelative(id, xdelta, ydelta));
   }
 
-// Move the object with the given identifier to the current position
-// of the object with the second identifier in a one frame jump.
+  // Move the object with the given identifier to the current position
+  // of the object with the second identifier in a one frame jump.
   public void jumpTo(String id1, String id2) {
     if (debug) {
       System.out.println("XtangoAnimator jumpTo: " + id1 + " to " + id2);
@@ -362,8 +339,8 @@ public final class XtangoAnimator
     af.doCommand(new CjumpTo(id1, id2));
   }
 
-// Change the color of the object with the given identifier
-// to the specified color value.
+  // Change the color of the object with the given identifier
+  // to the specified color value.
   public void color(String id, Color colorval) {
     if (debug) {
       System.out.println("XtangoAnimator color: " + id + ", " + colorval);
@@ -371,8 +348,8 @@ public final class XtangoAnimator
     af.doCommand(new Ccolor(id, colorval));
   }
 
-// Permanently remove the object with the given identifier from the display,
-// and remove any association of this identifier string with the object.
+  // Permanently remove the object with the given identifier from the display,
+  // and remove any association of this identifier string with the object.
   public void delete(String id) {
     if (debug) {
       System.out.println("XtangoAnimator delete: " + id);
@@ -380,16 +357,15 @@ public final class XtangoAnimator
     af.doCommand(new Cdelete(id));
   }
 
-// Change the object with the given identifier to the designated fill value.
+  // Change the object with the given identifier to the designated fill value.
   public void fill(String id, int fillval) {
     if (debug) {
-      System.out.println("XtangoAnimator fill: id=" + id
-                         + ", fillval=" + fillval);
+      System.out.println("XtangoAnimator fill: id=" + id + ", fillval=" + fillval);
     }
     af.doCommand(new Cfill(id, fillval));
   }
 
-// Toggle the visibility of the object with the given identifier.
+  // Toggle the visibility of the object with the given identifier.
   public void vis(String id) {
     if (debug) {
       System.out.println("XtangoAnimator vis: " + id);
@@ -397,8 +373,8 @@ public final class XtangoAnimator
     af.doCommand(new Cvis(id, Cvis.VIS));
   }
 
-// Push the object with the given identifier backward to the viewing
-// plane farthest from the viewer.
+  // Push the object with the given identifier backward to the viewing
+  // plane farthest from the viewer.
   public void lower(String id) {
     if (debug) {
       System.out.println("XtangoAnimator lower: " + id);
@@ -406,8 +382,8 @@ public final class XtangoAnimator
     af.doCommand(new Cvis(id, Cvis.LOWER));
   }
 
-// Pop the object with the given identifier forward to the viewing
-// plane closest to the viewer.
+  // Pop the object with the given identifier forward to the viewing
+  // plane closest to the viewer.
   public void raise(String id) {
     if (debug) {
       System.out.println("XtangoAnimator raise: " + id);
@@ -415,8 +391,8 @@ public final class XtangoAnimator
     af.doCommand(new Cvis(id, Cvis.RAISE));
   }
 
-// Make the two objects specified by the given identifiers
-// smoothly exchange positions.
+  // Make the two objects specified by the given identifiers
+  // smoothly exchange positions.
   public void exchangePos(String id1, String id2) {
     if (debug) {
       System.out.println("XtangoAnimator exchangePos: " + id1 + ", " + id2);
@@ -424,8 +400,8 @@ public final class XtangoAnimator
     af.doCommand(new CexchangePos(id1, id2, SYNC));
   }
 
-// Make the two objects specified by the given identifiers
-// exchange positions in one instantaneous jump.
+  // Make the two objects specified by the given identifiers
+  // exchange positions in one instantaneous jump.
   public void switchPos(String id1, String id2) {
     if (debug) {
       System.out.println("XtangoAnimator switchPos: " + id1 + ", " + id2);
@@ -433,7 +409,7 @@ public final class XtangoAnimator
     af.doCommand(new CswitchPos(id1, id2));
   }
 
-// Exchange the identifiers used to designate the two given objects.
+  // Exchange the identifiers used to designate the two given objects.
   public void swapIds(String id1, String id2) {
     if (debug) {
       System.out.println("XtangoAnimator swapIds: " + id1 + ", " + id2);
@@ -441,234 +417,223 @@ public final class XtangoAnimator
     af.doCommand(new CswapIds(id1, id2));
   }
 
-// Smoothly move asynchronously, via a sequence of intermediate steps,
-// the object with the given id to the specified position.
+  // Smoothly move asynchronously, via a sequence of intermediate steps,
+  // the object with the given id to the specified position.
   public void moveAsync(String id, float xpos, float ypos) {
     if (debug) {
-      System.out.println("XtangoAnimator moveAsync: " + id
-                         + ", xpos=" + xpos + ", ypos=" + ypos);
+      System.out.println("XtangoAnimator moveAsync: " + id + ", xpos=" + xpos + ", ypos=" + ypos);
     }
     af.doCommand(new Cmove(id, xpos, ypos, ASYNC));
   }
 
-// Smoothly move asynchronously, via a sequence of intermediate steps,
-// the object with the given identifier by the given relative distance.
+  // Smoothly move asynchronously, via a sequence of intermediate steps,
+  // the object with the given identifier by the given relative distance.
   public void moveRelativeAsync(String id, float xdelta, float ydelta) {
     if (debug) {
-      System.out.println("XtangoAnimator moveRelativeAsync: "
-                         + id + ", xdelta=" + xdelta + ", ydelta=" + ydelta);
+      System.out.println("XtangoAnimator moveRelativeAsync: " + id + ", xdelta=" + xdelta + ", ydelta=" + ydelta);
     }
     af.doCommand(new CmoveRelative(id, xdelta, ydelta, ASYNC));
   }
 
-// Smoothly move asynchronously, via a sequence of intermediate steps,
-// the object with the first id to the current position of the object
-// with the second id.
+  // Smoothly move asynchronously, via a sequence of intermediate steps,
+  // the object with the first id to the current position of the object
+  // with the second id.
   public void moveToAsync(String id1, String id2) {
     if (debug) {
-      System.out.println("XtangoAnimator moveToAsync: "
-                         + id1 + " to " + id2);
+      System.out.println("XtangoAnimator moveToAsync: " + id1 + " to " + id2);
     }
     af.doCommand(new CmoveTo(id1, id2, ASYNC));
   }
 
-// Make the two objects specified by the given identifiers
-// smoothly exchange positions asynchronously.
+  // Make the two objects specified by the given identifiers
+  // smoothly exchange positions asynchronously.
   public void exchangePosAsync(String id1, String id2) {
     if (debug) {
-      System.out.println("XtangoAnimator exchangePosAsync: "
-                         + id1 + ", " + id2);
+      System.out.println("XtangoAnimator exchangePosAsync: " + id1 + ", " + id2);
     }
     af.doCommand(new CexchangePos(id1, id2, ASYNC));
   }
 
   public static void main(String[] args) { // for testing
-if (args.length!=1){
-  System.out.println("no file name argument");
-  System.exit(1);
-}
+    if (args.length != 1) {
+      System.out.println("no file name argument");
+      System.exit(1);
+    }
 
-filename= args[0];
+    filename = args[0];
 
     if (debug) {
       System.out.println("XtangoAnimator: main");
     }
     XtangoAnimator xa = new XtangoAnimator();
     xa.begin();
-//       xa.delay(10);
-//       xa.pointLine("Lthin", 0.3f, 0.2f, 0.8f, 0.7f, Color.black,
-//          XtangoAnimator.THIN);
-//       xa.delay(10);
-//       xa.pointLine("Lmedium", 0.4f, 0.2f, 0.9f, 0.7f, Color.black,
-//          XtangoAnimator.MEDTHICK);
-//       xa.delay(10);
-//       xa.pointLine("Lthick", 0.5f, 0.2f, 1.0f, 0.7f, Color.black,
-//          XtangoAnimator.THICK);
-//       xa.delay(10);
-//       xa.triangle("Tri1", 0.1f, 0.1f, 0.5f, 0.9f, 0.9f, 0.2f, Color.magenta,
-//          XtangoAnimator.OUTLINE);
-//       xa.delay(10);
-//       xa.triangle("Tri2", 0.1f, 0.3f, 0.7f, 0.9f, 0.8f, 0.3f, Color.green,
-//          XtangoAnimator.SOLID);
-//       xa.delay(10);
-//       xa.bg(Color.yellow);
-//       xa.delay(10);
-//       xa.text("t00", 0.0f, 0.0f, false, Color.gray, "text 0");
-//       xa.delay(10);
-//       xa.text("t01", 0.1f, 0.1f, false, Color.blue, "text 1");
-//       xa.delay(10);
-//       xa.circle("c0", 0.8f, 0.2f, 0.1f, Color.red, XtangoAnimator.SOLID);
-//       xa.delay(10);
-//       xa.bg(Color.cyan);
-//       xa.delay(10);
-//       xa.text("t02", 0.2f, 0.2f, false, Color.gray, "text 2");
-//       xa.delay(10);
-//       xa.text("t03", 0.3f, 0.3f, false, Color.gray, "text 3");
-//       xa.delay(10);
-//       xa.text("t04", 0.4f, 0.4f, false, Color.gray, "text 4");
-//       xa.delay(10);
-//       xa.text("t05", 0.5f, 0.5f, false, Color.gray, "text 5");
-//       xa.delay(10);
-//       xa.text("t06", 0.6f, 0.6f, false, Color.gray, "text 6");
-//       xa.delay(10);
-//       xa.text("t06", 0.6f, 0.6f, false, Color.gray, "TEXT 6");
-//       xa.delay(10);
-//       xa.text("t07", 0.7f, 0.7f, false, Color.gray, "text 7");
-//       xa.delay(10);
-//       xa.text("t08", 0.8f, 0.8f, false, Color.gray, "text 8");
-//       xa.delay(10);
-//       xa.text("t09", 0.9f, 0.9f, false, Color.gray, "text 9");
-//       xa.delay(10);
-//       xa.text("t10", 1.0f, 1.0f, false, Color.gray, "text10");
-//       xa.delay(10);
-//       xa.circle("c1", 0.7f, 0.7f, 0.05f, Color.black, XtangoAnimator.OUTLINE);
-//       xa.delay(10);
-//       xa.fill("c1", XtangoAnimator.SOLID);
-//       xa.delay(10);
-//       xa.fill("c1", XtangoAnimator.HALF);
-//       xa.delay(10);
-//       xa.color("t07", Color.white);
-//       xa.delay(10);
-//       xa.raise("t07");
-//       xa.delay(10);
-//       xa.swapIds("t04", "t05");
-//       xa.jump("t04", 0.9f, 0.1f);
-//       xa.delay(10);
-//       xa.delete("t04"); xa.delete("t05"); xa.delete("t06");
-//       xa.delete("t04");
-//       xa.delay(10);
-//       xa.jumpTo("c0", "t03");
-//       xa.delay(10);
-//       xa.vis("t03");    // should lower
-//       xa.delay(10);
-//       xa.vis("t03");    // should raise
-//       xa.delay(10);
-//       xa.rectangle("R", 0.5f, 0.5f, 0.1f, 0.2f, Color.black,
-//          XtangoAnimator.SOLID);
-//       xa.delay(10);
-//       xa.rectangle("Rhalf", 0.6f, 0.6f, 0.2f, 0.1f, Color.black,
-//          XtangoAnimator.HALF);
-//       xa.delay(10);
-//       xa.line("L", 0.1f, 0.1f, 0.8f, 0.8f, Color.black, XtangoAnimator.THIN);
-//       xa.delay(10);
-    xa.circle("moveTest1", 0.1f, 0.9f, 0.05f, Color.magenta,
-              XtangoAnimator.SOLID);
-//       xa.move("moveTest1", 0.9f, 0.1f);
-    xa.circle("moveTest2", 0.9f, 0.9f, 0.05f, Color.blue,
-              XtangoAnimator.OUTLINE);
-//       xa.move("moveTest2", 0.1f, 0.1f);
-//       for (int i = 0; i < 5; i++) {
-//          xa.rectangle("R"+i, (float)Math.random(), (float)Math.random(),
-//             (float)Math.random()/4,
-//             (float)Math.random()/4, Color.magenta, XtangoAnimator.SOLID);
-//          xa.delay(2);
-//          xa.color("R"+i, Color.orange);
-//          xa.delay(2);
-//          xa.delete("R"+i);
-//       }
-//       for (int i = 0; i < 5; i++) {
-//          xa.delay(2);
-//          float x = (float)Math.random();
-//          float y = (float)Math.random();
-//          System.out.println("jump x=" + x + ", y=" + y);
-//          xa.jump("c1", x, y);
-//       }
+    //       xa.delay(10);
+    //       xa.pointLine("Lthin", 0.3f, 0.2f, 0.8f, 0.7f, Color.black,
+    //          XtangoAnimator.THIN);
+    //       xa.delay(10);
+    //       xa.pointLine("Lmedium", 0.4f, 0.2f, 0.9f, 0.7f, Color.black,
+    //          XtangoAnimator.MEDTHICK);
+    //       xa.delay(10);
+    //       xa.pointLine("Lthick", 0.5f, 0.2f, 1.0f, 0.7f, Color.black,
+    //          XtangoAnimator.THICK);
+    //       xa.delay(10);
+    //       xa.triangle("Tri1", 0.1f, 0.1f, 0.5f, 0.9f, 0.9f, 0.2f, Color.magenta,
+    //          XtangoAnimator.OUTLINE);
+    //       xa.delay(10);
+    //       xa.triangle("Tri2", 0.1f, 0.3f, 0.7f, 0.9f, 0.8f, 0.3f, Color.green,
+    //          XtangoAnimator.SOLID);
+    //       xa.delay(10);
+    //       xa.bg(Color.yellow);
+    //       xa.delay(10);
+    //       xa.text("t00", 0.0f, 0.0f, false, Color.gray, "text 0");
+    //       xa.delay(10);
+    //       xa.text("t01", 0.1f, 0.1f, false, Color.blue, "text 1");
+    //       xa.delay(10);
+    //       xa.circle("c0", 0.8f, 0.2f, 0.1f, Color.red, XtangoAnimator.SOLID);
+    //       xa.delay(10);
+    //       xa.bg(Color.cyan);
+    //       xa.delay(10);
+    //       xa.text("t02", 0.2f, 0.2f, false, Color.gray, "text 2");
+    //       xa.delay(10);
+    //       xa.text("t03", 0.3f, 0.3f, false, Color.gray, "text 3");
+    //       xa.delay(10);
+    //       xa.text("t04", 0.4f, 0.4f, false, Color.gray, "text 4");
+    //       xa.delay(10);
+    //       xa.text("t05", 0.5f, 0.5f, false, Color.gray, "text 5");
+    //       xa.delay(10);
+    //       xa.text("t06", 0.6f, 0.6f, false, Color.gray, "text 6");
+    //       xa.delay(10);
+    //       xa.text("t06", 0.6f, 0.6f, false, Color.gray, "TEXT 6");
+    //       xa.delay(10);
+    //       xa.text("t07", 0.7f, 0.7f, false, Color.gray, "text 7");
+    //       xa.delay(10);
+    //       xa.text("t08", 0.8f, 0.8f, false, Color.gray, "text 8");
+    //       xa.delay(10);
+    //       xa.text("t09", 0.9f, 0.9f, false, Color.gray, "text 9");
+    //       xa.delay(10);
+    //       xa.text("t10", 1.0f, 1.0f, false, Color.gray, "text10");
+    //       xa.delay(10);
+    //       xa.circle("c1", 0.7f, 0.7f, 0.05f, Color.black, XtangoAnimator.OUTLINE);
+    //       xa.delay(10);
+    //       xa.fill("c1", XtangoAnimator.SOLID);
+    //       xa.delay(10);
+    //       xa.fill("c1", XtangoAnimator.HALF);
+    //       xa.delay(10);
+    //       xa.color("t07", Color.white);
+    //       xa.delay(10);
+    //       xa.raise("t07");
+    //       xa.delay(10);
+    //       xa.swapIds("t04", "t05");
+    //       xa.jump("t04", 0.9f, 0.1f);
+    //       xa.delay(10);
+    //       xa.delete("t04"); xa.delete("t05"); xa.delete("t06");
+    //       xa.delete("t04");
+    //       xa.delay(10);
+    //       xa.jumpTo("c0", "t03");
+    //       xa.delay(10);
+    //       xa.vis("t03");    // should lower
+    //       xa.delay(10);
+    //       xa.vis("t03");    // should raise
+    //       xa.delay(10);
+    //       xa.rectangle("R", 0.5f, 0.5f, 0.1f, 0.2f, Color.black,
+    //          XtangoAnimator.SOLID);
+    //       xa.delay(10);
+    //       xa.rectangle("Rhalf", 0.6f, 0.6f, 0.2f, 0.1f, Color.black,
+    //          XtangoAnimator.HALF);
+    //       xa.delay(10);
+    //       xa.line("L", 0.1f, 0.1f, 0.8f, 0.8f, Color.black, XtangoAnimator.THIN);
+    //       xa.delay(10);
+    xa.circle("moveTest1", 0.1f, 0.9f, 0.05f, Color.magenta, XtangoAnimator.SOLID);
+    //       xa.move("moveTest1", 0.9f, 0.1f);
+    xa.circle("moveTest2", 0.9f, 0.9f, 0.05f, Color.blue, XtangoAnimator.OUTLINE);
+    //       xa.move("moveTest2", 0.1f, 0.1f);
+    //       for (int i = 0; i < 5; i++) {
+    //          xa.rectangle("R"+i, (float)Math.random(), (float)Math.random(),
+    //             (float)Math.random()/4,
+    //             (float)Math.random()/4, Color.magenta, XtangoAnimator.SOLID);
+    //          xa.delay(2);
+    //          xa.color("R"+i, Color.orange);
+    //          xa.delay(2);
+    //          xa.delete("R"+i);
+    //       }
+    //       for (int i = 0; i < 5; i++) {
+    //          xa.delay(2);
+    //          float x = (float)Math.random();
+    //          float y = (float)Math.random();
+    //          System.out.println("jump x=" + x + ", y=" + y);
+    //          xa.jump("c1", x, y);
+    //       }
     xa.exchangePosAsync("moveTest1", "moveTest2");
-//       xa.delay(1);
-//       xa.bigText("ha!", 0.5f, 0.1f, true, Color.black, "ha!");
+    //       xa.delay(1);
+    //       xa.bigText("ha!", 0.5f, 0.1f, true, Color.black, "ha!");
     xa.exchangePos("moveTest2", "moveTest1"); // swapped args
-//       xa.delay(1);
-//       xa.bigText("Ha!", 0.6f, 0.1f, true, Color.black, "Ha!");
+    //       xa.delay(1);
+    //       xa.bigText("Ha!", 0.6f, 0.1f, true, Color.black, "Ha!");
     xa.exchangePosAsync("moveTest1", "moveTest2");
-//       xa.delay(5);
-//       xa.bigText("HA!", 0.7f, 0.1f, true, Color.black, "HA!");
-//       xa.delay(10);
-//       xa.jumpRelative("t00", 0.05f, 0.05f);
-//       xa.delay(10);
-//       xa.jumpRelative("t01", -0.05f, 0.07f);
-//       xa.delay(10);
-//       xa.jumpRelative("t02", 0.02f, -0.15f);
-//       xa.delay(10);
-//       xa.jumpRelative("t03", -0.3f, -0.3f);
-//       xa.delay(10);
-//       xa.moveRelative("moveTest1", 0.3f, 0.3f);
-//       xa.moveTo("moveTest2", "t00");
-//       xa.delay(10);
-//       xa.smallText("Tsmall", 0.2f, 0.9f, true, Color.magenta, "Going...");
-//       xa.line("L1", 0.2f, 0.85f, 0.0f, 0.1f, Color.black, XtangoAnimator.THIN);
-//       xa.line("L2", 0.15f, 0.9f, 0.1f, 0.0f, Color.black, XtangoAnimator.THIN);
-//       xa.delay(10);
-//       xa.text("Tnormal", 0.15f, 0.8f, true, Color.blue, "Yup, Going...");
-//       xa.line("L3", 0.15f, 0.75f, 0.0f, 0.1f, Color.black, XtangoAnimator.THIN);
-//       xa.line("L4", 0.1f, 0.8f, 0.1f, 0.0f, Color.black, XtangoAnimator.THIN);
-//       xa.delay(10);
-//       xa.bigText("Tbig", 0.1f, 0.7f, true, Color.darkGray, "Surely, GONE!");
-//       xa.line("L5", 0.1f, 0.65f, 0.0f, 0.1f, Color.black, XtangoAnimator.THIN);
-//       xa.line("L6", 0.05f, 0.7f, 0.1f, 0.0f, Color.black, XtangoAnimator.THIN);
-//       xa.delay(10);
-//       xa.coords(0.0f, 0.0f, 0.5f, 0.5f);
-//       xa.delay(10);
-//       xa.coords(0.0f, 0.5f, 0.5f, 1.0f);
-//       xa.delay(10);
-//       xa.coords(0.0f, 0.0f, 1.0f, 1.0f);
-//       xa.delay(10);
-//       xa.coords(0.0f, 0.0f, 1.0f, 0.5f);
-//       xa.delay(10);
-//       xa.coords(0.0f, 0.0f, 0.5f, 1.0f);
-//       xa.delay(10);
-//       xa.switchPos("Tbig", "Tsmall");
-//       xa.delay(10);
-//       xa.moveToAsync("Tnormal", "Tsmall");
-//       xa.delay(1);
-//       xa.moveRelativeAsync("Tbig", 0.3f, 0.0f);
-//       xa.moveAsync("Tsmall", 0.2f, 0.9f);
+    //       xa.delay(5);
+    //       xa.bigText("HA!", 0.7f, 0.1f, true, Color.black, "HA!");
+    //       xa.delay(10);
+    //       xa.jumpRelative("t00", 0.05f, 0.05f);
+    //       xa.delay(10);
+    //       xa.jumpRelative("t01", -0.05f, 0.07f);
+    //       xa.delay(10);
+    //       xa.jumpRelative("t02", 0.02f, -0.15f);
+    //       xa.delay(10);
+    //       xa.jumpRelative("t03", -0.3f, -0.3f);
+    //       xa.delay(10);
+    //       xa.moveRelative("moveTest1", 0.3f, 0.3f);
+    //       xa.moveTo("moveTest2", "t00");
+    //       xa.delay(10);
+    //       xa.smallText("Tsmall", 0.2f, 0.9f, true, Color.magenta, "Going...");
+    //       xa.line("L1", 0.2f, 0.85f, 0.0f, 0.1f, Color.black, XtangoAnimator.THIN);
+    //       xa.line("L2", 0.15f, 0.9f, 0.1f, 0.0f, Color.black, XtangoAnimator.THIN);
+    //       xa.delay(10);
+    //       xa.text("Tnormal", 0.15f, 0.8f, true, Color.blue, "Yup, Going...");
+    //       xa.line("L3", 0.15f, 0.75f, 0.0f, 0.1f, Color.black, XtangoAnimator.THIN);
+    //       xa.line("L4", 0.1f, 0.8f, 0.1f, 0.0f, Color.black, XtangoAnimator.THIN);
+    //       xa.delay(10);
+    //       xa.bigText("Tbig", 0.1f, 0.7f, true, Color.darkGray, "Surely, GONE!");
+    //       xa.line("L5", 0.1f, 0.65f, 0.0f, 0.1f, Color.black, XtangoAnimator.THIN);
+    //       xa.line("L6", 0.05f, 0.7f, 0.1f, 0.0f, Color.black, XtangoAnimator.THIN);
+    //       xa.delay(10);
+    //       xa.coords(0.0f, 0.0f, 0.5f, 0.5f);
+    //       xa.delay(10);
+    //       xa.coords(0.0f, 0.5f, 0.5f, 1.0f);
+    //       xa.delay(10);
+    //       xa.coords(0.0f, 0.0f, 1.0f, 1.0f);
+    //       xa.delay(10);
+    //       xa.coords(0.0f, 0.0f, 1.0f, 0.5f);
+    //       xa.delay(10);
+    //       xa.coords(0.0f, 0.0f, 0.5f, 1.0f);
+    //       xa.delay(10);
+    //       xa.switchPos("Tbig", "Tsmall");
+    //       xa.delay(10);
+    //       xa.moveToAsync("Tnormal", "Tsmall");
+    //       xa.delay(1);
+    //       xa.moveRelativeAsync("Tbig", 0.3f, 0.0f);
+    //       xa.moveAsync("Tsmall", 0.2f, 0.9f);
     System.out.println("DONE!");
 
-
     try {
-     // System.out.println("inside!");
+      // System.out.println("inside!");
       //File output = new File(filename);
       //FileWriter out = new FileWriter(output);
 
-      System.out.println("< XtangoAnimator , finished , None >" + "\r\n");
+      System.out.println("<XtangoAnimator , finished , None >" + "\r\n");
       //out.close();
 
-    }
-
-    catch (Exception e) { // IOException  or  ClassNotFoundException
+    } catch (Exception e) { // IOException  or  ClassNotFoundException
 
       System.out.println(e);
     }
     xa.end();
-   // System.exit(0);
+    // System.exit(0);
   }
 
 
 }
 
-final class AnimatorFrame
-    extends Frame
-    implements ActionListener {
+final class AnimatorFrame extends Frame implements ActionListener {
 
   private int frameWidth = 0;
   private int frameHeight = 0;
@@ -727,7 +692,7 @@ final class AnimatorFrame
   public void actionPerformed(ActionEvent evt) {
     Object o = evt.getSource();
     if (o instanceof Button) {
-      String label = ( (Button) o).getLabel();
+      String label = ((Button) o).getLabel();
       if (label.equals("Start")) {
         tf.setText("" + ac.frameDelay);
         if (at == null) {
@@ -740,69 +705,57 @@ final class AnimatorFrame
           }
         }
         xa.startPushed();
-      }
-      else if (label.equals("Faster")) { // divide frameDelay by 2
+      } else if (label.equals("Faster")) { // divide frameDelay by 2
         int newDelay = ac.frameDelay;
         newDelay /= 2;
         newDelay = newDelay < 16 ? 16 : newDelay;
         ac.frameDelay = newDelay;
         tf.setText("" + newDelay);
         if (XtangoAnimator.debug) {
-          System.out.println("AnimatorFrame: new frameDelay="
-                             + newDelay);
+          System.out.println("AnimatorFrame: new frameDelay=" + newDelay);
         }
-      }
-      else if (label.equals("Slower")) { // multiply frameDelay by 2
+      } else if (label.equals("Slower")) { // multiply frameDelay by 2
         int newDelay = ac.frameDelay;
         newDelay *= 2;
         ac.frameDelay = newDelay;
         tf.setText("" + newDelay);
         if (XtangoAnimator.debug) {
-          System.out.println("AnimatorFrame: new frameDelay="
-                             + newDelay);
+          System.out.println("AnimatorFrame: new frameDelay=" + newDelay);
         }
-      }
-      else if (label.equals("Single Step Off")) {
+      } else if (label.equals("Single Step Off")) {
         synchronized (this) {
           singleStep = true;
         }
         singleStepButton.setLabel("Single Step On");
-      }
-      else if (label.equals("Single Step On")) {
+      } else if (label.equals("Single Step On")) {
         synchronized (this) {
           singleStep = false; // now that single stepping is off,
           this.notifyAll(); // clear out any waiting threads
         }
         singleStepButton.setLabel("Single Step Off");
-      }
-      else if (label.equals("Step")) {
+      } else if (label.equals("Step")) {
         synchronized (this) {
           if (singleStep) {
             this.notifyAll();
           }
         }
-      }
-      else if (label.equals("Stop")) {
+      } else if (label.equals("Stop")) {
         if (at != null) {
           at.stop();
         }
-      }
-      else if (label.equals("Close")) {
+      } else if (label.equals("Close")) {
         if (at != null) {
           at.stop();
         }
         this.setVisible(false);
         this.dispose();
         xa.quitPushed();
-      }
-      else if (label.equals("Quit")) {
+      } else if (label.equals("Quit")) {
         System.exit(0);
-      }
-      else if (XtangoAnimator.debug) {
+      } else if (XtangoAnimator.debug) {
         System.out.println("unknown Button label: " + label);
       }
-    }
-    else if (XtangoAnimator.debug) {
+    } else if (XtangoAnimator.debug) {
       System.out.println("ActionEvent is not a Button");
     }
   }
@@ -814,35 +767,31 @@ final class AnimatorFrame
       System.out.println("doCommand: command " + command);
     }
     if (command instanceof AnimatorAction) {
-      ( (AnimatorAction) command).perform(ac, ht, icons);
-    }
-    else if (command instanceof AnimatorIcon) {
-      ( (AnimatorIcon) command).add(ht, icons);
-    }
-    else {
+      ((AnimatorAction) command).perform(ac, ht, icons);
+    } else if (command instanceof AnimatorIcon) {
+      ((AnimatorIcon) command).add(ht, icons);
+    } else {
       System.err.println("doCommand: illegal command");
     }
-// Make it the programmer's responsibility to call xa.delay(frames) if
-// a delay is needed.  This will allow a group of commmands to be done
-// nearly instantaneously.
-//      try {
-//         int frameDelay = ac.frameDelay;
-//         Thread.sleep(frameDelay);
-//      } catch (InterruptedException e) {}
+    // Make it the programmer's responsibility to call xa.delay(frames) if
+    // a delay is needed.  This will allow a group of commmands to be done
+    // nearly instantaneously.
+    //      try {
+    //         int frameDelay = ac.frameDelay;
+    //         Thread.sleep(frameDelay);
+    //      } catch (InterruptedException e) {}
     synchronized (this) {
       if (singleStep) {
         try {
           wait();
+        } catch (InterruptedException e) {
         }
-        catch (InterruptedException e) {}
       }
     }
   }
 }
 
-final class AnimatorCanvas
-    extends Canvas
-    implements Runnable {
+final class AnimatorCanvas extends Canvas implements Runnable {
 
   int frameDelay = 16; // was 128
   int numMoveSteps = 10;
@@ -861,8 +810,7 @@ final class AnimatorCanvas
     this.icons = icons;
   }
 
-  synchronized void changeCoordinates
-      (float lx, float by, float rx, float ty) {
+  synchronized void changeCoordinates(float lx, float by, float rx, float ty) {
     this.lx = lx;
     this.by = by;
     this.rx = rx;
@@ -875,18 +823,15 @@ final class AnimatorCanvas
     heightCanvas = boundingBox.height;
     squareCanvas = Math.min(widthCanvas, heightCanvas);
     excessY = heightCanvas - squareCanvas;
-// take out the following line so the Canvas can utilize all
-//    setSize(squareCanvas, squareCanvas);
+    // take out the following line so the Canvas can utilize all
+    //    setSize(squareCanvas, squareCanvas);
     cornerX = boundingBox.x;
     cornerY = boundingBox.y;
     offscreenImage = createImage(widthCanvas, heightCanvas);
     offscreenGraphics = offscreenImage.getGraphics();
     if (XtangoAnimator.debug) {
-      System.out.println("Canvas: cornerX=" + cornerX
-                         + ", cornerY=" + cornerY);
-      System.out.println("Canvas: widthCanvas=" + widthCanvas
-                         + ", heightCanvas=" + heightCanvas + ", squareCanvas="
-                         + squareCanvas + ", excessY=" + excessY);
+      System.out.println("Canvas: cornerX=" + cornerX + ", cornerY=" + cornerY);
+      System.out.println("Canvas: widthCanvas=" + widthCanvas + ", heightCanvas=" + heightCanvas + ", squareCanvas=" + squareCanvas + ", excessY=" + excessY);
     }
   }
 
@@ -908,18 +853,18 @@ final class AnimatorCanvas
         if (XtangoAnimator.debug) {
           System.out.println("painting " + icons.elementAt(i));
         }
-        ( (AnimatorIcon) icons.elementAt(i)).draw(this, offscreenGraphics);
+        ((AnimatorIcon) icons.elementAt(i)).draw(this, offscreenGraphics);
       }
     }
     g.drawImage(offscreenImage, 0, 0, this);
   }
 
   int scaleX(float xpos) {
-    return ( (int) ( (xpos - lx) / (rx - lx) * squareCanvas));
+    return ((int) ((xpos - lx) / (rx - lx) * squareCanvas));
   }
 
   int scaleY(float ypos) { // excessY: make sure y=0 is along bottom
-    return ( (int) ( (ty - ypos) / (ty - by) * squareCanvas)) + excessY;
+    return ((int) ((ty - ypos) / (ty - by) * squareCanvas)) + excessY;
   }
 
   int scaleR(float r) { // linear scaling for radius, rectangle size,...
@@ -930,8 +875,8 @@ final class AnimatorCanvas
     while (true) {
       try {
         Thread.sleep(frameDelay);
+      } catch (InterruptedException e) {
       }
-      catch (InterruptedException e) {}
       repaint();
     }
   }
@@ -942,16 +887,14 @@ abstract class AnimatorCommand {
   public abstract String toString();
 }
 
-abstract class AnimatorAction
-    extends AnimatorCommand {
+abstract class AnimatorAction extends AnimatorCommand {
 
   abstract void perform(AnimatorCanvas ac, Hashtable ht, Vector icons);
 
   public abstract String toString();
 }
 
-class Cbg
-    extends AnimatorAction {
+class Cbg extends AnimatorAction {
 
   private Color colorval = null;
 
@@ -968,8 +911,7 @@ class Cbg
   }
 }
 
-class Ccoords
-    extends AnimatorAction {
+class Ccoords extends AnimatorAction {
 
   private float lx = 0, by = 0, rx = 1, ty = 1;
 
@@ -989,8 +931,7 @@ class Ccoords
   }
 }
 
-class Cdelay
-    extends AnimatorAction {
+class Cdelay extends AnimatorAction {
 
   private int steps = 0;
 
@@ -1004,8 +945,8 @@ class Cdelay
     }
     try {
       Thread.sleep(steps * ac.frameDelay);
+    } catch (InterruptedException e) {
     }
-    catch (InterruptedException e) {}
   }
 
   public String toString() {
@@ -1013,8 +954,7 @@ class Cdelay
   }
 }
 
-class Ccolor
-    extends AnimatorAction {
+class Ccolor extends AnimatorAction {
 
   private String id = null;
   private Color colorval = null;
@@ -1027,12 +967,12 @@ class Ccolor
   void perform(AnimatorCanvas ac, Hashtable ht, Vector icons) {
     Object icon = null;
     synchronized (ht) {
-      if ( (icon = ht.get(id)) == null) {
+      if ((icon = ht.get(id)) == null) {
         System.err.println("Ccolor hashtable: no such id=" + id);
         return;
       }
     }
-    ( (AnimatorIcon) icon).colorval(colorval);
+    ((AnimatorIcon) icon).colorval(colorval);
   }
 
   public String toString() {
@@ -1040,8 +980,7 @@ class Ccolor
   }
 }
 
-class Cfill
-    extends AnimatorAction {
+class Cfill extends AnimatorAction {
 
   private String id = null;
   private int fillval = XtangoAnimator.OUTLINE;
@@ -1054,23 +993,18 @@ class Cfill
   void perform(AnimatorCanvas ac, Hashtable ht, Vector icons) {
     Object icon = null;
     synchronized (ht) {
-      if ( (icon = ht.get(id)) == null) {
+      if ((icon = ht.get(id)) == null) {
         System.err.println("Cfill hashtable: no such id=" + id);
         return;
       }
     }
     if (icon instanceof AnimatorShape) {
-      if (fillval == XtangoAnimator.SOLID
-          || fillval == XtangoAnimator.HALF
-          || fillval == XtangoAnimator.OUTLINE) {
-        ( (AnimatorShape) icon).fillval(fillval);
+      if (fillval == XtangoAnimator.SOLID || fillval == XtangoAnimator.HALF || fillval == XtangoAnimator.OUTLINE) {
+        ((AnimatorShape) icon).fillval(fillval);
+      } else {
+        System.err.println("Cfill: fillval=" + fillval + " not implemented");
       }
-      else {
-        System.err.println
-            ("Cfill: fillval=" + fillval + " not implemented");
-      }
-    }
-    else {
+    } else {
       System.err.println("Cfill: icon is not fillable, icon=" + icon);
     }
   }
@@ -1080,8 +1014,7 @@ class Cfill
   }
 }
 
-class Cdelete
-    extends AnimatorAction {
+class Cdelete extends AnimatorAction {
 
   private String id = null;
 
@@ -1092,7 +1025,7 @@ class Cdelete
   void perform(AnimatorCanvas ac, Hashtable ht, Vector icons) {
     Object icon = null;
     synchronized (ht) {
-      if ( (icon = ht.remove(id)) == null) {
+      if ((icon = ht.remove(id)) == null) {
         System.err.println("Cdelete hashtable: no such id=" + id);
         return;
       }
@@ -1110,9 +1043,7 @@ class Cdelete
   }
 }
 
-class Cmove
-    extends AnimatorAction
-    implements Runnable {
+class Cmove extends AnimatorAction implements Runnable {
 
   protected final static int ABSOLUTE = 1, RELATIVE = 2, ICON = 3;
 
@@ -1124,8 +1055,7 @@ class Cmove
   protected int moveMode = 0;
   protected int numMoveSteps = 0, frameDelay = 0;
 
-  Cmove(String id, float xpos, float ypos, int syncMode,
-        String id2, float xdelta, float ydelta, int moveMode) {
+  Cmove(String id, float xpos, float ypos, int syncMode, String id2, float xdelta, float ydelta, int moveMode) {
     this.id = id;
     this.id2 = id2;
     this.xpos = xpos;
@@ -1144,12 +1074,12 @@ class Cmove
     numMoveSteps = ac.numMoveSteps;
     frameDelay = ac.frameDelay;
     synchronized (ht) {
-      if ( (icon = (AnimatorIcon) ht.get(id)) == null) {
+      if ((icon = (AnimatorIcon) ht.get(id)) == null) {
         System.err.println("Cjump hashtable: no such id=" + id);
         return;
       }
       if (id2 != null) {
-        if ( (icon2 = (AnimatorIcon) ht.get(id2)) == null) {
+        if ((icon2 = (AnimatorIcon) ht.get(id2)) == null) {
           System.err.println("CmoveTo hashtable: no such id2=" + id2);
           return;
         }
@@ -1157,11 +1087,9 @@ class Cmove
     }
     if (syncMode == XtangoAnimator.SYNC) {
       run();
-    }
-    else if (syncMode == XtangoAnimator.ASYNC) {
+    } else if (syncMode == XtangoAnimator.ASYNC) {
       (new Thread(this)).start();
-    }
-    else {
+    } else {
       System.err.println("Cmove: illegal syncMode=" + syncMode);
     }
   }
@@ -1177,18 +1105,15 @@ class Cmove
       if (moveMode == RELATIVE) { // the position with another
         xpos = (xdelta + p.x); // move of same icon next
         ypos = (ydelta + p.y);
-      }
-      else if (moveMode == ICON) {
+      } else if (moveMode == ICON) {
         Position p2 = null;
         synchronized (icon2.position) {
           p2 = icon2.position();
         }
         xpos = p2.x;
         ypos = p2.y;
-      }
-      else if (moveMode == ABSOLUTE) {
-      }
-      else {
+      } else if (moveMode == ABSOLUTE) {
+      } else {
         System.err.println("Cmove: illegal moveMode=" + moveMode);
       }
       float xchange = (xpos - p.x) / numMoveSteps;
@@ -1197,35 +1122,30 @@ class Cmove
         icon.positionRel(xchange, ychange);
         try {
           Thread.sleep(frameDelay);
+        } catch (InterruptedException e) {
         }
-        catch (InterruptedException e) {}
       }
       icon.position(xpos, ypos); // avoid summing round-off errors
     }
   }
 
   public String toString() {
-    return "Cmove: id=" + id + ", xpos=" + xpos + ", ypos=" + ypos
-        + ", syncMode=" + syncMode;
+    return "Cmove: id=" + id + ", xpos=" + xpos + ", ypos=" + ypos + ", syncMode=" + syncMode;
   }
 }
 
-class CmoveRelative
-    extends Cmove {
+class CmoveRelative extends Cmove {
 
   CmoveRelative(String id, float xdelta, float ydelta, int syncMode) {
     super(id, 0.0f, 0.0f, syncMode, null, xdelta, ydelta, RELATIVE);
   }
 
   public String toString() {
-    return "CmoveRelative: id=" + id + ", xdelta=" + xdelta + ", ydelta=" +
-        ydelta
-        + ", syncMode=" + syncMode;
+    return "CmoveRelative: id=" + id + ", xdelta=" + xdelta + ", ydelta=" + ydelta + ", syncMode=" + syncMode;
   }
 }
 
-class CmoveTo
-    extends Cmove {
+class CmoveTo extends Cmove {
 
   CmoveTo(String id, String id2, int syncMode) {
     super(id, 0.0f, 0.0f, syncMode, id2, 0.0f, 0.0f, ICON);
@@ -1236,8 +1156,7 @@ class CmoveTo
   }
 }
 
-class Cjump
-    extends AnimatorAction {
+class Cjump extends AnimatorAction {
 
   private String id = null;
   private float xpos = 0, ypos = 0;
@@ -1251,7 +1170,7 @@ class Cjump
   void perform(AnimatorCanvas ac, Hashtable ht, Vector icons) {
     AnimatorIcon icon = null;
     synchronized (ht) {
-      if ( (icon = (AnimatorIcon) ht.get(id)) == null) {
+      if ((icon = (AnimatorIcon) ht.get(id)) == null) {
         System.err.println("Cjump hashtable: no such id=" + id);
         return;
       }
@@ -1266,8 +1185,7 @@ class Cjump
   }
 }
 
-class CjumpRelative
-    extends AnimatorAction {
+class CjumpRelative extends AnimatorAction {
 
   private String id = null;
   private float xdelta = 0, ydelta = 0;
@@ -1281,7 +1199,7 @@ class CjumpRelative
   void perform(AnimatorCanvas ac, Hashtable ht, Vector icons) {
     AnimatorIcon icon = null;
     synchronized (ht) {
-      if ( (icon = (AnimatorIcon) ht.get(id)) == null) {
+      if ((icon = (AnimatorIcon) ht.get(id)) == null) {
         System.err.println("CjumpRelative hashtable: no such id=" + id);
         return;
       }
@@ -1292,13 +1210,11 @@ class CjumpRelative
   }
 
   public String toString() {
-    return "CjumpRelative: id=" + id + ", xdelta=" + xdelta + ", ydelta=" +
-        ydelta;
+    return "CjumpRelative: id=" + id + ", xdelta=" + xdelta + ", ydelta=" + ydelta;
   }
 }
 
-class CjumpTo
-    extends AnimatorAction {
+class CjumpTo extends AnimatorAction {
 
   private String id1 = null;
   private String id2 = null;
@@ -1312,11 +1228,11 @@ class CjumpTo
     AnimatorIcon icon1 = null, icon2 = null;
     Position p = null;
     synchronized (ht) {
-      if ( (icon1 = (AnimatorIcon) ht.get(id1)) == null) {
+      if ((icon1 = (AnimatorIcon) ht.get(id1)) == null) {
         System.err.println("CjumpTo hashtable: no such id1=" + id1);
         return;
       }
-      if ( (icon2 = (AnimatorIcon) ht.get(id2)) == null) {
+      if ((icon2 = (AnimatorIcon) ht.get(id2)) == null) {
         System.err.println("CjumpTo hashtable: no such id2=" + id2);
         return;
       }
@@ -1334,9 +1250,7 @@ class CjumpTo
   }
 }
 
-class CexchangePos
-    extends AnimatorAction
-    implements Runnable {
+class CexchangePos extends AnimatorAction implements Runnable {
 
   private String id1 = null;
   private String id2 = null;
@@ -1354,58 +1268,52 @@ class CexchangePos
     numMoveSteps = ac.numMoveSteps;
     frameDelay = ac.frameDelay;
     synchronized (ht) {
-      if ( (icon1 = (AnimatorIcon) ht.get(id1)) == null) {
+      if ((icon1 = (AnimatorIcon) ht.get(id1)) == null) {
         System.err.println("CexchangePos hashtable: no such id1=" + id1);
         return;
       }
-      if ( (icon2 = (AnimatorIcon) ht.get(id2)) == null) {
+      if ((icon2 = (AnimatorIcon) ht.get(id2)) == null) {
         System.err.println("CexchangePos hashtable: no such id2=" + id2);
         return;
       }
     }
     if (syncMode == XtangoAnimator.SYNC) {
       run();
-    }
-    else if (syncMode == XtangoAnimator.ASYNC) {
+    } else if (syncMode == XtangoAnimator.ASYNC) {
       (new Thread(this)).start();
-    }
-    else {
+    } else {
       System.err.println("Cmove: illegal syncMode=" + syncMode);
     }
   }
 
   public void run() {
-  // FileOutputStream output=null;
-    XtangoAnimator.i=null;
+    // FileOutputStream output=null;
+    XtangoAnimator.i = null;
     // while (XtangoAnimator.i!=icon1.position){
-          XtangoAnimator.i = icon1.position;
-   //    }
+    XtangoAnimator.i = icon1.position;
+    //    }
 
     synchronized (icon1.position) { // deadlock possible!
 
-    // Thread.yield();
+      // Thread.yield();
 
-
-      if (XtangoAnimator.i==icon2.position){
+      if (XtangoAnimator.i == icon2.position) {
         try {
-    // System.out.println("inside!");
-     //ile output = new File(XtangoAnimator.filename);
-     //ileWriter out = new FileWriter(output);
+          // System.out.println("inside!");
+          //ile output = new File(XtangoAnimator.filename);
+          //ileWriter out = new FileWriter(output);
 
-          System.out.println("< XtangoAnimator , deadlock occured , deadlock >" + "\r\n");
-     //out.close();
+          System.out.println("<XtangoAnimator , deadlock occured , deadlock >" + "\r\n");
+          //out.close();
 
-   }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
 
-
-    catch (Exception e) {
-       e.printStackTrace();
-   }
-
-           System.exit(1);
+        System.exit(1);
 
       }
-    //Thread.yield();
+      //Thread.yield();
       synchronized (icon2.position) {
         Position p1 = icon1.position();
         Position p2 = icon2.position();
@@ -1413,11 +1321,11 @@ class CexchangePos
         float ychange = (p2.y - p1.y) / numMoveSteps;
         for (int i = 1; i < numMoveSteps; i++) {
           icon1.positionRel(xchange, ychange);
-          icon2.positionRel( -xchange, -ychange);
+          icon2.positionRel(-xchange, -ychange);
           try {
             Thread.sleep(frameDelay);
+          } catch (InterruptedException e) {
           }
-          catch (InterruptedException e) {}
         }
         icon1.position(p2.x, p2.y); // avoid summing round-off errors
         icon2.position(p1.x, p1.y);
@@ -1426,13 +1334,11 @@ class CexchangePos
   }
 
   public String toString() {
-    return "CexchangePos: id1=" + id1 + ",id2=" + id2 + ", syncMode=" +
-        syncMode;
+    return "CexchangePos: id1=" + id1 + ",id2=" + id2 + ", syncMode=" + syncMode;
   }
 }
 
-class Cvis
-    extends AnimatorAction {
+class Cvis extends AnimatorAction {
 
   static final int VIS = 0;
   static final int RAISE = 1;
@@ -1450,54 +1356,43 @@ class Cvis
     Object icon = null;
     int newVisibility = Cvis.VIS;
     synchronized (ht) {
-      if ( (icon = ht.get(id)) == null) {
+      if ((icon = ht.get(id)) == null) {
         System.err.println("Cvis hashtable: no such id=" + id);
         return;
       }
     }
     if (action == Cvis.VIS) { // move to end opposite of current visibility
-      int oldVisibility = ( (AnimatorIcon) icon).visibility();
+      int oldVisibility = ((AnimatorIcon) icon).visibility();
       if (oldVisibility == Cvis.RAISE) {
         newVisibility = Cvis.LOWER;
-      }
-      else if (oldVisibility == Cvis.LOWER) {
+      } else if (oldVisibility == Cvis.LOWER) {
         newVisibility = Cvis.RAISE;
+      } else {
+        System.err.println("Cvis: oldVisibility=" + oldVisibility + " is incorrect");
       }
-      else {
-        System.err.println("Cvis: oldVisibility=" + oldVisibility
-                           + " is incorrect");
-      }
-    }
-    else if (action == Cvis.RAISE) { // move to end of icons
+    } else if (action == Cvis.RAISE) { // move to end of icons
       newVisibility = Cvis.RAISE;
-    }
-    else if (action == Cvis.LOWER) { // move to beginning of icons
+    } else if (action == Cvis.LOWER) { // move to beginning of icons
       newVisibility = Cvis.LOWER;
-    }
-    else {
+    } else {
       System.err.println("Cvis: action=" + action + " not implemented");
     }
-    ( (AnimatorIcon) icon).visibility(newVisibility);
+    ((AnimatorIcon) icon).visibility(newVisibility);
     synchronized (icons) {
       if (newVisibility == Cvis.RAISE) {
         if (icons.removeElement(icon)) {
           icons.addElement(icon);
-        }
-        else {
+        } else {
           System.err.println("Cvis: missing icon=" + icon);
         }
-      }
-      else if (newVisibility == Cvis.LOWER) {
+      } else if (newVisibility == Cvis.LOWER) {
         if (icons.removeElement(icon)) {
           icons.insertElementAt(icon, 0);
-        }
-        else {
+        } else {
           System.err.println("Cvis: missing icon=" + icon);
         }
-      }
-      else {
-        System.err.println("Cvis: newVisibility=" + newVisibility
-                           + " is incorrect (should not happen)");
+      } else {
+        System.err.println("Cvis: newVisibility=" + newVisibility + " is incorrect (should not happen)");
       }
     }
   }
@@ -1507,8 +1402,7 @@ class Cvis
   }
 }
 
-class CswitchPos
-    extends AnimatorAction {
+class CswitchPos extends AnimatorAction {
 
   private String id1 = null, id2 = null;
 
@@ -1521,11 +1415,11 @@ class CswitchPos
     AnimatorIcon icon1 = null, icon2 = null;
     Position p1 = null, p2 = null;
     synchronized (ht) {
-      if ( (icon1 = (AnimatorIcon) ht.get(id1)) == null) {
+      if ((icon1 = (AnimatorIcon) ht.get(id1)) == null) {
         System.err.println("CswitchPos hashtable: no such id1=" + id1);
         return;
       }
-      if ( (icon2 = (AnimatorIcon) ht.get(id2)) == null) {
+      if ((icon2 = (AnimatorIcon) ht.get(id2)) == null) {
         System.err.println("CswitchPos hashtable: no such id2=" + id2);
         return;
       }
@@ -1548,8 +1442,7 @@ class CswitchPos
   }
 }
 
-class CswapIds
-    extends AnimatorAction {
+class CswapIds extends AnimatorAction {
 
   private String id1 = null;
   private String id2 = null;
@@ -1562,11 +1455,11 @@ class CswapIds
   void perform(AnimatorCanvas ac, Hashtable ht, Vector icons) {
     AnimatorIcon icon1 = null, icon2 = null;
     synchronized (ht) {
-      if ( (icon1 = (AnimatorIcon) ht.get(id1)) == null) {
+      if ((icon1 = (AnimatorIcon) ht.get(id1)) == null) {
         System.err.println("CswapIds hashtable: no such id1=" + id1);
         return;
       }
-      if ( (icon2 = (AnimatorIcon) ht.get(id2)) == null) {
+      if ((icon2 = (AnimatorIcon) ht.get(id2)) == null) {
         System.err.println("CswapIds hashtable: no such id2=" + id2);
         return;
       }
@@ -1593,8 +1486,7 @@ class CswapIds
   }
 }
 
-class Cend
-    extends AnimatorAction {
+class Cend extends AnimatorAction {
 
   Cend() {
     super();
@@ -1649,8 +1541,7 @@ class Size {
   }
 }
 
-abstract class AnimatorIcon
-    extends AnimatorCommand {
+abstract class AnimatorIcon extends AnimatorCommand {
   // an icon can be a command to draw the icon
   protected String id = null;
   final Position position = new Position(); // need to synchronize on this
@@ -1658,8 +1549,7 @@ abstract class AnimatorIcon
   protected Color colorvalHALF = Color.gray; // only used in triangles now
   protected int visibility = Cvis.RAISE;
 
-  protected AnimatorIcon(String id, float xpos, float ypos,
-                         Color colorval) {
+  protected AnimatorIcon(String id, float xpos, float ypos, Color colorval) {
     this.id = id;
     this.position.x = xpos;
     this.position.y = ypos;
@@ -1668,15 +1558,14 @@ abstract class AnimatorIcon
     int G = colorval.getGreen();
     int B = colorval.getBlue();
     float[] HSB = Color.RGBtoHSB(R, G, B, new float[3]);
-    
-	this.colorvalHALF =
-        new Color(Color.HSBtoRGB(HSB[0], 0.5f * HSB[1], HSB[2]));
-/*
-         * Half the saturation with same hue (of course) and brightness works fine
-         * for red, green, blue, yellow, cyan, magenta, but not so well with pink
-         * and not at all for black on Windows 95.  Use only for HALF fillval in
-         * triangles for now.
-         */
+
+    this.colorvalHALF = new Color(Color.HSBtoRGB(HSB[0], 0.5f * HSB[1], HSB[2]));
+    /*
+     * Half the saturation with same hue (of course) and brightness works fine
+     * for red, green, blue, yellow, cyan, magenta, but not so well with pink
+     * and not at all for black on Windows 95.  Use only for HALF fillval in
+     * triangles for now.
+     */
   }
 
   synchronized void colorval(Color colorval) {
@@ -1713,8 +1602,7 @@ abstract class AnimatorIcon
     Object old = null;
     synchronized (ht) {
       if (ht.containsKey(id)) {
-        System.err.println
-            ("CommandThread add: ignoring duplicate id=" + id);
+        System.err.println("CommandThread add: ignoring duplicate id=" + id);
         return;
       }
       old = ht.put(id, this);
@@ -1723,10 +1611,8 @@ abstract class AnimatorIcon
       synchronized (icons) {
         icons.addElement(this);
       }
-    }
-    else {
-      System.err.println
-          ("CommandThread add: non-null old should not have happened!!");
+    } else {
+      System.err.println("CommandThread add: non-null old should not have happened!!");
     }
   }
 
@@ -1741,15 +1627,13 @@ abstract class AnimatorIcon
   }
 }
 
-abstract class AnimatorShape
-    extends AnimatorIcon {
+abstract class AnimatorShape extends AnimatorIcon {
 
   protected static int numHalf = 10;
 
   protected int fillval = XtangoAnimator.SOLID;
 
-  protected AnimatorShape(String id, float xpos, float ypos,
-                          Color colorval, int fillval) {
+  protected AnimatorShape(String id, float xpos, float ypos, Color colorval, int fillval) {
     super(id, xpos, ypos, colorval);
     this.fillval = fillval;
   }
@@ -1770,13 +1654,11 @@ abstract class AnimatorShape
   }
 }
 
-class Icircle
-    extends AnimatorShape {
+class Icircle extends AnimatorShape {
 
   protected float radius = 0;
 
-  Icircle(String id, float xpos, float ypos, float radius,
-          Color colorval, int fillval) {
+  Icircle(String id, float xpos, float ypos, float radius, Color colorval, int fillval) {
     super(id, xpos, ypos, colorval, fillval);
     this.radius = radius;
   }
@@ -1785,29 +1667,18 @@ class Icircle
     g.setColor(colorval);
     if (fillval == XtangoAnimator.SOLID) { // translate from center
       g.fillOval( // to upper-left
-          ac.scaleX(position.x - radius), ac.scaleY(position.y + radius),
-          ac.scaleR(2 * radius), ac.scaleR(2 * radius));
-    }
-    else if (fillval == XtangoAnimator.OUTLINE) {
-      g.drawOval(
-          ac.scaleX(position.x - radius), ac.scaleY(position.y + radius),
-          ac.scaleR(2 * radius), ac.scaleR(2 * radius));
-    }
-    else if (fillval == XtangoAnimator.HALF) {
+                  ac.scaleX(position.x - radius), ac.scaleY(position.y + radius), ac.scaleR(2 * radius), ac.scaleR(2 * radius));
+    } else if (fillval == XtangoAnimator.OUTLINE) {
+      g.drawOval(ac.scaleX(position.x - radius), ac.scaleY(position.y + radius), ac.scaleR(2 * radius), ac.scaleR(2 * radius));
+    } else if (fillval == XtangoAnimator.HALF) {
       float inc = radius / (float) numHalf;
       for (int i = 1; i < numHalf; i++) {
         float rad = inc * i;
-        g.drawOval(
-            ac.scaleX(position.x - rad), ac.scaleY(position.y + rad),
-            ac.scaleR(2 * rad), ac.scaleR(2 * rad));
+        g.drawOval(ac.scaleX(position.x - rad), ac.scaleY(position.y + rad), ac.scaleR(2 * rad), ac.scaleR(2 * rad));
       }
-      g.drawOval(
-          ac.scaleX(position.x - radius), ac.scaleY(position.y + radius),
-          ac.scaleR(2 * radius), ac.scaleR(2 * radius));
-    }
-    else {
-      System.err.println("Icircle.draw(): fillval=" + fillval
-                         + " not yet implemented");
+      g.drawOval(ac.scaleX(position.x - radius), ac.scaleY(position.y + radius), ac.scaleR(2 * radius), ac.scaleR(2 * radius));
+    } else {
+      System.err.println("Icircle.draw(): fillval=" + fillval + " not yet implemented");
     }
   }
 
@@ -1816,14 +1687,12 @@ class Icircle
   }
 }
 
-class Iline
-    extends AnimatorIcon {
+class Iline extends AnimatorIcon {
 
   protected Size size = null;
   protected int widthval = XtangoAnimator.THIN;
 
-  Iline(String id, float xpos, float ypos, float xsize, float ysize,
-        Color colorval, int widthval) {
+  Iline(String id, float xpos, float ypos, float xsize, float ysize, Color colorval, int widthval) {
     super(id, xpos, ypos, colorval);
     this.size = new Size(xsize, ysize);
     this.widthval = widthval;
@@ -1832,71 +1701,25 @@ class Iline
   synchronized void draw(AnimatorCanvas ac, Graphics g) {
     g.setColor(colorval);
     if (widthval == XtangoAnimator.THIN) {
-      g.drawLine(
-          ac.scaleX(position.x), ac.scaleY(position.y),
-          ac.scaleX(position.x + size.w), ac.scaleY(position.y + size.h));
-    }
-    else if (widthval == XtangoAnimator.MEDTHICK) {
-      g.drawLine(
-          ac.scaleX(position.x), ac.scaleY(position.y),
-          ac.scaleX(position.x + size.w), ac.scaleY(position.y + size.h));
-      g.drawLine(
-          ac.scaleX(position.x) + 1, ac.scaleY(position.y) + 1,
-          ac.scaleX(position.x + size.w) + 1,
-          ac.scaleY(position.y + size.h) + 1);
-      g.drawLine(
-          ac.scaleX(position.x) + 1, ac.scaleY(position.y) - 1,
-          ac.scaleX(position.x + size.w) + 1,
-          ac.scaleY(position.y + size.h) - 1);
-      g.drawLine(
-          ac.scaleX(position.x) - 1, ac.scaleY(position.y) - 1,
-          ac.scaleX(position.x + size.w) - 1,
-          ac.scaleY(position.y + size.h) - 1);
-      g.drawLine(
-          ac.scaleX(position.x) - 1, ac.scaleY(position.y) + 1,
-          ac.scaleX(position.x + size.w) - 1,
-          ac.scaleY(position.y + size.h) + 1);
-    }
-    else if (widthval == XtangoAnimator.THICK) {
-      g.drawLine(
-          ac.scaleX(position.x), ac.scaleY(position.y),
-          ac.scaleX(position.x + size.w), ac.scaleY(position.y + size.h));
-      g.drawLine(
-          ac.scaleX(position.x) + 1, ac.scaleY(position.y) + 1,
-          ac.scaleX(position.x + size.w) + 1,
-          ac.scaleY(position.y + size.h) + 1);
-      g.drawLine(
-          ac.scaleX(position.x) + 1, ac.scaleY(position.y) - 1,
-          ac.scaleX(position.x + size.w) + 1,
-          ac.scaleY(position.y + size.h) - 1);
-      g.drawLine(
-          ac.scaleX(position.x) - 1, ac.scaleY(position.y) - 1,
-          ac.scaleX(position.x + size.w) - 1,
-          ac.scaleY(position.y + size.h) - 1);
-      g.drawLine(
-          ac.scaleX(position.x) - 1, ac.scaleY(position.y) + 1,
-          ac.scaleX(position.x + size.w) - 1,
-          ac.scaleY(position.y + size.h) + 1);
-      g.drawLine(
-          ac.scaleX(position.x) + 2, ac.scaleY(position.y) + 2,
-          ac.scaleX(position.x + size.w) + 2,
-          ac.scaleY(position.y + size.h) + 2);
-      g.drawLine(
-          ac.scaleX(position.x) + 2, ac.scaleY(position.y) - 2,
-          ac.scaleX(position.x + size.w) + 2,
-          ac.scaleY(position.y + size.h) - 2);
-      g.drawLine(
-          ac.scaleX(position.x) - 2, ac.scaleY(position.y) - 2,
-          ac.scaleX(position.x + size.w) - 2,
-          ac.scaleY(position.y + size.h) - 2);
-      g.drawLine(
-          ac.scaleX(position.x) - 2, ac.scaleY(position.y) + 2,
-          ac.scaleX(position.x + size.w) - 2,
-          ac.scaleY(position.y + size.h) + 2);
-    }
-    else {
-      System.err.println("Iline.draw(): widthval=" + widthval
-                         + " not yet implemented");
+      g.drawLine(ac.scaleX(position.x), ac.scaleY(position.y), ac.scaleX(position.x + size.w), ac.scaleY(position.y + size.h));
+    } else if (widthval == XtangoAnimator.MEDTHICK) {
+      g.drawLine(ac.scaleX(position.x), ac.scaleY(position.y), ac.scaleX(position.x + size.w), ac.scaleY(position.y + size.h));
+      g.drawLine(ac.scaleX(position.x) + 1, ac.scaleY(position.y) + 1, ac.scaleX(position.x + size.w) + 1, ac.scaleY(position.y + size.h) + 1);
+      g.drawLine(ac.scaleX(position.x) + 1, ac.scaleY(position.y) - 1, ac.scaleX(position.x + size.w) + 1, ac.scaleY(position.y + size.h) - 1);
+      g.drawLine(ac.scaleX(position.x) - 1, ac.scaleY(position.y) - 1, ac.scaleX(position.x + size.w) - 1, ac.scaleY(position.y + size.h) - 1);
+      g.drawLine(ac.scaleX(position.x) - 1, ac.scaleY(position.y) + 1, ac.scaleX(position.x + size.w) - 1, ac.scaleY(position.y + size.h) + 1);
+    } else if (widthval == XtangoAnimator.THICK) {
+      g.drawLine(ac.scaleX(position.x), ac.scaleY(position.y), ac.scaleX(position.x + size.w), ac.scaleY(position.y + size.h));
+      g.drawLine(ac.scaleX(position.x) + 1, ac.scaleY(position.y) + 1, ac.scaleX(position.x + size.w) + 1, ac.scaleY(position.y + size.h) + 1);
+      g.drawLine(ac.scaleX(position.x) + 1, ac.scaleY(position.y) - 1, ac.scaleX(position.x + size.w) + 1, ac.scaleY(position.y + size.h) - 1);
+      g.drawLine(ac.scaleX(position.x) - 1, ac.scaleY(position.y) - 1, ac.scaleX(position.x + size.w) - 1, ac.scaleY(position.y + size.h) - 1);
+      g.drawLine(ac.scaleX(position.x) - 1, ac.scaleY(position.y) + 1, ac.scaleX(position.x + size.w) - 1, ac.scaleY(position.y + size.h) + 1);
+      g.drawLine(ac.scaleX(position.x) + 2, ac.scaleY(position.y) + 2, ac.scaleX(position.x + size.w) + 2, ac.scaleY(position.y + size.h) + 2);
+      g.drawLine(ac.scaleX(position.x) + 2, ac.scaleY(position.y) - 2, ac.scaleX(position.x + size.w) + 2, ac.scaleY(position.y + size.h) - 2);
+      g.drawLine(ac.scaleX(position.x) - 2, ac.scaleY(position.y) - 2, ac.scaleX(position.x + size.w) - 2, ac.scaleY(position.y + size.h) - 2);
+      g.drawLine(ac.scaleX(position.x) - 2, ac.scaleY(position.y) + 2, ac.scaleX(position.x + size.w) - 2, ac.scaleY(position.y + size.h) + 2);
+    } else {
+      System.err.println("Iline.draw(): widthval=" + widthval + " not yet implemented");
     }
   }
 
@@ -1905,13 +1728,11 @@ class Iline
   }
 }
 
-class Irectangle
-    extends AnimatorShape {
+class Irectangle extends AnimatorShape {
 
   protected Size size = null;
 
-  Irectangle(String id, float xpos, float ypos, float xsize, float ysize,
-             Color colorval, int fillval) {
+  Irectangle(String id, float xpos, float ypos, float xsize, float ysize, Color colorval, int fillval) {
     super(id, xpos, ypos, colorval, fillval);
     this.size = new Size(xsize, ysize);
   }
@@ -1920,31 +1741,20 @@ class Irectangle
     g.setColor(colorval);
     if (fillval == XtangoAnimator.SOLID) { // translate from lower-left
       g.fillRect( // corner to upper-left
-          ac.scaleX(position.x), ac.scaleY(position.y + size.h),
-          ac.scaleR(size.w), ac.scaleR(size.h));
-    }
-    else if (fillval == XtangoAnimator.HALF) {
+                  ac.scaleX(position.x), ac.scaleY(position.y + size.h), ac.scaleR(size.w), ac.scaleR(size.h));
+    } else if (fillval == XtangoAnimator.HALF) {
       float incw = size.w / (float) numHalf;
       float inch = size.h / (float) numHalf;
       for (int i = 1; i < numHalf; i++) {
         float sizew = incw * i;
         float sizeh = inch * i;
-        g.drawRect(
-            ac.scaleX(position.x), ac.scaleY(position.y + sizeh),
-            ac.scaleR(sizew), ac.scaleR(sizeh));
+        g.drawRect(ac.scaleX(position.x), ac.scaleY(position.y + sizeh), ac.scaleR(sizew), ac.scaleR(sizeh));
       }
-      g.drawRect(
-          ac.scaleX(position.x), ac.scaleY(position.y + size.h),
-          ac.scaleR(size.w), ac.scaleR(size.h));
-    }
-    else if (fillval == XtangoAnimator.OUTLINE) {
-      g.drawRect(
-          ac.scaleX(position.x), ac.scaleY(position.y + size.h),
-          ac.scaleR(size.w), ac.scaleR(size.h));
-    }
-    else {
-      System.err.println("Irectangle.draw(): fillval=" + fillval
-                         + " not yet implemented");
+      g.drawRect(ac.scaleX(position.x), ac.scaleY(position.y + size.h), ac.scaleR(size.w), ac.scaleR(size.h));
+    } else if (fillval == XtangoAnimator.OUTLINE) {
+      g.drawRect(ac.scaleX(position.x), ac.scaleY(position.y + size.h), ac.scaleR(size.w), ac.scaleR(size.h));
+    } else {
+      System.err.println("Irectangle.draw(): fillval=" + fillval + " not yet implemented");
     }
   }
 
@@ -1953,13 +1763,11 @@ class Irectangle
   }
 }
 
-class Itriangle
-    extends AnimatorShape {
+class Itriangle extends AnimatorShape {
 
   private Position p2 = null, p3 = null;
 
-  Itriangle(String id, float v1x, float v1y, float v2x, float v2y,
-            float v3x, float v3y, Color colorval, int fillval) {
+  Itriangle(String id, float v1x, float v1y, float v2x, float v2y, float v3x, float v3y, Color colorval, int fillval) {
     super(id, v1x, v1y, colorval, fillval);
     this.p2 = new Position(v2x, v2y);
     this.p3 = new Position(v3x, v3y);
@@ -1993,28 +1801,19 @@ class Itriangle
      */
     if (fillval == XtangoAnimator.HALF) {
       g.setColor(colorvalHALF);
-    }
-    else {
+    } else {
       g.setColor(colorval);
     }
-    int[] X = {
-        ac.scaleX(position.x), ac.scaleX(p2.x), ac.scaleX(p3.x),
-        ac.scaleX(position.x)};
-    int[] Y = {
-        ac.scaleY(position.y), ac.scaleY(p2.y), ac.scaleY(p3.y),
-        ac.scaleY(position.y)};
+    int[] X = {ac.scaleX(position.x), ac.scaleX(p2.x), ac.scaleX(p3.x), ac.scaleX(position.x)};
+    int[] Y = {ac.scaleY(position.y), ac.scaleY(p2.y), ac.scaleY(p3.y), ac.scaleY(position.y)};
     if (fillval == XtangoAnimator.SOLID) {
       g.fillPolygon(X, Y, 4);
-    }
-    else if (fillval == XtangoAnimator.HALF) {
+    } else if (fillval == XtangoAnimator.HALF) {
       g.fillPolygon(X, Y, 4);
-    }
-    else if (fillval == XtangoAnimator.OUTLINE) {
+    } else if (fillval == XtangoAnimator.OUTLINE) {
       g.drawPolygon(X, Y, 4);
-    }
-    else {
-      System.err.println("Irectangle.draw(): fillval=" + fillval
-                         + " not yet implemented");
+    } else {
+      System.err.println("Irectangle.draw(): fillval=" + fillval + " not yet implemented");
     }
   }
 
@@ -2023,26 +1822,21 @@ class Itriangle
   }
 }
 
-class Itext
-    extends AnimatorIcon {
+class Itext extends AnimatorIcon {
 
   public static final int SMALL = 0;
   public static final int NORMAL = 1;
   public static final int BIG = 2;
 
-  protected static final Font fSMALL =
-      new Font("TimesRoman", Font.PLAIN, 10);
-  protected static final Font fNORMAL =
-      new Font("TimesRoman", Font.PLAIN, 16);
-  protected static final Font fBIG =
-      new Font("TimesRoman", Font.PLAIN, 22);
+  protected static final Font fSMALL = new Font("TimesRoman", Font.PLAIN, 10);
+  protected static final Font fNORMAL = new Font("TimesRoman", Font.PLAIN, 16);
+  protected static final Font fBIG = new Font("TimesRoman", Font.PLAIN, 22);
 
   protected boolean centered = false;
   protected String string = null;
   protected int size = Itext.NORMAL;
 
-  Itext(String id, float xpos, float ypos, boolean centered,
-        Color colorval, String string, int size) {
+  Itext(String id, float xpos, float ypos, boolean centered, Color colorval, String string, int size) {
     super(id, xpos, ypos, colorval);
     this.centered = centered;
     this.string = string;
@@ -2061,30 +1855,24 @@ class Itext
     g.setColor(colorval);
     if (size == Itext.SMALL) {
       g.setFont(fSMALL);
-    }
-    else if (size == Itext.NORMAL) {
+    } else if (size == Itext.NORMAL) {
       g.setFont(fNORMAL);
-    }
-    else if (size == Itext.BIG) {
+    } else if (size == Itext.BIG) {
       g.setFont(fBIG);
-    }
-    else {
+    } else {
       System.err.println("Itext draw(): no size=" + size);
     }
     if (centered) {
       FontMetrics fm = g.getFontMetrics();
       int length = fm.stringWidth(string);
       int height = fm.getAscent() - fm.getDescent();
-      g.drawString(string, ac.scaleX(position.x) - length / 2,
-                   ac.scaleY(position.y) + height / 2);
-    }
-    else {
+      g.drawString(string, ac.scaleX(position.x) - length / 2, ac.scaleY(position.y) + height / 2);
+    } else {
       g.drawString(string, ac.scaleX(position.x), ac.scaleY(position.y));
     }
   }
 
   public synchronized String toString() {
-    return super.toString() + ", centered=" + centered + ", string=" + string
-        + ", size=" + size;
+    return super.toString() + ", centered=" + centered + ", string=" + string + ", size=" + size;
   }
 }
