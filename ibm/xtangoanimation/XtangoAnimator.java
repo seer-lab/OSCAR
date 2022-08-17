@@ -458,11 +458,13 @@ public final class XtangoAnimator
     @Override
     public void run() {
       try {
-        Thread.sleep(5000);
+        Thread.sleep(5500);
       } catch (InterruptedException e) {
-        System.out.println("deadlock detected!");
+        System.out.println("deadlock avoider interrupted!");
         System.exit(0);
       }
+      System.out.println("deadlock detected!");
+      System.exit(0);
     }
   }
 
@@ -477,8 +479,8 @@ public final class XtangoAnimator
     if (debug) {
       System.out.println("XtangoAnimator: main");
     }
-    XtangoAnimator xa = new XtangoAnimator();
     new Thread(new DeadlockAvoider()).start();
+    XtangoAnimator xa = new XtangoAnimator();
     xa.begin();
     //       xa.delay(10);
     //       xa.pointLine("Lthin", 0.3f, 0.2f, 0.8f, 0.7f, Color.black,
