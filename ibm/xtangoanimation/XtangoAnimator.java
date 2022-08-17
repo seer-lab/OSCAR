@@ -454,6 +454,18 @@ public final class XtangoAnimator
     af.doCommand(new CexchangePos(id1, id2, ASYNC));
   }
 
+  public static class DeadlockAvoider implements Runnable {
+    @Override
+    public void run() {
+      try {
+        Thread.sleep(5000);
+      } catch (InterruptedException e) {
+        System.out.println("deadlock detected!");
+        System.exit(0);
+      }
+    }
+  }
+
   public static void main(String[] args) { // for testing
     if (args.length != 1) {
       System.out.println("no file name argument");
@@ -466,6 +478,7 @@ public final class XtangoAnimator
       System.out.println("XtangoAnimator: main");
     }
     XtangoAnimator xa = new XtangoAnimator();
+    new Thread(new DeadlockAvoider()).start();
     xa.begin();
     //       xa.delay(10);
     //       xa.pointLine("Lthin", 0.3f, 0.2f, 0.8f, 0.7f, Color.black,
