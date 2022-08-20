@@ -27,10 +27,11 @@ VARIABLE_ARGS = [
 
 
 def pgfplots_format(param, k):
-    print(f"    % {k}")
-    print("    \\addplot coordinates {")
-    print("        " + param[k])
-    print("    };")
+    print(f"    % {k}  -  {param[k]}")
+   # print(f"    % {k}")
+   # print("    \\addplot coordinates {")
+   # print("        " + param[k])
+   # print("    };")
     print()
 
 
@@ -151,9 +152,9 @@ if not DISABLE_COVERAGE:
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(std_coverages, v_arg)
 
-    print("Average Cluster Size: ")
-    for v_arg in VARIABLE_ARGS:
-        pgfplots_format(avg_cluster_sizes, v_arg)
+    #print("Average Cluster Size: ")
+    #for v_arg in VARIABLE_ARGS:
+    #    pgfplots_format(avg_cluster_sizes, v_arg)
 
 print("Program Flags: ")
 for v_arg in output_flags_per_args:
