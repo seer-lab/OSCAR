@@ -13,8 +13,6 @@ import java.io.*;
  *
  */
 public class ProgramRunner {
-
-
   private BuggedProgram bug;
 
 
@@ -47,21 +45,37 @@ public class ProgramRunner {
     String newLine = System.getProperty("line.separator");
     System.out.println("In this file you will find the number of the bug appearances " + "accordingly to the number of threads that the " + "bugged program utilized with:" + newLine + newLine);
 
-    System.out.println("Few Threads: " + newLine + newLine);
-    ProgramRunner fewThreads = new ProgramRunner(17);
-    fewThreads.doWork();
-    System.out.println(newLine + "************************************" + newLine + newLine);
-    System.out.println("Average Threads: " + newLine + newLine);
-    ProgramRunner averageThreads = new ProgramRunner(40);
-    averageThreads.doWork();
-    System.out.println(newLine + "************************************" + newLine + newLine);
-    System.out.println("A Lot Of Threads: " + newLine + newLine);
-    ProgramRunner aLotOfThreads = new ProgramRunner(120);
-    aLotOfThreads.doWork();
-    System.out.println(newLine + "************************************" + newLine + newLine);
+    if (args.length == 2) {
+      switch (args[1]) {
+        case "little":
+          ProgramRunner fewThreads = new ProgramRunner(17);
+          fewThreads.doWork();
+          break;
+        case "average":
+          ProgramRunner averageThreads = new ProgramRunner(40);
+          averageThreads.doWork();
+          break;
+        case "lot":
+          ProgramRunner aLotOfThreads = new ProgramRunner(120);
+          aLotOfThreads.doWork();
+          break;
+        default:
+          throw new RuntimeException("INVALID ARGUMENT");
+      }
 
-
+    } else {
+      System.out.println("Few Threads: " + newLine + newLine);
+      ProgramRunner fewThreads = new ProgramRunner(17);
+      fewThreads.doWork();
+      System.out.println(newLine + "************************************" + newLine + newLine);
+      System.out.println("Average Threads: " + newLine + newLine);
+      ProgramRunner averageThreads = new ProgramRunner(40);
+      averageThreads.doWork();
+      System.out.println(newLine + "************************************" + newLine + newLine);
+      System.out.println("A Lot Of Threads: " + newLine + newLine);
+      ProgramRunner aLotOfThreads = new ProgramRunner(120);
+      aLotOfThreads.doWork();
+      System.out.println(newLine + "************************************" + newLine + newLine);
+    }
   }
-
-
 }
