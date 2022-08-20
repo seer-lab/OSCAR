@@ -251,8 +251,8 @@ if not argv.disable_coverage:
 
             interleaving_dists.append(interleaving_dist)
 
-        avg_dist_runs[rc] = round(np.average(interleaving_dists), 2)
-        std_dev_runs[rc] = round(float(np.std(interleaving_dists)), 2)
+        avg_dist_runs[rc] = round(np.average(interleaving_dists), 4)
+        std_dev_runs[rc] = round(float(np.std(interleaving_dists)), 4)
 
     distance_alg = DISTANCE_ALGS[argv.distance_algorithm]
     print(f'\tUnique interleavings: {flatten_results_map(uniq_interleavings_runs)}')
