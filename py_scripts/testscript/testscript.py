@@ -18,7 +18,7 @@ def to_unicode(code: int):
 def flatten_results_map(results_map):
     total = ""
     for key in results_map.keys():
-        total += f"({key},{round(results_map[key], 2)})"
+        total += f"({key},{round(results_map[key], 4)})"
     return total
 
 
