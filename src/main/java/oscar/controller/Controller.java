@@ -36,7 +36,7 @@ public final class Controller {
    * Make the injected program sleep
    *
    * @param noiseLoc instrumented location type
-   * @param uuid      instrumented location generated uuid
+   * @param uuid     instrumented location generated uuid
    */
   public static void noise(NoiseLocation noiseLoc, String uuid) {
     // Check if the controller has been initialized. This can occur if noise is inserted into static blocks.
@@ -53,44 +53,43 @@ public final class Controller {
 
     // Write pre-noise location trace
     if (!options.DisablePreNoiseTracing && options.ControllerOutput != null) {
-        options.ControllerOutput.write(threadID + " " + uuid);
+      options.ControllerOutput.write(threadID + " " + uuid);
 
       if (!options.Quiet)
         logger.fine("[SIGNAL][PRE-NOISE][" + noiseLoc.getCategory() + "]" + "[" + uuid + "]");
     }
 
     // Do not noise if noise is disabled
-    if (options.DisableNoise)
-      return;
+    if (!options.DisableNoise) {
+      // Get a random noise intensity
+      long noiseIntensity = options.MinNoiseIntensity;
+      noiseIntensity += Math.abs(rand.nextLong() % (1 + options.MaxNoiseIntensity - options.MinNoiseIntensity));
 
-    // Get a random noise intensity
-    long noiseIntensity = options.MinNoiseIntensity;
-    noiseIntensity += Math.abs(rand.nextLong() % (1 + options.MaxNoiseIntensity - options.MinNoiseIntensity));
+      // Sleep for a determined amount of time
+      try {
+        if (!options.YieldMode) {
+          logger.finest("[SLEEP]" +
+                            "[" + noiseLoc.getCategory().name() + "]" +
+                            "[" + noiseLoc.name() + "]" +
+                            "[" + uuid + "]: "
+                            + noiseIntensity + " MS."
+          );
 
-    // Sleep for a determined amount of time
-    try {
-      if (!options.YieldMode) {
-        logger.finest("[SLEEP]" +
-                          "[" + noiseLoc.getCategory().name() + "]" +
-                          "[" + noiseLoc.name() + "]" +
-                          "[" + uuid + "]: "
-                          + noiseIntensity + " MS."
-        );
+          Thread.sleep(noiseIntensity);
+        } else {
+          logger.finest("[" + "Yield" + "]" +
+                            "[" + noiseLoc.getCategory().name() + "]" +
+                            "[" + noiseLoc.name() + "]" +
+                            "[" + uuid + "]: "
+                            + noiseIntensity + " times."
+          );
 
-        Thread.sleep(noiseIntensity);
-      } else {
-        logger.finest("[" + "Yield" + "]" +
-                          "[" + noiseLoc.getCategory().name() + "]" +
-                          "[" + noiseLoc.name() + "]" +
-                          "[" + uuid + "]: "
-                          + noiseIntensity + " times."
-        );
-
-        for (int i = 0; i < noiseIntensity; i++)
-          Thread.yield();
+          for (int i = 0; i < noiseIntensity; i++)
+            Thread.yield();
+        }
+      } catch (InterruptedException e) {
+        throw new RuntimeException("OSCAR sleep statement was interrupted.", e);
       }
-    } catch (InterruptedException e) {
-      throw new RuntimeException("OSCAR sleep statement was interrupted.", e);
     }
 
     // Write post-noise location trace
