@@ -134,11 +134,11 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
 print()
 print()
 
-if DISABLE_COVERAGE:
+if not DISABLE_COVERAGE:
     print("Average runtime: ")
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(v_arg_avg_run_times, v_arg)
-else:
+
     print("Unique interleavings: ")
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(uniq_interleavings, v_arg)
