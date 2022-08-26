@@ -50,6 +50,7 @@ argparser.add_argument('-utl', '--unique_trace_locations', action='store_true',
                        help='Enable unique ids for repeated trace locations.')
 argparser.add_argument('-uti', '--unordered_thread_ids', action='store_true', help='Maintain original thread ID order.')
 argparser.add_argument('-dc', '--disable_coverage', action='store_true', help='Disable coverage analysis.')
+argparser.add_argument('-di', '--disable_interleaving', action='store_true', help='Disable interleaving analysis.')
 argparser.add_argument('-of', '--output_flags', type=str, help='Flags which will be checked in program output.')
 
 argv = argparser.parse_args()
@@ -227,29 +228,32 @@ if not argv.disable_coverage:
         interleaving_dist = 0
 
         # Calculate average ratio
-        for x in range(0, len(interleavings_split) - 1):
-            for y in range(x + 1, len(interleavings_split)):
-                # Levenshtein
-                if argv.distance_algorithm == 0:
-                    interleaving_dist = jf.levenshtein_distance(interleavings_split[x], interleavings_split[y])
+        if not argv.disable_coverage:
+            for x in range(0, len(interleavings_split) - 1):
+                for y in range(x + 1, len(interleavings_split)):
+                    # Levenshtein
+                    if argv.distance_algorithm == 0:
+                        interleaving_dist = jf.levenshtein_distance(interleavings_split[x], interleavings_split[y])
 
-                # Damerau-Levenshtein
-                if argv.distance_algorithm == 1:
-                    interleaving_dist = jf.damerau_levenshtein_distance(interleavings_split[x], interleavings_split[y])
+                    # Damerau-Levenshtein
+                    if argv.distance_algorithm == 1:
+                        interleaving_dist = jf.damerau_levenshtein_distance(interleavings_split[x], interleavings_split[y])
 
-                # Jaro
-                if argv.distance_algorithm == 2:
-                    interleaving_dist = jf.jaro_similarity(interleavings_split[x], interleavings_split[y])
+                    # Jaro
+                    if argv.distance_algorithm == 2:
+                        interleaving_dist = jf.jaro_similarity(interleavings_split[x], interleavings_split[y])
 
-                # Jaro-Wrinkler
-                if argv.distance_algorithm == 3:
-                    interleaving_dist = jf.jaro_winkler_similarity(interleavings_split[x], interleavings_split[y])
+                    # Jaro-Wrinkler
+                    if argv.distance_algorithm == 3:
+                        interleaving_dist = jf.jaro_winkler_similarity(interleavings_split[x], interleavings_split[y])
 
-                # Hamming
-                if argv.distance_algorithm == 4:
-                    interleaving_dist = jf.hamming_distance(interleavings_split[x], interleavings_split[y])
+                    # Hamming
+                    if argv.distance_algorithm == 4:
+                        interleaving_dist = jf.hamming_distance(interleavings_split[x], interleavings_split[y])
 
-            interleaving_dists.append(interleaving_dist)
+                interleaving_dists.append(interleaving_dist)
+        else:
+            interleaving_dists.append(1)
 
         avg_dist_runs[rc] = round(np.average(interleaving_dists), 4)
         std_dev_runs[rc] = round(float(np.std(interleaving_dists)), 4)

@@ -13,6 +13,7 @@ NUMBER_RUNS = SORTED_DEFAULT_VALUES  # [5, 10, 15]
 NUMBER_THREADS = ["out little"]  # SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = "-lfo -np tbbtr svbbsfa svbasfa -nc lb sb -m 1"
 OUTPUT_FLAGS = ["finished","SortProgram"]
+DISABLE_INTERLEAVING_ANALYSIS = False
 
 VARIABLE_ARGS = [
     "-M 5",
@@ -37,6 +38,9 @@ def pgfplots_format(param, k):
 
 if DISABLE_COVERAGE:
     TESTSCRIPT_ARGS += " -dc"
+
+if DISABLE_INTERLEAVING_ANALYSIS:
+    TESTSCRIPT_ARGS += " -di"
 
 v_arg_avg_run_times = {}
 uniq_interleavings = {}
