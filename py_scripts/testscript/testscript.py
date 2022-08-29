@@ -8,6 +8,7 @@ import jellyfish as jf
 import numpy
 import numpy as np
 import time
+from tqdm import tqdm
 
 
 # Convert a string to unicode
@@ -88,7 +89,7 @@ FLAGS = str(argv.output_flags).split(",")
 flags_detected = {}
 
 # Run program x times
-for i in range(0, runs):
+for i in tqdm(range(0, runs), desc="Variable Args"):
     print(f'Running {i + 1}/{runs}')
     start_time = time.time_ns() / 1_000_000
 
@@ -237,7 +238,8 @@ if not argv.disable_coverage:
 
                     # Damerau-Levenshtein
                     if argv.distance_algorithm == 1:
-                        interleaving_dist = jf.damerau_levenshtein_distance(interleavings_split[x], interleavings_split[y])
+                        interleaving_dist = jf.damerau_levenshtein_distance(interleavings_split[x],
+                                                                            interleavings_split[y])
 
                     # Jaro
                     if argv.distance_algorithm == 2:
@@ -263,4 +265,3 @@ if not argv.disable_coverage:
     print(f'\tAverage {distance_alg} distance: {flatten_results_map(avg_dist_runs)}')
     print(f'\t{distance_alg} distance standard deviation: {flatten_results_map(std_dev_runs)}')
     print(f'\tAverage Cluster Size: {flatten_results_map(avg_cluster_size)}')
-
