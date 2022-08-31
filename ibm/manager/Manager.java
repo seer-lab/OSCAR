@@ -69,7 +69,6 @@ class Manager {
       try {
         Thread.sleep(1500);
       } catch (InterruptedException e) {
-        throw new RuntimeException(e);
       }
       System.out.println("deadlock");
       System.out.flush();
