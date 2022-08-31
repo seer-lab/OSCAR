@@ -34,6 +34,7 @@ public final class ControllerOptions {
       new ControllerOption("PrintNoiseHeuristics", "Print all possible noise heuristics.", "Flag", "-", "-pnh", "--print-noise-heuristics"),
       new ControllerOption("Version", "Print OSCAR version.", "Flag", "-", "-v", "--version"),
       new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),
+      new ControllerOption("DisableSkippedLocations", "Disable logging of skipped noise locations.", "Flag", "False", "-dsl", "--disable-skipped-logging"),
       new ControllerOption("Quiet", "Disable logging.", "Flag", "False", "-q", "--quiet"),
       new ControllerOption("Help", "Print Help.", "Flag", "False", "-h", "--help")
   );
@@ -48,6 +49,7 @@ public final class ControllerOptions {
   public boolean DisablePreNoiseTracing = false;
   public final HashSet<NoiseLocation> NoiseLocations = new HashSet<>();
   public final HashSet<NoiseHeuristic> NoiseHeuristics = new HashSet<>();
+  public boolean DisableSkippedLocations = false;
 
   public boolean Verbose = false;
   public boolean YieldMode = false;
@@ -163,6 +165,9 @@ public final class ControllerOptions {
 
           logger.info("Setting logger level to verbose (FINEST).");
           LoggerFactory.setLevel(Level.FINEST);
+          break;
+        case "DisableSkippedLocations":
+          options.DisableSkippedLocations = true;
           break;
         case "Quiet":
           if (options.Verbose)
