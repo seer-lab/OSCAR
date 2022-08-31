@@ -36,7 +36,7 @@ class Trelease extends Thread
             }
             else
             {
-                System.out.println("Thread num: "+t_num+" finished");
+                //System.out.println("Thread num: "+t_num+" finished");
                 return;
             }
         }

@@ -26,9 +26,10 @@ class Manager {
       init_req_counter = request_counter = Integer.parseInt(arg[2]);
     }
     int num_of_threads = Integer.parseInt(arg[1]);
+    new Thread(new Monitor()).start();
     Manager manager = new Manager(num_of_threads);
-    System.out.println("Number of memory blocks to release:" + init_req_counter);
-    System.out.println("Number of memory blocks released:" + released_counter);
+    //System.out.println("Number of memory blocks to release:" + init_req_counter);
+    //System.out.println("Number of memory blocks released:" + released_counter);
     try {
       flag = !(init_req_counter == released_counter);
       System.out.println("Program name: Manager , Bug found: " + flag + "\r\n");
@@ -61,7 +62,6 @@ class Manager {
     } catch (InterruptedException e) {
     }
   }
-
 
   public static class Monitor implements Runnable {
     @Override
