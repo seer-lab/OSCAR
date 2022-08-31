@@ -7,18 +7,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ConsoleOutput implements ControllerOutput {
-  private static final Logger logger = LoggerFactory.getInstance(ConsoleOutput.class);
-
   public ConsoleOutput() {
-    logger.setLevel(Level.ALL);
   }
 
   @Override
   public void write(String output) {
-    logger.info(output);
+    System.out.println(output);
   }
 
   @Override
   public void terminate() {
+    System.out.flush();
   }
 }
