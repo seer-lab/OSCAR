@@ -12,7 +12,7 @@ DISABLE_COVERAGE = True
 NUMBER_RUNS = SORTED_DEFAULT_VALUES  # [5, 10, 15]
 NUMBER_THREADS = ["out little"]  # SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = "-lfo -np tbbtr svbbsfa svbasfa -nc lb sb -m 1"
-OUTPUT_FLAGS = ["finished","SortProgram"]
+OUTPUT_FLAGS = ["finished", "SortProgram"]
 DISABLE_INTERLEAVING_ANALYSIS = False
 
 VARIABLE_ARGS = [
@@ -29,10 +29,10 @@ VARIABLE_ARGS = [
 
 def pgfplots_format(param, k):
     print(f"    % {k}  -  {param[k]}")
-   # print(f"    % {k}")
-   # print("    \\addplot coordinates {")
-   # print("        " + param[k])
-   # print("    };")
+    # print(f"    % {k}")
+    # print("    \\addplot coordinates {")
+    # print("        " + param[k])
+    # print("    };")
     print()
 
 
@@ -54,7 +54,8 @@ DISTANCE_ALG = ""
 
 # Compile program
 program_location = OSCAR_DIR + OSCAR_ARGS.split(" ")[0]
-subprocess.run(f"cd {program_location} && javac $(find ./* | grep .java)", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+subprocess.run(f"cd {program_location} && javac $(find ./* | grep .java)", shell=True, stdout=subprocess.PIPE,
+               stderr=subprocess.PIPE)
 
 # Run Oscar
 result = subprocess.run(f"cd {OSCAR_DIR} && mvn clean", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -87,12 +88,16 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
     for n_threads in tqdm(NUMBER_THREADS, desc="Number of Threads", leave=False):
         run_times = []
 
-        output_flags = ",".join([str(element) for element in OUTPUT_FLAGS])
+        if len(OUTPUT_FLAGS) > 0:
+            output_flags = ",".join([str(element) for element in OUTPUT_FLAGS])
+            output_flags = f" -of {output_flags}"
+        else:
+            output_flags = ""
 
         p_args = f"{FIXED_ARGS} {v_arg}"
         t_args = f"{TESTSCRIPT_ARGS} -c {n_runs}"
 
-        cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {n_threads} {p_args}\" {t_args} -of {output_flags}'
+        cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {n_threads} {p_args}\" {t_args} {output_flags}'
         result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         if result.returncode != 0:
@@ -156,8 +161,8 @@ if not DISABLE_COVERAGE:
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(std_coverages, v_arg)
 
-    #print("Average Cluster Size: ")
-    #for v_arg in VARIABLE_ARGS:
+    # print("Average Cluster Size: ")
+    # for v_arg in VARIABLE_ARGS:
     #    pgfplots_format(avg_cluster_sizes, v_arg)
 
 print("Program Flags: ")
