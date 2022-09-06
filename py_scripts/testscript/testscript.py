@@ -90,7 +90,6 @@ flags_detected = {}
 
 # Run program x times
 for i in tqdm(range(0, runs), desc="Variable Args"):
-    print(f'Running {i + 1}/{runs}')
     start_time = time.time_ns() / 1_000_000
 
     if not argv.jar:
@@ -232,28 +231,30 @@ if not argv.disable_coverage:
         if not argv.disable_coverage:
             for x in range(0, len(interleavings_split) - 1):
                 for y in range(x + 1, len(interleavings_split)):
+                    ix = interleavings_split[x]
+                    iy = interleavings_split[y]
+
                     # Levenshtein
                     if argv.distance_algorithm == 0:
-                        interleaving_dist = jf.levenshtein_distance(interleavings_split[x], interleavings_split[y])
+                        interleaving_dist = jf.levenshtein_distance(ix, iy)
 
                     # Damerau-Levenshtein
                     if argv.distance_algorithm == 1:
-                        interleaving_dist = jf.damerau_levenshtein_distance(interleavings_split[x],
-                                                                            interleavings_split[y])
+                        interleaving_dist = jf.damerau_levenshtein_distance(ix, iy)
 
                     # Jaro
                     if argv.distance_algorithm == 2:
-                        interleaving_dist = jf.jaro_similarity(interleavings_split[x], interleavings_split[y])
+                        interleaving_dist = jf.jaro_similarity(ix, iy)
 
                     # Jaro-Wrinkler
                     if argv.distance_algorithm == 3:
-                        interleaving_dist = jf.jaro_winkler_similarity(interleavings_split[x], interleavings_split[y])
+                        interleaving_dist = jf.jaro_winkler_similarity(ix, iy)
 
                     # Hamming
                     if argv.distance_algorithm == 4:
-                        interleaving_dist = jf.hamming_distance(interleavings_split[x], interleavings_split[y])
+                        interleaving_dist = jf.hamming_distance(ix, iy)
 
-                interleaving_dists.append(interleaving_dist)
+                    interleaving_dists.append(interleaving_dist)
         else:
             interleaving_dists.append(1)
 
