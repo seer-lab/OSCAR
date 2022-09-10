@@ -1,0 +1,1 @@
+for i in *; do (cd $i && javac $(find ./* | grep .java)); done

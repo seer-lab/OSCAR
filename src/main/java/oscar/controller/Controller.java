@@ -5,6 +5,7 @@ import oscar.controller.util.ControllerOptions;
 import oscar.utils.logger.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 public final class Controller {
@@ -12,6 +13,8 @@ public final class Controller {
   private static final Random rand = new Random();
 
   private static ControllerOptions options;
+  private static AtomicInteger noiseStatementCallCount = new AtomicInteger(0);
+  private static AtomicInteger noiseTriggeredCount = new AtomicInteger(0);
 
   public static String[] start(String[] argv) {
     logger.info("Starting OSCAR noising controller.");
@@ -28,6 +31,8 @@ public final class Controller {
     if (options.ControllerOutput != null)
       options.ControllerOutput.terminate();
 
+    logger.info("Noise function invoked " + noiseStatementCallCount + " times.");
+    logger.info("Noise triggered " + noiseTriggeredCount + " times.");
     logger.info("OSCAR noising controller routine ended.");
     System.exit(0);
   }
@@ -39,6 +44,9 @@ public final class Controller {
    * @param uuid     instrumented location generated uuid
    */
   public static void noise(NoiseLocation noiseLoc, String uuid) {
+    // Increment noise statement call counter
+    noiseStatementCallCount.incrementAndGet();
+
     // Check if the controller has been initialized. This can occur if noise is inserted into static blocks.
     if (options == null)
       return;
@@ -88,6 +96,8 @@ public final class Controller {
           for (int i = 0; i < noiseIntensity; i++)
             Thread.yield();
         }
+
+        noiseTriggeredCount.incrementAndGet();
       } catch (InterruptedException e) {
         throw new RuntimeException("OSCAR sleep statement was interrupted.", e);
       }

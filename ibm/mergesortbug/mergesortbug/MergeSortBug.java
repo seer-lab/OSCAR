@@ -211,7 +211,7 @@ public class MergeSortBug extends Thread {
         threads = "6";
       }
 
-      if (args[0].compareTo("lots") == 0) {
+      if (args[0].compareTo("lot") == 0) {
         threads = "14";
       }
 
