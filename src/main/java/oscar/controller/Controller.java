@@ -52,7 +52,7 @@ public final class Controller {
       return;
 
     // Check if location enabled
-    if (!options.NoiseHeuristics.contains(noiseLoc.getCategory()) && !options.NoiseLocations.contains(noiseLoc)) {
+    if (!options.noiseCategories.contains(noiseLoc.getCategory()) && !options.NoiseLocations.contains(noiseLoc)) {
       if (!options.DisableSkippedLocations)
         logger.fine("[SLEEP] Skipping noise location '" + noiseLoc.name() + "'.");
       return;

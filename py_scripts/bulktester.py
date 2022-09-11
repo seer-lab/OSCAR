@@ -2,27 +2,27 @@ import subprocess
 from tqdm import tqdm
 import numpy as np
 
-SORTED_DEFAULT_VALUES = sorted([10])
+SORTED_DEFAULT_VALUES = sorted([5])
 
 OSCAR_DIR = "../"
-OSCAR_ARGS = "ibm/bubblesort2 tr.Loader output"
-PROGRAM = "../../output tr.Loader"
+OSCAR_ARGS = "ibm/account account.Main output"
+PROGRAM = "../../output account.Main"
 TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2"
 DISABLE_COVERAGE = True
 NUMBER_RUNS = SORTED_DEFAULT_VALUES  # [5, 10, 15]
-NUMBER_THREADS = ["out little"]  # SORTED_DEFAULT_VALUES  # [3]
-FIXED_ARGS = "-lfo -np tbbtr svbbsfa svbasfa -nc lb sb -m 1"
-OUTPUT_FLAGS = ["finished", "SortProgram"]
-DISABLE_INTERLEAVING_ANALYSIS = False
+NUMBER_THREADS = ["out lot"]  # SORTED_DEFAULT_VALUES  # [3]
+FIXED_ARGS = "-lfo -nc tb lb sb"
+OUTPUT_FLAGS = []
+DISABLE_INTERLEAVING_ANALYSIS = True
 
 VARIABLE_ARGS = [
-    "-M 5",
-    "-M 10",
-    "-M 25",
-    "-M 5 -y",
-    "-M 10 -y",
-    "-M 25 -y",
-    "-M 50 -y",
+    "-M 1 -m 1",
+    "-M 5 -m 5",
+    "-M 10 -m 10",
+    "-M 50 -m 50",
+    "-M 100 -m 100",
+    "-M 500 -m 500",
+    "-M 1000 -m 1000",
     "-d",
 ]
 
@@ -144,11 +144,11 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
 print()
 print()
 
-if not DISABLE_COVERAGE:
-    print("Average runtime: ")
-    for v_arg in VARIABLE_ARGS:
-        pgfplots_format(v_arg_avg_run_times, v_arg)
+print("Average runtime: ")
+for v_arg in VARIABLE_ARGS:
+    pgfplots_format(v_arg_avg_run_times, v_arg)
 
+if not DISABLE_COVERAGE:
     print("Unique interleavings: ")
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(uniq_interleavings, v_arg)

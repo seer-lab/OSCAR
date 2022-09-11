@@ -6,32 +6,32 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum NoiseLocation {
-  BEFORE_SYNC_METHOD_CALL(NoiseHeuristic.SYNCHRONIZATION_BASED),
-  AFTER_SYNC_METHOD_CALL(NoiseHeuristic.SYNCHRONIZATION_BASED),
-  BEFORE_SYNC_BLOCK(NoiseHeuristic.SYNCHRONIZATION_BASED),
-  AFTER_SYNC_BLOCK(NoiseHeuristic.SYNCHRONIZATION_BASED),
+  BEFORE_SYNC_METHOD_CALL(NoiseCategory.SYNCHRONIZATION_BASED),
+  AFTER_SYNC_METHOD_CALL(NoiseCategory.SYNCHRONIZATION_BASED),
+  BEFORE_SYNC_BLOCK(NoiseCategory.SYNCHRONIZATION_BASED),
+  AFTER_SYNC_BLOCK(NoiseCategory.SYNCHRONIZATION_BASED),
   //---------------------------------------------------------
-  BEFORE_THREAD_LAUNCH(NoiseHeuristic.THREAD_BASED),
-  AFTER_THREAD_LAUNCH(NoiseHeuristic.THREAD_BASED),
-  BEFORE_THREAD_ROUTINE(NoiseHeuristic.THREAD_BASED),
+  BEFORE_THREAD_LAUNCH(NoiseCategory.THREAD_BASED),
+  AFTER_THREAD_LAUNCH(NoiseCategory.THREAD_BASED),
+  BEFORE_THREAD_ROUTINE(NoiseCategory.THREAD_BASED),
   //---------------------------------------------------------
-  BEFORE_REENTRANT_LOCK_LOCK(NoiseHeuristic.LOCK_BASED),
-  AFTER_REENTRANT_LOCK_UNLOCK(NoiseHeuristic.LOCK_BASED),
+  BEFORE_REENTRANT_LOCK_LOCK(NoiseCategory.LOCK_BASED),
+  AFTER_REENTRANT_LOCK_UNLOCK(NoiseCategory.LOCK_BASED),
   //---------------------------------------------------------
-  BEFORE_SHARED_FIELD_ACCESS(NoiseHeuristic.SHARED_VARIABLE_BASED),
-  BEFORE_SHARED_LOCAL_ACCESS(NoiseHeuristic.SHARED_VARIABLE_BASED),
+  BEFORE_SHARED_FIELD_ACCESS(NoiseCategory.SHARED_VARIABLE_BASED),
+  BEFORE_SHARED_LOCAL_ACCESS(NoiseCategory.SHARED_VARIABLE_BASED),
   //---------------------------------------------------------
-  AFTER_SHARED_FIELD_ACCESS(NoiseHeuristic.SHARED_VARIABLE_BASED),
-  AFTER_SHARED_LOCAL_ACCESS(NoiseHeuristic.SHARED_VARIABLE_BASED),
+  AFTER_SHARED_FIELD_ACCESS(NoiseCategory.SHARED_VARIABLE_BASED),
+  AFTER_SHARED_LOCAL_ACCESS(NoiseCategory.SHARED_VARIABLE_BASED),
 
   // Experimental
-  BEFORE_CLASS_INITIALIZATION(NoiseHeuristic.MISCELLANEOUS),
-  BEFORE_THREAD_EXTERNAL_FIELD_REF(NoiseHeuristic.MISCELLANEOUS),
-  AFTER_THREAD_EXTERNAL_FIELD_REF(NoiseHeuristic.MISCELLANEOUS);
+  BEFORE_CLASS_INITIALIZATION(NoiseCategory.MISCELLANEOUS),
+  BEFORE_THREAD_EXTERNAL_FIELD_REF(NoiseCategory.MISCELLANEOUS),
+  AFTER_THREAD_EXTERNAL_FIELD_REF(NoiseCategory.MISCELLANEOUS);
 
-  private final NoiseHeuristic category;
+  private final NoiseCategory category;
 
-  NoiseLocation(NoiseHeuristic category) {
+  NoiseLocation(NoiseCategory category) {
     this.category = category;
   }
 
@@ -39,7 +39,7 @@ public enum NoiseLocation {
     return category.getShorthand() + generateShorthand(name());
   }
 
-  public NoiseHeuristic getCategory() {
+  public NoiseCategory getCategory() {
     return category;
   }
 

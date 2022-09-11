@@ -2,7 +2,7 @@ package oscar.controller.util;
 
 import oscar.Main;
 import oscar.controller.noise.NoiseLocation;
-import oscar.controller.noise.NoiseHeuristic;
+import oscar.controller.noise.NoiseCategory;
 import oscar.controller.util.output.*;
 import oscar.utils.logger.LoggerFactory;
 
@@ -19,9 +19,9 @@ public final class ControllerOptions {
   private static final List<ControllerOption> CONTROLLER_OPTIONS = Arrays.asList(
       new ControllerOption("InjectedArgs", "Inject arguments into the program", "String", "", "-a", "--args"),
       // new ControllerOption("ConfigFile", "Set config file location to load", "String", "", "-c", "--config_file"),
-      new ControllerOption("ConsoleOutput", "Enable output of noising locations signals to console", "Flag", "False", "-co", "--console-output"),
-      new ControllerOption("FileOutput", "Enable output of noising locations signals to a file", "Flag", "False", "-fo", "--file-output"),
-      new ControllerOption("LazyFileOutput", "Enable lazy output of noising locations signals to a file", "Flag", "False", "-lfo", "--lazy-file-output"),
+      new ControllerOption("ConsoleOutput", "Output trace to console", "Flag", "False", "-co", "--console-output"),
+      new ControllerOption("FileOutput", "Output trace to a file", "Flag", "False", "-fo", "--file-output"),
+      new ControllerOption("LazyFileOutput", "Lazily output trace to a file", "Flag", "False", "-lfo", "--lazy-file-output"),
       new ControllerOption("MaxNoiseIntensity", "Set maximum noise intensity", "Long", "10", "-M", "--max_noise_intensity"),
       new ControllerOption("MinNoiseIntensity", "Set minimum noise intensity", "Long", "0", "-m", "--min_noise_intensity"),
       new ControllerOption("DisableNoise", "Disable all noise", "Flag", "False", "-d", "--disable-noise"),
@@ -29,9 +29,9 @@ public final class ControllerOptions {
       new ControllerOption("DisablePreNoiseTracing", "Disable pre-noise tracing", "Flag", "False", "-d1", "--disable-pre-noise-trace"),
       new ControllerOption("DisablePostNoiseTracing", "Disable post-noise tracing", "Flag", "False", "-d2", "--disable-post-noise-trace"),
       new ControllerOption("YieldMode", "Set noise type to yield.", "Flag", "False", "-y", "--yield"),
-      new ControllerOption("NoiseHeuristics", "Set the list of active noise heuristics.", "List<String>", "{}", "-nh", "--noise-heuristics"),
-      new ControllerOption("NoiseLocations", "Set the list of active noise locations.", "List<String>", "{}", "-nl", "--noise-locations"),
-      new ControllerOption("PrintNoiseHeuristics", "Print all possible noise heuristics.", "Flag", "-", "-pnh", "--print-noise-heuristics"),
+      new ControllerOption("NoiseCategories", "Set active noise placement categories.", "List<String>", "{}", "-nc", "--noise-categories"),
+      new ControllerOption("NoiseLocations", "Set active noise locations.", "List<String>", "{}", "-nl", "--noise-locations"),
+      new ControllerOption("PrintNoiseLocations", "Print all noise placement locations.", "Flag", "-", "-pnl", "--print-noise-locations"),
       new ControllerOption("Version", "Print OSCAR version.", "Flag", "-", "-v", "--version"),
       new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),
       new ControllerOption("DisableSkippedLocations", "Disable logging of skipped noise locations.", "Flag", "False", "-dsl", "--disable-skipped-logging"),
@@ -48,7 +48,7 @@ public final class ControllerOptions {
   public boolean DisablePostNoiseTracing = false;
   public boolean DisablePreNoiseTracing = false;
   public final HashSet<NoiseLocation> NoiseLocations = new HashSet<>();
-  public final HashSet<NoiseHeuristic> NoiseHeuristics = new HashSet<>();
+  public final HashSet<NoiseCategory> noiseCategories = new HashSet<>();
   public boolean DisableSkippedLocations = false;
 
   public boolean Verbose = false;
@@ -131,12 +131,12 @@ public final class ControllerOptions {
 
           options.YieldMode = true;
           break;
-        case "NoiseHeuristics":
-          options.NoiseHeuristics.clear();
+        case "NoiseCategories":
+          options.noiseCategories.clear();
 
           // Read all noise placements
           while (i + 1 < argv.length && !argv[i + 1].startsWith("-"))
-            options.NoiseHeuristics.add(NoiseHeuristic.fromString(argv[++i]));
+            options.noiseCategories.add(NoiseCategory.fromString(argv[++i]));
           break;
         case "NoiseLocations":
           options.NoiseLocations.clear();
@@ -146,8 +146,8 @@ public final class ControllerOptions {
             options.NoiseLocations.add(NoiseLocation.fromString(argv[++i]));
 
           break;
-        case "PrintNoiseHeuristics":
-          printNoiseHeuristics();
+        case "PrintNoiseLocations":
+          printNoiseLocations();
           System.exit(0);
           break;
         case "DisableNoise":
@@ -220,12 +220,12 @@ public final class ControllerOptions {
     System.out.println("OSCAR Noise Injector 2022");
   }
 
-  private static void printNoiseHeuristics() {
-    System.out.println("Available noise placement heuristics:");
+  private static void printNoiseLocations() {
+    System.out.println("Available noise placement categories:");
 
     System.out.printf(
         "\t%-25s\t%-25s\n",
-        "Heuristic",
+        "Category",
         "Shorthand code"
     );
 
@@ -235,7 +235,7 @@ public final class ControllerOptions {
         "-------------------------"
     );
 
-    for (NoiseHeuristic nc : NoiseHeuristic.values())
+    for (NoiseCategory nc : NoiseCategory.values())
       System.out.printf(
           "\t%-25s\t%-25s\n",
           nc.name().replace("_", " "),
@@ -244,11 +244,11 @@ public final class ControllerOptions {
 
     System.out.println();
 
-    System.out.println("Possible noising locations:");
+    System.out.println("Possible noising placement locations:");
 
     System.out.printf(
         "\t%-25s\t%-35s\t%-25s\n",
-        "Heuristic",
+        "Category",
         "Location",
         "Shorthand code"
     );
