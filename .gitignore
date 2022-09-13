@@ -6,3 +6,4 @@ target
 .idea
 testscript/.idea/workspace.xml
 *.doc#
+venv

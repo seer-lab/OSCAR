@@ -458,7 +458,7 @@ public final class XtangoAnimator
     @Override
     public void run() {
       try {
-        Thread.sleep(5500);
+        Thread.sleep(500);
       } catch (InterruptedException e) {
         System.out.println("deadlock avoider interrupted!");
         System.exit(0);
