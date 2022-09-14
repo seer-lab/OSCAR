@@ -22,8 +22,9 @@ public final class ControllerOptions {
       new ControllerOption("ConsoleOutput", "Output trace to console", "Flag", "False", "-co", "--console-output"),
       new ControllerOption("FileOutput", "Output trace to a file", "Flag", "False", "-fo", "--file-output"),
       new ControllerOption("LazyFileOutput", "Lazily output trace to a file", "Flag", "False", "-lfo", "--lazy-file-output"),
-      new ControllerOption("MaxNoiseIntensity", "Set maximum noise intensity", "Long", "10", "-M", "--max_noise_intensity"),
-      new ControllerOption("MinNoiseIntensity", "Set minimum noise intensity", "Long", "0", "-m", "--min_noise_intensity"),
+      new ControllerOption("MaxNoiseIntensity", "Set maximum noise intensity", "Long", "10", "-M", "--max-noise-intensity"),
+      new ControllerOption("MinNoiseIntensity", "Set minimum noise intensity", "Long", "0", "-m", "--min-noise-intensity"),
+      new ControllerOption("NoiseProbability", "Probability of noise being triggered", "Float", "1", "-p", "--noise-probability"),
       new ControllerOption("DisableNoise", "Disable all noise", "Flag", "False", "-d", "--disable-noise"),
       new ControllerOption("DisableNoiseTracing", "Disable all noise tracing", "Flag", "False", "-dt", "--disable-tracing"),
       new ControllerOption("DisablePreNoiseTracing", "Disable pre-noise tracing", "Flag", "False", "-d1", "--disable-pre-noise-trace"),
@@ -50,6 +51,7 @@ public final class ControllerOptions {
   public final HashSet<NoiseLocation> NoiseLocations = new HashSet<>();
   public final HashSet<NoiseCategory> noiseCategories = new HashSet<>();
   public boolean DisableSkippedLocations = false;
+  public float NoiseProbability = 1;
 
   public boolean Verbose = false;
   public boolean YieldMode = false;
@@ -100,6 +102,17 @@ public final class ControllerOptions {
 
           options.ControllerOutput = new ConsoleOutput();
           break;
+        case "NoiseProbability":
+          if (options.DisableNoise)
+            throw new RuntimeException("Noise disabled.");
+
+          options.NoiseProbability = parseFloat(argv[i + 1]);
+          i++;
+
+          if (options.NoiseProbability <0 || options.NoiseProbability > 1)
+            throw new RuntimeException("Invalid value for 'noise probability', must be higher or equal to 0 and lower or equal to 1.");
+
+          break;
         case "MaxNoiseIntensity":
           if (options.DisableNoise)
             throw new RuntimeException("Noise disabled.");
@@ -107,10 +120,10 @@ public final class ControllerOptions {
           options.MaxNoiseIntensity = parseLong(argv[i + 1]);
           i++;
           if (options.MaxNoiseIntensity < 0)
-            throw new RuntimeException("Invalid value for 'max_noise_intensity', must be higher or equal to 0.");
+            throw new RuntimeException("Invalid value for 'max noise intensity', must be higher or equal to 0.");
 
           if (options.MaxNoiseIntensity < options.MinNoiseIntensity)
-            throw new RuntimeException("Invalid value for 'max_noise_intensity', must be lower or equal to min_noise_intensity.");
+            throw new RuntimeException("Invalid value for 'max noise intensity', must be lower or equal to 'min-noise-intensity'.");
           break;
         case "MinNoiseIntensity":
           if (options.DisableNoise)
@@ -120,10 +133,10 @@ public final class ControllerOptions {
           i++;
 
           if (options.MinNoiseIntensity < 0)
-            throw new RuntimeException("Invalid value for 'min_noise_intensity', must be higher or equal to 0.");
+            throw new RuntimeException("Invalid value for 'min noise intensity', must be higher or equal to 0.");
 
           if (options.MinNoiseIntensity > options.MaxNoiseIntensity)
-            throw new RuntimeException("Invalid value for 'min_noise_intensity', must be lower or equal to max_noise_intensity.");
+            throw new RuntimeException("Invalid value for 'min noise intensity', must be lower or equal to 'max noise intensity'.");
           break;
         case "YieldMode":
           if (options.DisableNoise)
@@ -282,6 +295,14 @@ public final class ControllerOptions {
       return Long.parseLong(arg);
     } catch (NumberFormatException e) {
       throw new RuntimeException("Invalid argument for option '" + arg + "', expected a long.");
+    }
+  }
+
+  private static float parseFloat(String arg) {
+    try {
+      return Float.parseFloat(arg);
+    } catch (NumberFormatException e) {
+      throw new RuntimeException("Invalid argument for option '" + arg + "', expected a float.");
     }
   }
 }

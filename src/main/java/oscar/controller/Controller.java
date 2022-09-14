@@ -70,36 +70,39 @@ public final class Controller {
 
     // Do not noise if noise is disabled
     if (!options.DisableNoise) {
-      // Get a random noise intensity
-      long noiseIntensity = options.MinNoiseIntensity;
-      noiseIntensity += Math.abs(rand.nextLong() % (1 + options.MaxNoiseIntensity - options.MinNoiseIntensity));
+      // Compute probability for noise if probability activated
+      if (options.NoiseProbability == 1 || rand.nextFloat() < options.NoiseProbability) {
+        // Get a random noise intensity
+        long noiseIntensity = options.MinNoiseIntensity;
+        noiseIntensity += Math.abs(rand.nextLong() % (1 + options.MaxNoiseIntensity - options.MinNoiseIntensity));
 
-      // Sleep for a determined amount of time
-      try {
-        if (!options.YieldMode) {
-          logger.finest("[SLEEP]" +
-                            "[" + noiseLoc.getCategory().name() + "]" +
-                            "[" + noiseLoc.name() + "]" +
-                            "[" + uuid + "]: "
-                            + noiseIntensity + " MS."
-          );
+        // Sleep for a determined amount of time
+        try {
+          if (!options.YieldMode) {
+            logger.finest("[SLEEP]" +
+                              "[" + noiseLoc.getCategory().name() + "]" +
+                              "[" + noiseLoc.name() + "]" +
+                              "[" + uuid + "]: "
+                              + noiseIntensity + " MS."
+            );
 
-          Thread.sleep(noiseIntensity);
-        } else {
-          logger.finest("[" + "Yield" + "]" +
-                            "[" + noiseLoc.getCategory().name() + "]" +
-                            "[" + noiseLoc.name() + "]" +
-                            "[" + uuid + "]: "
-                            + noiseIntensity + " times."
-          );
+            Thread.sleep(noiseIntensity);
+          } else {
+            logger.finest("[" + "Yield" + "]" +
+                              "[" + noiseLoc.getCategory().name() + "]" +
+                              "[" + noiseLoc.name() + "]" +
+                              "[" + uuid + "]: "
+                              + noiseIntensity + " times."
+            );
 
-          for (int i = 0; i < noiseIntensity; i++)
-            Thread.yield();
+            for (int i = 0; i < noiseIntensity; i++)
+              Thread.yield();
+          }
+
+          noiseTriggeredCount.incrementAndGet();
+        } catch (InterruptedException e) {
+          throw new RuntimeException("OSCAR sleep statement was interrupted.", e);
         }
-
-        noiseTriggeredCount.incrementAndGet();
-      } catch (InterruptedException e) {
-        throw new RuntimeException("OSCAR sleep statement was interrupted.", e);
       }
     }
 

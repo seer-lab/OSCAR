@@ -309,9 +309,13 @@ That way, I thought, the running thread will get to the constructor, give up the
 
 Results:
 
-In all my tests, I have never succeeded in creating to bug. It seems like the JVM keeps it own track of objects and, either doesn't do context switch inside of a constructor, or if it does, it doesn\u2019t let anybody use the object before it completed the constructor.
+In all my tests, I have never succeeded in creating to bug. It seems like the JVM keeps it own track of objects and,
+either doesn't do context switch inside of a constructor, or if it does, it doesn\u2019t let anybody use the object
+ before it completed the constructor.
 
-Like I have said before, it is very hard to make that bug happen, we have to know a lot about the memory model of the JVM, and in some JVM it is even harder (I have read somewhere, that for instance, on the Symantec JVM, a form of double checked bug locking can be seen).
+Like I have said before, it is very hard to make that bug happen, we have to know a lot about the memory model of the
+JVM, and in some JVM it is even harder (I have read somewhere, that for instance, on the Symantec JVM, a form of
+double checked bug locking can be seen).
 
  
 
@@ -319,7 +323,8 @@ Like I have said before, it is very hard to make that bug happen, we have to kno
 
 Tool overview:
 
-FindBugs is a program to find bugs in Java programs. It looks for instances of "bug patterns", meaning, code instances that are likely to be errors.
+FindBugs is a program to find bugs in Java programs. It looks for instances of "bug patterns", meaning, code instances
+that are likely to be errors.
 
 (To more about FindBugs see http://www.cs.umd.edu/~pugh/java/bugs/ )
 
@@ -407,7 +412,12 @@ As you can see in the screenshots below, the FindBud tool, did recognize the bug
 
 8. Summery
 
-As can be seen, The DCL pattern is very hard to detect by noise makers. To understand when the bug can happen, and why, we have to have a deep understanding of the java memory model. Despite the fact the bug is hard to find, it is well known that, the double-checked locking, in whatever form, should not be used because it is not guaranteed that it will work on any JVM implementation. In this case we can see the importance of tools that use static analysis like code pattern checking, FindBugs for example, to recognize bugs, especially bugs like DCL that are very hard to detect by dynamic analysis.
+As can be seen, The DCL pattern is very hard to detect by noise makers. To understand when the bug can happen,
+and why, we have to have a deep understanding of the java memory model. Despite the fact the bug is hard to
+find, it is well known that, the double-checked locking, in whatever form, should not be used because it is not
+guaranteed that it will work on any JVM implementation. In this case we can see the importance of tools that use
+static analysis like code pattern checking, FindBugs for example, to recognize bugs, especially bugs like DCL that are
+very hard to detect by dynamic analysis.
 
  
 
@@ -439,15 +449,34 @@ Appendix A
 
 The Java Memory Model
 
-DCL is not guaranteed to work. To understand why, we need to look at the relationship between the JVM and the computer environment on which it runs. In particular, we need to look at the Java Memory Model (JMM), defined in Chapter 17 of the Java Language Specification, which details how Java handles the interaction between threads and memory.
+DCL is not guaranteed to work. To understand why, we need to look at the relationship between the JVM and the
+computer environment on which it runs. In particular, we need to look at the Java Memory Model (JMM), defined in
+Chapter 17 of the Java Language Specification, which details how Java handles the interaction between threads and memory.
 
-Unlike most other languages, Java defines its relationship to the underlying hardware through a formal memory model that is expected to hold on all Java platforms.
+Unlike most other languages, Java defines its relationship to the underlying hardware through a formal memory model that
+is expected to hold on all Java platforms.
 
-When running in a synchronous (single-threaded) environment, a program's interaction with memory is quite simple, or at least it appears so. Programs store items into memory locations and expect that they will still be there the next time those memory locations are examined.
+When running in a synchronous (single-threaded) environment, a program's interaction with memory is quite simple, or at
+least it appears so. Programs store items into memory locations and expect that they will still be there the next time
+those memory locations are examined.
 
-Actually, the truth is quite different, we think of programs as executing sequentially -- in the order specified by the program code -- that doesn't always happen. Compilers, processors, and caches are free to take all sorts of liberties with our programs and data, as long as they don't affect the result of the computation. For example, compilers can generate instructions in a different order from the obvious interpretation the program suggests and store variables in registers instead of memory; processors may execute instructions in parallel or out of order; and caches may vary the order in which writes commit to main memory. The JMM says that all of these various reorderings and optimizations are acceptable, so long as the environment maintains as-if-serial semantics -- that is, so long as you achieve the same result as you would have if the instructions were executed in a strictly sequential environment.
+Actually, the truth is quite different, we think of programs as executing sequentially -- in the order specified by the
+program code -- that doesn't always happen. Compilers, processors, and caches are free to take all sorts of liberties
+with our programs and data, as long as they don't affect the result of the computation. For example, compilers can
+generate instructions in a different order from the obvious interpretation the program suggests and store variables in
+registers instead of memory; processors may execute instructions in parallel or out of order; and caches may vary the
+order in which writes commit to main memory. The JMM says that all of these various reorderings and optimizations are
+acceptable, so long as the environment maintains as-if-serial semantics -- that is, so long as you achieve the same
+result as you would have if the instructions were executed in a strictly sequential environment.
 
-with multithreaded programs, one thread can read memory locations that another thread has written. If thread A modifies some variables in a certain order, in the absence of synchronization, thread B may not see them in the same order -- or may not see them at all, for that matter. That could result because the compiler reordered the instructions or temporarily stored a variable in a register and wrote it out to memory later; or because the processor executed the instructions in parallel or in a different order than the compiler specified; or because the instructions were in different regions of memory, and the cache updated the corresponding main memory locations in a different order than the one in which they were written. Whatever the circumstances, multithreaded programs are inherently less predictable, unless you explicitly ensure that threads have a consistent view of memory by using synchronization.
+with multithreaded programs, one thread can read memory locations that another thread has written. If thread A modifies
+some variables in a certain order, in the absence of synchronization, thread B may not see them in the same order --
+or may not see them at all, for that matter. That could result because the compiler reordered the instructions or
+temporarily stored a variable in a register and wrote it out to memory later; or because the processor executed the
+instructions in parallel or in a different order than the compiler specified; or because the instructions were in
+different regions of memory, and the cache updated the corresponding main memory locations in a different order than
+the one in which they were written. Whatever the circumstances, multithreaded programs are inherently less predictable,
+unless you explicitly ensure that threads have a consistent view of memory by using synchronization.
 
  
 
