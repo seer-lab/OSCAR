@@ -53,6 +53,10 @@ argparser.add_argument('-uti', '--unordered_thread_ids', action='store_true', he
 argparser.add_argument('-dc', '--disable_coverage', action='store_true', help='Disable coverage analysis.')
 argparser.add_argument('-di', '--disable_interleaving', action='store_true', help='Disable interleaving analysis.')
 argparser.add_argument('-of', '--output_flags', type=str, help='Flags which will be checked in program output.')
+argparser.add_argument('-r', '--run_time', default="0", type=int, help=f'Interval (in seconds) for which to run tests.')
+argparser.add_argument('-dri', '--discard_repeated_interleavings', action='store_true', help='Discard repeated '
+                                                                                             'interleavings when '
+                                                                                             'calculating difference.')
 
 argv = argparser.parse_args()
 
@@ -88,8 +92,11 @@ print(f'Running program {argv.count} times')
 FLAGS = str(argv.output_flags).split(",")
 flags_detected = {}
 
-# Run program x times
-for i in tqdm(range(0, runs), desc="Variable Args"):
+# Run program x time
+test_time = time.time_ns() / 1_000_000
+
+run_ctr = 0
+while run_ctr < runs or (argv.run_time > 0 and test_time <= time.time_ns() / 1_000_000 - argv.run_time):
     start_time = time.time_ns() / 1_000_000
 
     if not argv.jar:
@@ -124,6 +131,7 @@ for i in tqdm(range(0, runs), desc="Variable Args"):
         run_counts.append(int(rc))
 
     runtimes.append(time.time_ns() / 1_000_000 - start_time)
+    run_ctr += 1
 
 print(f'Finished running. Analyzing files.')
 
@@ -207,11 +215,18 @@ if not argv.disable_coverage:
     avg_dist_runs = {}
     std_dev_runs = {}
     uniq_interleavings_runs = {}
+    uniq_interleavings_runs_ratio = {}
     avg_cluster_size = {}
 
     for rc in run_counts:
         interleavings_split = interleavings[0:rc]
         uniq_interleavings_runs[rc] = len(set(interleavings_split))
+        uniq_interleavings_runs_ratio[rc] = len(set(interleavings_split)) / len(interleavings)
+
+        # Check if option added to discard repeated interleavings
+        # for calculating interleaving difference
+        if argv.discard_repeated_interleavings:
+            interleavings_split = set(interleavings_split)
 
         clusters = {}
         # Calculate avg cluster size
@@ -263,6 +278,7 @@ if not argv.disable_coverage:
 
     distance_alg = DISTANCE_ALGS[argv.distance_algorithm]
     print(f'\tUnique interleavings: {flatten_results_map(uniq_interleavings_runs)}')
+    print(f'\tUnique interleavings ratio: {flatten_results_map(uniq_interleavings_runs_ratio)}')
     print(f'\tAverage {distance_alg} distance: {flatten_results_map(avg_dist_runs)}')
     print(f'\t{distance_alg} distance standard deviation: {flatten_results_map(std_dev_runs)}')
     print(f'\tAverage Cluster Size: {flatten_results_map(avg_cluster_size)}')

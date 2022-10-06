@@ -2,29 +2,28 @@ import subprocess
 from tqdm import tqdm
 import numpy as np
 
-SORTED_DEFAULT_VALUES = sorted([5])
+SORTED_DEFAULT_VALUES = sorted([0,1,10,100,1000,10000,100000,1000000])
 
 OSCAR_DIR = "../"
 OSCAR_ARGS = "ibm/account account.Main output"
 PROGRAM = "../../output account.Main"
 TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2"
 DISABLE_COVERAGE = True
-NUMBER_RUNS = SORTED_DEFAULT_VALUES  # [5, 10, 15]
-NUMBER_THREADS = ["out lot"]  # SORTED_DEFAULT_VALUES  # [3]
-FIXED_ARGS = "-lfo -nc tb lb sb"
+NUMBER_RUNS = [20] # SORTED_DEFAULT_VALUES  # [5, 10, 15]
+NUMBER_THREADS = ["out lot"] #SORTED_DEFAULT_VALUES  # [3]
+FIXED_ARGS = " -m 1 -M 10 -nc sb lb svb tb "
 OUTPUT_FLAGS = []
 DISABLE_INTERLEAVING_ANALYSIS = True
 
 VARIABLE_ARGS = [
-    "-M 1 -m 1",
-    "-M 5 -m 5",
-    "-M 10 -m 10",
-    "-M 50 -m 50",
-    "-M 100 -m 100",
-    "-M 500 -m 500",
-    "-M 1000 -m 1000",
-    "-d",
+    "-p 0",
+    "-p 0.1",
+    "-p 0.25",
+    "-p 0.50",
+    "-p 0.75",
+    "-p 1",
 ]
+
 
 
 def pgfplots_format(param, k):
