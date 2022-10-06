@@ -93,10 +93,10 @@ FLAGS = str(argv.output_flags).split(",")
 flags_detected = {}
 
 # Run program x time
-test_time = time.time_ns() / 1_000_000
+test_time = time.time()
 
 run_ctr = 0
-while run_ctr < runs or (argv.run_time > 0 and test_time <= time.time_ns() / 1_000_000 - argv.run_time):
+while run_ctr < runs or (argv.run_time > 0 and test_time <= time.time() - argv.run_time):
     start_time = time.time_ns() / 1_000_000
 
     if not argv.jar:
