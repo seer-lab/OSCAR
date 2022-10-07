@@ -8,22 +8,20 @@ OSCAR_DIR = "../"
 OSCAR_ARGS = "ibm/account account.Main output"
 PROGRAM = "../../output account.Main"
 TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2 -r 120 -dri"
-NUMBER_RUNS = [20] # SORTED_DEFAULT_VALUES  # [5, 10, 15]
-NUMBER_THREADS = ["out lot"] #SORTED_DEFAULT_VALUES  # [3]
-FIXED_ARGS = " -lfo -m 1 -M 10 -nc sb lb -nl svbasfa svbbsfa tbbtr"
+NUMBER_RUNS = [20]  # SORTED_DEFAULT_VALUES  # [5, 10, 15]
+NUMBER_THREADS = ["out lot"]  # SORTED_DEFAULT_VALUES  # [3]
+FIXED_ARGS = " -lfo -m 1 -M 10 -nc sb lb -nl svbasfa svbbsfa tbbtr -p 0"
 OUTPUT_FLAGS = []
 DISABLE_COVERAGE = False
 DISABLE_INTERLEAVING_ANALYSIS = False
 
-VARIABLE_ARGS = [
-    "-p 0",
-    "-p 0.5",
-    "-p 0.10",
-    "-p 0.25",
-    "-p 0.50",
-    "-p 0.75",
-    "-p 1",
-]
+#    "-p 0",
+#    "-p 0.5",
+#    "-p 0.10",
+#    "-p 0.25",
+#    "-p 0.50",
+#    "-p 0.75",
+#    "-p 1",
 
 if DISABLE_COVERAGE:
     TESTSCRIPT_ARGS += " -dc"
@@ -69,7 +67,7 @@ if len(OUTPUT_FLAGS) > 0:
 else:
     output_flags = ""
 
-p_args = f"{FIXED_ARGS} {v_arg}"
+p_args = f"{FIXED_ARGS}"
 t_args = f"{TESTSCRIPT_ARGS} -c {n_runs}"
 
 cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {n_threads} {p_args}\" {t_args} {output_flags}'
