@@ -9,7 +9,7 @@ OSCAR_ARGS = "ibm/account account.Main output"
 PROGRAM = "../../output account.Main"
 TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2 -r 120 -dri"
 NUMBER_RUNS = [20]  # SORTED_DEFAULT_VALUES  # [5, 10, 15]
-NUMBER_THREADS = ["out lot"]  # SORTED_DEFAULT_VALUES  # [3]
+PROGRAM_ARGS = ["out lot"]  # SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = " -lfo -m 1 -M 10 -nc sb lb -nl svbasfa svbbsfa tbbtr -p 0"
 OUTPUT_FLAGS = []
 DISABLE_COVERAGE = False
@@ -70,7 +70,7 @@ else:
 p_args = f"{FIXED_ARGS}"
 t_args = f"{TESTSCRIPT_ARGS} -c {n_runs}"
 
-cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {n_threads} {p_args}\" {t_args} {output_flags}'
+cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {PROGRAM_ARGS} {p_args}\" {t_args} {output_flags}'
 result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 print(result.stderr.decode('utf-8'))
