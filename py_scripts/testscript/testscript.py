@@ -5,7 +5,6 @@ import os
 import shutil
 import subprocess
 import jellyfish as jf
-import numpy
 import numpy as np
 import time
 from tqdm import tqdm
@@ -226,7 +225,7 @@ if not argv.disable_coverage:
         # Check if option added to discard repeated interleavings
         # for calculating interleaving difference
         if argv.discard_repeated_interleavings:
-            interleavings_split = set(interleavings_split)
+            interleavings_split = np.unique(interleavings_split)
 
         clusters = {}
         # Calculate avg cluster size
