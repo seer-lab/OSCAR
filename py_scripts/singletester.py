@@ -71,6 +71,8 @@ p_args = f"{FIXED_ARGS}"
 t_args = f"{TESTSCRIPT_ARGS} -c {n_runs}"
 
 cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {PROGRAM_ARGS} {p_args}\" {t_args} {output_flags}'
+print(cmd)
+
 result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 if result.returncode != 0:

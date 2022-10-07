@@ -218,9 +218,10 @@ if not argv.disable_coverage:
 
     for rc in run_counts:
         interleavings_split = interleavings if argv.run_time > 0 else interleavings[0:rc]
-        interleaving_count = len(interleavings_split)
-        uniq_interleavings_runs[interleaving_count] = len(set(interleavings_split))
-        uniq_interleavings_runs_ratio[interleaving_count] = len(set(interleavings_split)) / len(interleavings)
+        interleavings_count = len(interleavings_split)
+        uniq_interleavings_count = len(set(interleavings_split))
+        uniq_interleavings_runs[interleavings_count] = uniq_interleavings_count
+        uniq_interleavings_runs_ratio[interleavings_count] = uniq_interleavings_count / interleavings_count
 
         # Check if option added to discard repeated interleavings
         # for calculating interleaving difference
@@ -235,7 +236,7 @@ if not argv.disable_coverage:
             else:
                 clusters[interleaving] += 1
 
-        avg_cluster_size[interleaving_count] = np.average(list(clusters.values()))
+        avg_cluster_size[interleavings_count] = np.average(list(clusters.values()))
 
         # For regular pairs
         interleaving_dists = []
@@ -272,8 +273,8 @@ if not argv.disable_coverage:
         else:
             interleaving_dists.append(1)
 
-        avg_dist_runs[interleaving_count] = round(np.average(interleaving_dists), 4)
-        std_dev_runs[interleaving_count] = round(float(np.std(interleaving_dists)), 4)
+        avg_dist_runs[interleavings_count] = round(np.average(interleaving_dists), 4)
+        std_dev_runs[interleavings_count] = round(float(np.std(interleaving_dists)), 4)
 
     distance_alg = DISTANCE_ALGS[argv.distance_algorithm]
     print(f'\tUnique interleavings: {flatten_results_map(uniq_interleavings_runs)}')
