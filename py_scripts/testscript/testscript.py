@@ -273,6 +273,9 @@ if not argv.disable_coverage:
         else:
             interleaving_dists.append(1)
 
+        if len(interleaving_dists) == 1:
+            interleaving_dists.append(0)
+
         avg_dist_runs[interleavings_count] = round(np.average(interleaving_dists), 4)
         std_dev_runs[interleavings_count] = round(float(np.std(interleaving_dists)), 4)
 
