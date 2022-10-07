@@ -75,7 +75,30 @@ os.chdir(argv.program_dir)
 if os.path.isdir('oscar_output'):
     shutil.rmtree('oscar_output')
 
+
 ###############################################################################################################
+
+def calculate_distance(a, b):
+    # Levenshtein
+    if argv.distance_algorithm == 0:
+        return jf.levenshtein_distance(a, b)
+
+    # Damerau-Levenshtein
+    if argv.distance_algorithm == 1:
+        return jf.damerau_levenshtein_distance(a, b)
+
+    # Jaro
+    if argv.distance_algorithm == 2:
+        return jf.jaro_similarity(a, b)
+
+    # Jaro-Wrinkler
+    if argv.distance_algorithm == 3:
+        return jf.jaro_winkler_similarity(a, b)
+
+    # Hamming
+    if argv.distance_algorithm == 4:
+        return jf.hamming_distance(a, b)
+
 
 # Save runtimes
 runtimes = []
@@ -246,35 +269,16 @@ if not argv.disable_coverage:
         if not argv.disable_coverage:
             for x in range(0, len(interleavings_split) - 1):
                 for y in range(x + 1, len(interleavings_split)):
-                    ix = interleavings_split[x]
-                    iy = interleavings_split[y]
+                    a = interleavings_split[x]
+                    b = interleavings_split[y]
 
-                    # Levenshtein
-                    if argv.distance_algorithm == 0:
-                        interleaving_dist = jf.levenshtein_distance(ix, iy)
-
-                    # Damerau-Levenshtein
-                    if argv.distance_algorithm == 1:
-                        interleaving_dist = jf.damerau_levenshtein_distance(ix, iy)
-
-                    # Jaro
-                    if argv.distance_algorithm == 2:
-                        interleaving_dist = jf.jaro_similarity(ix, iy)
-
-                    # Jaro-Wrinkler
-                    if argv.distance_algorithm == 3:
-                        interleaving_dist = jf.jaro_winkler_similarity(ix, iy)
-
-                    # Hamming
-                    if argv.distance_algorithm == 4:
-                        interleaving_dist = jf.hamming_distance(ix, iy)
-
+                    interleaving_dist = calculate_distance(a, b)
                     interleaving_dists.append(interleaving_dist)
         else:
             interleaving_dists.append(1)
 
         if len(interleaving_dists) == 0:
-            interleaving_dists.append(0)
+            interleaving_dists.append(calculate_distance("a", "a"))
 
         avg_dist_runs[interleavings_count] = round(np.average(interleaving_dists), 4)
         std_dev_runs[interleavings_count] = round(float(np.std(interleaving_dists)), 4)

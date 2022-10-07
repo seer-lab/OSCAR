@@ -109,7 +109,7 @@ public final class ControllerOptions {
           options.NoiseProbability = parseFloat(argv[i + 1]);
           i++;
 
-          if (options.NoiseProbability <0 || options.NoiseProbability > 1)
+          if (options.NoiseProbability < 0 || options.NoiseProbability > 1)
             throw new RuntimeException("Invalid value for 'noise probability', must be higher or equal to 0 and lower or equal to 1.");
 
           break;
