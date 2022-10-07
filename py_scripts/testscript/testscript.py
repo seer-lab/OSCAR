@@ -113,18 +113,17 @@ while run_ctr < runs or (argv.run_time > 0 and test_time + argv.run_time <= time
         print(result.stderr.decode('utf-8'))
         print(result.stdout.decode('utf-8'))
 
-    # Check the output for flags
-    output = result.stdout.decode('utf-8')
-
     # Parse line by line to check for flags
-    for line in output.split("\n"):
-        for flag in FLAGS:
-            if flag in line:
-                if line in flags_detected:
-                    flags_detected[line] = flags_detected[line] + 1
-                else:
-                    flags_detected[line] = 1
-                break
+    if len(FLAGS) > 0:
+        output = result.stdout.decode('utf-8')
+        for line in output.split("\n"):
+            for flag in FLAGS:
+                if flag in line:
+                    if line in flags_detected:
+                        flags_detected[line] = flags_detected[line] + 1
+                    else:
+                        flags_detected[line] = 1
+                    break
 
     for rc in str(argv.count).split(","):
         run_counts.append(int(rc))
