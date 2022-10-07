@@ -43,6 +43,7 @@ if DISABLE_INTERLEAVING_ANALYSIS:
 
 v_arg_avg_run_times = {}
 uniq_interleavings = {}
+uniq_interleavings_ratio = {}
 avg_coverages = {}
 std_coverages = {}
 avg_cluster_sizes = {}
@@ -119,8 +120,11 @@ for v_arg in tqdm(VARIABLE_ARGS, desc="Variable Args"):
                 run_times.append(float(line.split(": ")[1]))
 
             if not DISABLE_COVERAGE:
-                if "Unique interleavings" in line:
+                if "Unique interleavings:" in line:
                     uniq_interleavings[v_arg] = line.split(": ")[1].strip()
+
+                if "Unique interleavings ratio" in line:
+                    uniq_interleavings_ratio[v_arg] = line.split(": ")[1].strip()
 
                 if "distance:" in line:
                     avg_coverages[v_arg] = line.split(": ")[1].strip()
@@ -151,6 +155,11 @@ if not DISABLE_COVERAGE:
     print("Unique interleavings: ")
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(uniq_interleavings, v_arg)
+
+    print("Unique interleavings: ")
+    for v_arg in VARIABLE_ARGS:
+        pgfplots_format(uniq_interleavings_ratio, v_arg)
+
 
     print(f"Average {DISTANCE_ALG} distance: ")
     for v_arg in VARIABLE_ARGS:
