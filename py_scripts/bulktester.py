@@ -156,10 +156,9 @@ if not DISABLE_COVERAGE:
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(uniq_interleavings, v_arg)
 
-    print("Unique interleavings: ")
+    print("Unique interleavings ratio: ")
     for v_arg in VARIABLE_ARGS:
         pgfplots_format(uniq_interleavings_ratio, v_arg)
-
 
     print(f"Average {DISTANCE_ALG} distance: ")
     for v_arg in VARIABLE_ARGS:
