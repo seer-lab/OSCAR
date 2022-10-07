@@ -272,10 +272,7 @@ if not argv.disable_coverage:
                     a = interleavings_split[x]
                     b = interleavings_split[y]
 
-                    interleaving_dist = calculate_distance(a, b)
-                    interleaving_dists.append(interleaving_dist)
-        else:
-            interleaving_dists.append(1)
+                    interleaving_dists.append(calculate_distance(a, b))
 
         if len(interleaving_dists) == 0:
             interleaving_dists.append(calculate_distance("a", "a"))
