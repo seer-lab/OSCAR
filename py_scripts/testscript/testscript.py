@@ -95,7 +95,7 @@ flags_detected = {}
 test_time = time.time()
 
 run_ctr = 0
-while run_ctr < runs or (argv.run_time > 0 and test_time + argv.run_time <= time.time()):
+while run_ctr < runs or (argv.run_time > 0 and time.time() <= test_time + argv.run_time):
     start_time = time.time_ns() / 1_000_000
 
     if not argv.jar:

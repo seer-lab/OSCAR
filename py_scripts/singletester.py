@@ -7,7 +7,7 @@ SORTED_DEFAULT_VALUES = sorted([0, 1, 10, 100, 1000, 10000, 100000, 1000000])
 OSCAR_DIR = "../"
 OSCAR_ARGS = "ibm/account account.Main output"
 PROGRAM = "../../output account.Main"
-TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2 -r 120 -dri"
+TESTSCRIPT_ARGS = "-j " if PROGRAM.endswith(".jar") else " " + "-da 2 -r 100 -dri"
 NUMBER_RUNS = [20]  # SORTED_DEFAULT_VALUES  # [5, 10, 15]
 PROGRAM_ARGS = ["out lot"]  # SORTED_DEFAULT_VALUES  # [3]
 FIXED_ARGS = " -lfo -m 1 -M 10 -nc sb lb -nl svbasfa svbbsfa tbbtr -p 0"
@@ -73,5 +73,7 @@ t_args = f"{TESTSCRIPT_ARGS} -c {n_runs}"
 cmd = f'cd testscript && python3 testscript.py {PROGRAM} \"-a {PROGRAM_ARGS} {p_args}\" {t_args} {output_flags}'
 result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-print(result.stderr.decode('utf-8'))
-print(result.stdout.decode('utf-8'))
+if result.returncode != 0:
+    print(result.stderr.decode('utf-8'))
+else:
+    print(result.stdout.decode('utf-8'))
