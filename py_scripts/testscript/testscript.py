@@ -218,7 +218,7 @@ if not argv.disable_coverage:
 
     for rc in run_counts:
         interleavings_split = interleavings if argv.run_time > 0 else interleavings[0:rc]
-        interleaving_count = len(interleavings)
+        interleaving_count = len(interleavings_split)
         uniq_interleavings_runs[interleaving_count] = len(set(interleavings_split))
         uniq_interleavings_runs_ratio[interleaving_count] = len(set(interleavings_split)) / len(interleavings)
 
