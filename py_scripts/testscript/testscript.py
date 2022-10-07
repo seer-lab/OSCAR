@@ -218,9 +218,9 @@ if not argv.disable_coverage:
     avg_cluster_size = {}
 
     for rc in run_counts:
-        interleavings_split = interleavings[0:rc]
-        uniq_interleavings_runs[rc] = len(set(interleavings_split))
-        uniq_interleavings_runs_ratio[rc] = len(set(interleavings_split)) / len(interleavings)
+        interleavings_split = interleavings #[0:rc]
+        uniq_interleavings_runs[len(interleavings)] = len(set(interleavings_split))
+        uniq_interleavings_runs_ratio[len(interleavings)] = len(set(interleavings_split)) / len(interleavings)
 
         # Check if option added to discard repeated interleavings
         # for calculating interleaving difference
