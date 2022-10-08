@@ -8,6 +8,8 @@ import jellyfish as jf
 import numpy as np
 import time
 from tqdm import tqdm
+from datasketch import MinHash, MinHashLSH, LeanMinHash
+from nltk import ngrams
 
 
 # Convert a string to unicode
@@ -34,13 +36,14 @@ DISTANCE_ALGS = {
     2: "Jaro",
     3: "Jaro-Wrinkler",
     4: "Hamming",
+    5: "Jaccard (MinHash)"
 }
 
 argparser.add_argument('program_dir', help='location of program to run.')
 argparser.add_argument('executable', help='Name of program\'s main class to run or jar file name.')
 argparser.add_argument('program_args', type=str, help='Arguments to be passed to program.')
 
-argparser.add_argument('-c', '--count', default="30", type=str,
+argparser.add_argument('-c', '--count', default="1", type=str,
                        help='Number of times to run program (comma separated).')
 argparser.add_argument('-da', '--distance_algorithm', default="0", type=int,
                        help=f'Distance algorithm: {DISTANCE_ALGS}.')
@@ -78,7 +81,7 @@ if os.path.isdir('oscar_output'):
 
 ###############################################################################################################
 
-def calculate_distance(a, b):
+def distance(a, b):
     # Levenshtein
     if argv.distance_algorithm == 0:
         return jf.levenshtein_distance(a, b)
@@ -98,6 +101,9 @@ def calculate_distance(a, b):
     # Hamming
     if argv.distance_algorithm == 4:
         return jf.hamming_distance(a, b)
+
+    # Default
+    return 0
 
 
 # Save runtimes
@@ -148,11 +154,12 @@ while run_ctr < runs or (argv.run_time > 0 and time.time() <= test_time + argv.r
                         flags_detected[line] = 1
                     break
 
-    for rc in str(argv.count).split(","):
-        run_counts.append(int(rc))
-
     runtimes.append(time.time_ns() / 1_000_000 - start_time)
     run_ctr += 1
+
+# For run time based tests
+if len(run_counts) == 0:
+    run_counts.append(run_ctr - 1)
 
 print(f'Finished running. Analyzing files.')
 
@@ -165,8 +172,9 @@ print()
 print("Results:")
 print(f'\tAverage runtime (ms): {round(np.average(runtimes), 0)}')
 
-for flag in flags_detected:
-    print(f'\tDetected flag_-_-{flag}-_-_{flags_detected[flag]}')
+if len(FLAGS) > 0:
+    for flag in flags_detected:
+        print(f'\tDetected flag_-_-{flag}-_-_{flags_detected[flag]}')
 
 if not argv.disable_coverage:
     # Try to analyze created files
@@ -177,7 +185,7 @@ if not argv.disable_coverage:
     interleavings = []
     trace_pairs = {}
 
-    for file in files:
+    for file_n, file in enumerate(files):
         content = open(file, 'r')  # .read()
         thread_ids = []
         trace_pairs_count = {}
@@ -239,9 +247,10 @@ if not argv.disable_coverage:
     uniq_interleavings_runs_ratio = {}
     avg_cluster_size = {}
 
-    for rc in run_counts:
+    for rc_n, rc in enumerate(run_counts):
         interleavings_split = interleavings if argv.run_time > 0 else interleavings[0:rc]
         interleavings_count = len(interleavings_split)
+
         uniq_interleavings_count = len(set(interleavings_split))
         uniq_interleavings_runs[interleavings_count] = uniq_interleavings_count
         uniq_interleavings_runs_ratio[interleavings_count] = uniq_interleavings_count / interleavings_count
@@ -251,38 +260,51 @@ if not argv.disable_coverage:
         if argv.discard_repeated_interleavings:
             interleavings_split = np.unique(interleavings_split)
 
-        clusters = {}
+        #clusters = {}
         # Calculate avg cluster size
-        for interleaving in interleavings_split:
-            if interleaving not in clusters:
-                clusters[interleaving] = 1
-            else:
-                clusters[interleaving] += 1
+        #for interleaving in interleavings_split:
+        #    if interleaving not in clusters:
+        #        clusters[interleaving] = 1
+        #    else:
+        #        clusters[interleaving] += 1
 
-        avg_cluster_size[interleavings_count] = np.average(list(clusters.values()))
-
-        # For regular pairs
-        interleaving_dists = []
-        interleaving_dist = 0
+        #avg_cluster_size[interleavings_count] = np.average(list(clusters.values()))
 
         # Calculate average ratio
-        if not argv.disable_coverage:
+        interleaving_dists = []
+
+        if argv.distance_algorithm != 5:
             for x in range(0, len(interleavings_split) - 1):
                 for y in range(x + 1, len(interleavings_split)):
-                    a = interleavings_split[x]
-                    b = interleavings_split[y]
+                    dist = distance(interleavings_split[x], interleavings_split[y])
+                    interleaving_dists.append(dist)
+        else:
+            # Handle Minhash
+            minhashes = []
+            for c, i in enumerate(interleavings_split):
+                minhash = MinHash(num_perm=128)
+                for d in ngrams(i, 3):
+                    minhash.update("".join(d).encode('utf-8'))
+                minhashes.append(LeanMinHash(minhash))
 
-                    interleaving_dists.append(calculate_distance(a, b))
+            for x in range(0, len(minhashes) - 1):
+                for y in range(x + 1, len(minhashes)):
+                    dist = minhashes[x].jaccard(minhashes[y])
+                    interleaving_dists.append(dist)
 
         if len(interleaving_dists) == 0:
-            interleaving_dists.append(calculate_distance("a", "a"))
+            interleaving_dists.append(distance("a", "a"))
 
         avg_dist_runs[interleavings_count] = round(np.average(interleaving_dists), 4)
         std_dev_runs[interleavings_count] = round(float(np.std(interleaving_dists)), 4)
+
+        print(f"File: {rc_n + 1}/{len(run_counts)}")
 
     distance_alg = DISTANCE_ALGS[argv.distance_algorithm]
     print(f'\tUnique interleavings: {flatten_results_map(uniq_interleavings_runs)}')
     print(f'\tUnique interleavings ratio: {flatten_results_map(uniq_interleavings_runs_ratio)}')
     print(f'\tAverage {distance_alg} distance: {flatten_results_map(avg_dist_runs)}')
     print(f'\t{distance_alg} distance standard deviation: {flatten_results_map(std_dev_runs)}')
-    print(f'\tAverage Cluster Size: {flatten_results_map(avg_cluster_size)}')
+    #print(f'\tAverage Cluster Size: {flatten_results_map(avg_cluster_size)}')
+
+    print(f"Total test time: {time.time() - test_time} seconds")
