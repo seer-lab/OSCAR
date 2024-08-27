@@ -1,4 +1,4 @@
-# OSCAR Noise Injector - Prototype
+# OSCAR Noise Injector - v2
 
 ### Requirements (Tested on)
 
