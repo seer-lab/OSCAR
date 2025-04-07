@@ -1,0 +1,9 @@
+mvn -f ../pom.xml compile > /dev/null
+
+exit_code=$?
+
+if [ $exit_code -eq 0 ]; then
+  echo "Successfully Built OSCAR"
+else
+  echo "Failed to build OSCAR with error code $exit_code"
+fi

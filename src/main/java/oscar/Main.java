@@ -7,6 +7,7 @@ import oscar.utils.logger.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -15,14 +16,36 @@ public class Main {
 
   private static final List<ControllerOption> ENGINE_OPTIONS = Arrays.asList(
       new ControllerOption("Verbose", "Enable full logging.", "Flag", "False", "-vb", "--verbose"),
-      new ControllerOption("Blacklist", "Set blacklisted classes by prefix (these will not be noised)", "List", Engine.BlacklistedClasses.toString(), "-b", "--blacklist"),
+      new ControllerOption("Blocklist", "Set blocklisted classes by prefix (these will not be noised)", "List", Engine.BlacklistedClasses.toString(), "-b", "--blocklist"),
       new ControllerOption("Jar", "Inject a program as a JAR file.", "Flag", "False", "-j", "--jar"),
       new ControllerOption("Help", "Print Help.", "Flag", "False", "-h", "--help"),
       new ControllerOption("Version", "Print Version.", "Flag", "False", "-v", "--version")
   );
 
   public static void main(String[] argv) {
-    if (argv.length < 3) {
+
+    if (argv.length == 1) {
+      if (Objects.equals(argv[0], "-h") || Objects.equals(argv[0], "--help")) {
+        System.out.println("Usage:");
+        System.out.println("\tjava [java_options] oscar <targetfile> <mainclass> <outputdirectory> [oscar_options]");
+        System.out.println("OSCAR options include:");
+        for (ControllerOption option : ENGINE_OPTIONS)
+          System.out.printf(
+                  "\t%-25s\t%-15s\t%-10s\t%s\n",
+                  option.getAliasesString(),
+                  option.getType(),
+                  option.getDefaultVal(),
+                  option.getDescription()
+          );
+
+        System.exit(0);
+      }
+      else if (Objects.equals(argv[0], "-v") || Objects.equals(argv[0], "--version")) {
+        System.out.println("OSCAR " + Main.VERSION);
+        System.exit(0);
+      }
+    }
+    else if (argv.length < 3) {
       System.out.println("Invalid number of arguments, expected at least 3. Use --help or -h for help.");
       System.exit(1);
     }
