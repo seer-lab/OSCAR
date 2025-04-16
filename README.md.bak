@@ -5,79 +5,22 @@
 - Apache Maven 3.6.3 and Apache Maven 3.9.9
 - OpenJDK 17.0.2 (Project compiles to Java 9) and OpenJDK 21.0.2
 
-### Cloning or Downloading
-The source code for OSCAR can be downloaded from Git via the following command:
-```shell
-git clone https://github.com/seer-lab/OSCAR.git
-```
-Otherwise, OSCAR can be downloaded from the most recent release on GitHub, and this bypasses
-the need to build.
-### Ensure Maven in Path
-To ensure operation with the build and execution scripts, Maven must be in your path.
-You can check if Maven is in your path by running the below scrips, or by running:
-```shell
-mvn --version
-```
-#### Windows (PowerShell)
+### Running Instructions
 
-```shell
-./windows_scripts/check_mvn.bat
+```sh
+mvn clean
+mvn compile
+mvn exec:java -Dexec.mainClass=oscar.Main -Dexec.args="-h"
 ```
 
-#### Windows
-```shell
-./unix_based_scripts/check_mvn.sh
-```
-
-### Making and Compiling
-#### Windows (PowerShell)
-
-```shell
-./windows_scripts/build_oscar.bat
-```
-
-#### Mac and Linux
-```shell
-./unix_based_scripts/build_oscar.sh
-```
-
-### Executing
-#### Windows
-```shell
-./windows_scripts/oscar.bat <arguments>
-```
-
-#### Mac and Linux
-```shell
-./unix_based_scripts/oscar.sh <arguments>
-```
-
-###### Note:
-If you would like to run OSCAR from anywhere, and avoid the ./ shortcut, 
-the script directory for your operating system can be added to path, 
-and allow for the execution of oscar like shown in the "OSCAR arguments"
-section below.
 ##### OSCAR arguments
-- Target File: This is the Java class file that you want to noise
-- Main Class: This is the main class of the Java file that you want to noise (Normally just Main)
-- Output Directory: This is the directory that you want the OSCAR generated file to save to
 
-These arguments are in the order of:
-```shell
+```
 oscar <targetfile> <mainclass> <outputdirectory>
-```
-You can additionally add options to each OSCAR call. These options are:
-```
-OSCAR options include:
-        -vb --verbose                   Flag            False           Enable full logging.
-        -b --blocklist                  List            [java., sun., jdk., javax., com., org., kotlin., android., io., okhttp3., dagger., soot., oscar., $]    Set blocklisted classes by prefix (these will not be noised)
-        -j --jar                        Flag            False           Inject a program as a JAR file.
-        -h --help                       Flag            False           Print Help.
-        -v --version                    Flag            False           Print Version.
 ```
 
 ##### Instrumented program arguments
-Once you have an instrumented program from OSCAR, you can run the instrumented program with the following options.
+
 ```
 Usage:
         java [java_options] <mainclass> [oscar_options]
@@ -102,7 +45,7 @@ OSCAR options include:
         -q --quiet                      Flag            False           Disable logging.
         -h --help                       Flag            False           Print Help.
 
-OSCAR Noise Injector 2022-2025
+OSCAR Noise Injector 2022
 ```
 
 ###### Note:
@@ -127,13 +70,8 @@ cd ../../..
    the folder "output".
 
 ```sh
-mvn exec:java -Dexec.args="data/cflash/account/Main.class Main 
+mvn exec:java -Dexec.mainClass=oscar.Main -Dexec.args="data/cflash/account/Main.class Main 
 output"
-```
- This can also be done using the provided OSCAR script. This is assuming you have OSCAR added to path.
-Otherwise, refer to the "Execution" section
-```shell
-oscar "data/cflash/account/Main.class" Main output
 ```
 
 3. Run the instrumented program without any noise
