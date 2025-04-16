@@ -24,9 +24,9 @@ mvn --version
 ./windows_scripts/check_mvn.bat
 ```
 
-#### Windows
+#### Mac and Linux
 ```shell
-./unix_based_scripts/check_mvn.sh
+./unix_based_scripts/check_mvn
 ```
 
 ### Making and Compiling
@@ -38,7 +38,7 @@ mvn --version
 
 #### Mac and Linux
 ```shell
-./unix_based_scripts/build_oscar.sh
+./unix_based_scripts/build_oscar
 ```
 
 ### Executing
@@ -49,7 +49,7 @@ mvn --version
 
 #### Mac and Linux
 ```shell
-./unix_based_scripts/oscar.sh <arguments>
+./unix_based_scripts/oscar <arguments>
 ```
 
 ###### Note:

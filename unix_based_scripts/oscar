@@ -1,1 +1,3 @@
+#!/bin/bash
+
 mvn -q -f . exec:java -Dexec.args="$*"
