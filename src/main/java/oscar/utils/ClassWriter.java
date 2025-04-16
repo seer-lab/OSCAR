@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public final class ClassWriter {
   private static final Logger logger = LoggerFactory.getInstance(ClassWriter.class);
@@ -64,20 +65,28 @@ public final class ClassWriter {
     if (url == null)
       throw new RuntimeException("Failed to find class '" + classFile + "'.");
 
-    String packagePathLocation = Paths.get(url.getPath())
-                                      .getParent()
-                                      .toString()
-                                      .replace("%20", " ");
+    String packagePathLocation;
+    try {
+        packagePathLocation = Paths.get(url.toURI())
+                                   .getParent()
+                                   .toString();
+    } catch (URISyntaxException e) {
+        throw new RuntimeException("Invalid URI from URL: " + url, e);
+    }
 
-    String packageOutputLocation = url.getPath()
-                                                .substring(
-                                                    0,
-                                                    url.getPath().length() - classFile.length() - 1
-                                                )
-                                                .replace("%20", " ")
-                                                .split(File.separator + "oscar" + File.separator)[1];
+    String rawPath = url.getPath()
+        .replace("%20", " ")
+        .replace('\\', '/');
 
-    packageOutputLocation = directory + File.separator + "oscar" + File.separator + packageOutputLocation;
+    String basePath = rawPath.substring(0, rawPath.length() - classFile.length() - 1);
+
+    String[] parts = basePath.split("/oscar/");
+
+    if (parts.length < 2) {
+        throw new IllegalStateException("Could not find '/oscar/' in path: " + basePath);
+    }
+
+    String packageOutputLocation = directory + File.separator + "oscar" + File.separator + parts[1];
 
     try {
       FileUtils.copyDirectory(new File(packagePathLocation), new File(packageOutputLocation));
