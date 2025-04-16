@@ -1,1 +1,1 @@
-mvn -q -f ../ exec:java -Dexec.mainClass=oscar.Main -Dexec.args="$*"
+mvn -q -f . exec:java -Dexec.args="$*"

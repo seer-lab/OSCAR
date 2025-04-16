@@ -1,4 +1,5 @@
-mvn -f ../pom.xml compile > /dev/null
+mvn -f pom.xml clean > /dev/null
+mvn -f pom.xml compile > /dev/null
 
 exit_code=$?
 

@@ -46,7 +46,7 @@ public class Main {
       }
     }
     else if (argv.length < 3) {
-      System.out.println("Invalid number of arguments, expected at least 3. Use --help or -h for help.");
+      System.out.println("Invalid number of arguments, expected at least 1 for help or version, otherwise 3. Use --help or -h for help.");
       System.exit(1);
     }
 
