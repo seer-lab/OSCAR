@@ -2,6 +2,11 @@
 
 ![OSCAR logo](images/OSCAR_logo.png)
 
+### Overview
+
+OSCAR is an open source noise injection framework for the Java programming language. It can be used to test concurrent programs and find bugs by increasing coverage of the interleaving space. Noise-based testing involves injecting random delays (e.g., sleep) into the code at points where context switching can occur in order to delay threads and vary thread scheduling.
+
+
 ### Requirements (Tested on)
 
 - Apache Maven 3.6.3 and Apache Maven 3.9.9
